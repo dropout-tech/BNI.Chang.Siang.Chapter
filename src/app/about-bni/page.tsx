@@ -8,7 +8,6 @@ import {
   Target,
   GraduationCap,
   Heart,
-  CheckCircle,
   ArrowRight,
 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Users, ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import SectionHeading from "@/components/SectionHeading";
 import WaveSVG from "@/components/WaveSVG";
@@ -47,9 +48,11 @@ export default function PartnersPage() {
                     {/* Avatar placeholder */}
                     <div className="w-24 h-24 mx-auto rounded-full bg-navy-700 border-2 border-gold-400/20 flex items-center justify-center mb-4 group-hover:border-gold-400/50 transition-colors overflow-hidden">
                       {partner.photo ? (
-                        <img
+                        <Image
                           src={partner.photo}
                           alt={partner.name}
+                          width={96}
+                          height={96}
                           className="w-full h-full object-cover"
                         />
                       ) : (

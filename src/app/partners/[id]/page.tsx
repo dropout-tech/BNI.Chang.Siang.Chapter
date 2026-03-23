@@ -10,6 +10,7 @@ import {
   Award,
   ArrowRight,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { partners } from "@/data/partners";
 import WaveSVG from "@/components/WaveSVG";
@@ -68,9 +69,11 @@ export default function PartnerDetailPage() {
               <div className="shrink-0">
                 <div className="w-32 h-32 rounded-full bg-navy-700 border-3 border-gold-400/30 flex items-center justify-center overflow-hidden">
                   {partner.photo ? (
-                    <img
+                    <Image
                       src={partner.photo}
                       alt={partner.name}
+                      width={128}
+                      height={128}
                       className="w-full h-full object-cover"
                     />
                   ) : (

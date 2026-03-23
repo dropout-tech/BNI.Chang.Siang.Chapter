@@ -9,7 +9,6 @@ import {
   GraduationCap,
   PartyPopper,
   ArrowRight,
-  Filter,
 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import WaveSVG from "@/components/WaveSVG";
