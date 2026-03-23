@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+:root {
+  --navy-900: #0A1628;
+  --navy-800: #102A43;
+  --navy-700: #1A3A5C;
+  --navy-600: #243B53;
+  --gold-400: #D4AF37;
+  --gold-300: #E8C547;
+  --gold-500: #B8960C;
+  --foreground: #FFFFFF;
+  --text-muted: #94A3B8;
+}
+
+@theme inline {
+  --color-navy-900: var(--navy-900);
+  --color-navy-800: var(--navy-800);
+  --color-navy-700: var(--navy-700);
+  --color-navy-600: var(--navy-600);
+  --color-gold-400: var(--gold-400);
+  --color-gold-300: var(--gold-300);
+  --color-gold-500: var(--gold-500);
+  --color-foreground: var(--foreground);
+  --color-text-muted: var(--text-muted);
+  --font-sans: var(--font-noto-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--navy-900);
+  color: var(--foreground);
+  font-family: 'Noto Sans TC', Arial, Helvetica, sans-serif;
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #E8C547 0%, #D4AF37 40%, #B8960C 70%, #D4AF37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gold-border-gradient {
+  border-image: linear-gradient(135deg, #E8C547, #D4AF37, #B8960C) 1;
+}
+
+.brushed-gold {
+  background: linear-gradient(
+    135deg,
+    #D4AF37 0%,
+    #E8C547 15%,
+    #D4AF37 30%,
+    #B8960C 50%,
+    #D4AF37 70%,
+    #E8C547 85%,
+    #D4AF37 100%
+  );
+}
+
+.wave-bg {
+  background: linear-gradient(180deg, 
+    var(--navy-900) 0%, 
+    var(--navy-800) 30%, 
+    var(--navy-700) 60%, 
+    var(--navy-800) 80%, 
+    var(--navy-900) 100%
+  );
+}
+
+.grain-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+.gold-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
