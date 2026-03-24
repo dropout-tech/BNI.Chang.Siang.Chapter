@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-// Simplified type for what we need in UI
 export interface MemberInfo {
     name: string;
     industry: string;
@@ -23,60 +22,47 @@ export interface Referral {
 export const useReferrals = () => {
     const [referrals, setReferrals] = useState<Referral[]>([]);
     const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!isSupabaseConfigured) {
+            setReferrals([]);
+            setLoading(false);
+            return;
+        }
+
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // 1. Get raw referrals data with resilient ordering
                 let { data: refsData, error: refsError } = await supabase
                     .from('referrals')
                     .select('*')
                     .order('created_at', { ascending: false });
 
                 if (refsError) {
-                    // Try alternative column name
                     const altRes = await supabase
                         .from('referrals')
                         .select('*')
                         .order('createdAt', { ascending: false });
-
-                    if (!altRes.error) {
-                        refsData = altRes.data;
-                        refsError = null;
-                    }
+                    if (!altRes.error) { refsData = altRes.data; refsError = null; }
                 }
 
                 if (refsError) {
-                    // Try without ordering if both fail
                     const fallbackRes = await supabase.from('referrals').select('*');
-                    if (!fallbackRes.error) {
-                        refsData = fallbackRes.data;
-                        refsError = null;
-                    }
+                    if (!fallbackRes.error) { refsData = fallbackRes.data; refsError = null; }
                 }
 
                 if (refsError) throw refsError;
+                if (!refsData || refsData.length === 0) { setReferrals([]); return; }
 
-                if (!refsData || refsData.length === 0) {
-                    setReferrals([]);
-                    return;
-                }
-
-                // 2. Get basic member info for mapping (Photo, Industry)
                 const { data: membersData } = await supabase
                     .from('members')
                     .select('name, industry, photo');
 
-                // Map by Name for quick lookup
                 const membersMap = new Map(membersData?.map(m => [m.name, m]));
 
-                // 3. Format data structure
                 const formattedReferrals: Referral[] = refsData.map((ref: any) => {
                     const referrerDetails = membersMap.get(ref.referrer_name);
                     const refereeDetails = membersMap.get(ref.referee_name);
-
                     return {
                         id: ref.id,
                         title: ref.title,
@@ -102,13 +88,7 @@ export const useReferrals = () => {
                 setReferrals(formattedReferrals);
             } catch (err: any) {
                 console.error("Error loading referrals:", err);
-                // If it's a 404 or 400, just show empty instead of error
-                if (err.code === 'PGRST116' || err.code === '42P01' || err.code === 'PGRST204') {
-                    setReferrals([]);
-                } else {
-                    setReferrals([]); // Still return empty to prevent crash
-                    // setError(err.message || '無法載入引薦資料'); // Don't block UI with error if we can help it
-                }
+                setReferrals([]);
             } finally {
                 setLoading(false);
             }

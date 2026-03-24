@@ -1,13 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { initAnalytics, trackPageView } from '../../lib/analytics';
 
 const PageTracker = () => {
     const location = useLocation();
     const initialized = useRef(false);
 
-    // Initialize Global Analytics Scripts once
     useEffect(() => {
         if (!initialized.current) {
             initAnalytics();
@@ -15,13 +14,11 @@ const PageTracker = () => {
         }
     }, []);
 
-    // Track Page Views on route change
     useEffect(() => {
         const track = async () => {
-            // 1. External Tools (GA4, Pixel)
             trackPageView(location.pathname);
 
-            // 2. Internal Supabase Page Views
+            if (!isSupabaseConfigured) return;
             try {
                 await supabase.from('page_views').insert({
                     path: location.pathname,

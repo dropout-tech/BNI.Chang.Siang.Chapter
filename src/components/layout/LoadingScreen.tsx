@@ -162,7 +162,7 @@ const LoadingScreen: React.FC = () => {
                         transition={{ delay: 0.8 }}
                         className="absolute bottom-8 text-primary/50 text-sm tracking-widest"
                     >
-                        BNI EVERSHINE
+                        BNI CHANG SIANG
                     </motion.div>
                 </motion.div>
             )}

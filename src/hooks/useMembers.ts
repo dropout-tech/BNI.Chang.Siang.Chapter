@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export interface Member {
     id: number;
@@ -28,6 +28,12 @@ export const useMembers = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!isSupabaseConfigured) {
+            setMembers([]);
+            setLoading(false);
+            return;
+        }
+
         const fetchMembers = async () => {
             try {
                 setLoading(true);
@@ -48,7 +54,6 @@ export const useMembers = () => {
 
         fetchMembers();
 
-        // Optional: Realtime subscription
         const subscription = supabase
             .channel('members_changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'members' }, fetchMembers)
