@@ -358,7 +358,7 @@ const MemberEdit: React.FC = () => {
 
                             <div className="aspect-square rounded-full border-4 border-primary/30 overflow-hidden relative group mb-4 bg-black">
                                 <img
-                                    src={previewUrl || (photo ? photo.trim() : '') || '/images/assets/logo/白色正方形logo.png'}
+                                    src={previewUrl || (photo ? photo.trim() : '') || `${import.meta.env.BASE_URL}images/assets/logo/白色正方形logo.png`}
                                     alt="Profile"
                                     className="w-full h-full object-cover"
                                     style={{ objectPosition: photoPosition }}

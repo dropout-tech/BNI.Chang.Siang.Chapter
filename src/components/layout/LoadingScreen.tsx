@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { assetUrl } from '../../lib/assets';
 
 const LoadingScreen: React.FC = () => {
     const { loading: authLoading } = useAuth();
@@ -96,7 +97,7 @@ const LoadingScreen: React.FC = () => {
                             className="relative"
                         >
                             <img
-                                src="/images/assets/logo/白色正方形logo.png"
+                                src={assetUrl('/images/assets/logo/白色正方形logo.png')}
                                 alt="ChangSiang Logo"
                                 className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl"
                             />

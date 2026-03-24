@@ -62,7 +62,7 @@ const AnimatedRoutes = () => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router basename={import.meta.env.BASE_URL}>
         <LoadingScreen />
         <PageTracker />
         <ScrollToTop />

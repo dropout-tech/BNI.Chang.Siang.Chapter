@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { assetUrl } from '../../lib/assets';
 
 interface PageHeroProps {
     title: React.ReactNode;
@@ -15,7 +16,7 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
             <div
                 className="absolute inset-0 z-0"
                 style={{
-                    backgroundImage: 'url(/images/assets/background.png)',
+                    backgroundImage: `url(${assetUrl('/images/assets/background.png')})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center center',
                     backgroundRepeat: 'no-repeat',

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Referral } from '../../types';
 import { ArrowRight, Quote } from 'lucide-react';
+import { assetUrl } from '../../lib/assets';
 
 const PersonAvatar: React.FC<{ name: string, photo: string, industry: string, isReferee?: boolean }> = ({ name, photo, industry, isReferee }) => {
     const [imgSrc, setImgSrc] = useState(photo);
@@ -12,7 +13,7 @@ const PersonAvatar: React.FC<{ name: string, photo: string, industry: string, is
                     src={imgSrc}
                     alt={name}
                     className="w-full h-full rounded-full object-cover bg-[#06203a]"
-                    onError={() => setImgSrc('/images/assets/logo/白色正方形logo.png')}
+                    onError={() => setImgSrc(assetUrl('/images/assets/logo/白色正方形logo.png'))}
                 />
             </div>
             <div className="text-sm font-bold text-white truncate max-w-[80px]">{name}</div>

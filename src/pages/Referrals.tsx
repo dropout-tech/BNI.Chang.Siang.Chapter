@@ -1,3 +1,4 @@
+import { assetUrl } from '../lib/assets';
 import React from 'react';
 import { useReferrals } from '../hooks/useReferrals';
 import { motion } from 'framer-motion';
@@ -138,10 +139,10 @@ const Referrals: React.FC = () => {
                                                 <div className="flex items-center gap-4 w-[45%]">
                                                     <div className="w-12 h-12 rounded-full overflow-hidden border border-white/20 shrink-0">
                                                         <img
-                                                            src={referral.referrer.photo || '/images/assets/logo/白色正方形logo.png'}
+                                                            src={assetUrl(referral.referrer.photo || '/images/assets/logo/白色正方形logo.png')}
                                                             alt={referral.referrer.name}
                                                             className="w-full h-full object-cover object-[center_top]"
-                                                            onError={(e) => e.currentTarget.src = '/images/assets/logo/白色正方形logo.png'}
+                                                            onError={(e) => e.currentTarget.src = assetUrl('/images/assets/logo/白色正方形logo.png')}
                                                         />
                                                     </div>
                                                     <div className="overflow-hidden">
@@ -166,10 +167,10 @@ const Referrals: React.FC = () => {
                                                     </div>
                                                     <div className="w-12 h-12 rounded-full overflow-hidden border border-white/20 shrink-0">
                                                         <img
-                                                            src={referral.referee.photo || '/images/assets/logo/白色正方形logo.png'}
+                                                            src={assetUrl(referral.referee.photo || '/images/assets/logo/白色正方形logo.png')}
                                                             alt={referral.referee.name}
                                                             className="w-full h-full object-cover object-[center_top]"
-                                                            onError={(e) => e.currentTarget.src = '/images/assets/logo/白色正方形logo.png'}
+                                                            onError={(e) => e.currentTarget.src = assetUrl('/images/assets/logo/白色正方形logo.png')}
                                                         />
                                                     </div>
                                                 </div>

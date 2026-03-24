@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import { useMembers } from '../../hooks/useMembers';
 import { motion } from 'framer-motion';
+import { assetUrl } from '../../lib/assets';
 
 const MemberThumbnail: React.FC<{ photo: string, name: string, industry: string, photoPosition?: string }> = ({ photo, name, industry, photoPosition }) => {
     // Helper to get normalized/secure URL
-    const getPhotoUrl = (p: string) => {
-        if (!p) return '/images/assets/logo/白色正方形logo.png';
-        const cleanP = p.trim();
-        if (cleanP.startsWith('http')) return cleanP;
-        return cleanP.startsWith('/') ? cleanP : `/${cleanP}`;
-    };
+    const getPhotoUrl = (p: string) => assetUrl(p);
 
     const [imgSrc, setImgSrc] = useState(getPhotoUrl(photo));
 
@@ -27,7 +23,7 @@ const MemberThumbnail: React.FC<{ photo: string, name: string, industry: string,
                 loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 style={{ objectPosition: photoPosition || 'center 20%' }}
-                onError={() => setImgSrc('/images/assets/logo/白色正方形logo.png')}
+                onError={() => setImgSrc(assetUrl('/images/assets/logo/白色正方形logo.png'))}
             />
             {/* Name and Industry overlay on hover */}
             <div className="absolute inset-x-0 bottom-0 top-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 p-2">
