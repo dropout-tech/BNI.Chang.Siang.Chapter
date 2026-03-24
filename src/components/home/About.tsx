@@ -38,7 +38,7 @@ const About: React.FC = () => {
                         transition={{ duration: 0.6 }}
                     >
                         <h2 className="text-4xl md:text-5xl font-black mb-4 text-primary">關於 BNI 長翔名人堂白金分會</h2>
-                        <p className="text-gray-400 text-lg max-w-3xl mx-auto mb-6">匯聚各產業精英的金質商務交流平台，隸屬全球最大商務引薦組織 BNI，致力於透過專業引薦與深度合作，為每位夥伴打開無限商機</p>
+                        <p className="text-gray-400 text-lg max-w-3xl mx-auto mb-6">以熱情積極、付出者著稱的金質商務交流平台。2022年9月成功創造97%綠燈紀錄，正邁向全綠燈分會！每週三於晶宴會館（民生館）面對面深度交流</p>
                         <div className="w-24 h-1 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto rounded-full opacity-80"></div>
                     </motion.div>
                 </div>
@@ -63,15 +63,15 @@ const About: React.FC = () => {
                     <div className="md:col-span-3 h-full">
                         <AboutCard icon={<Heart size={32} />} title="核心價值" delay={0.3} fullWidth>
                             <div className="flex flex-wrap justify-center items-center gap-4 text-xl font-bold text-primary mb-4">
-                                <span>專業</span>
-                                <span className="text-gray-600/50">|</span>
-                                <span>誠信</span>
-                                <span className="text-gray-600/50">|</span>
                                 <span>熱情</span>
                                 <span className="text-gray-600/50">|</span>
-                                <span>實踐</span>
+                                <span>積極</span>
+                                <span className="text-gray-600/50">|</span>
+                                <span>付出</span>
+                                <span className="text-gray-600/50">|</span>
+                                <span>共好</span>
                             </div>
-                            <p>以專業態度與誠信為本，懷抱熱忱，將理念化為實際行動</p>
+                            <p>長翔以「熱情積極、付出者」著稱，成會至今成績傲人，持續邁向全綠燈分會的目標</p>
                         </AboutCard>
                     </div>
                 </div>

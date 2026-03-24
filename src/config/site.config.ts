@@ -30,9 +30,11 @@ export const siteConfig = {
         region: '中山區',
         country: 'TW',
         countryName: '台灣',
-        latitude: 25.0630,
-        longitude: 121.5228,
+        latitude: 25.0583,
+        longitude: 121.5425,
         geoRegion: 'TW-TPE',
+        address: '台北市中山區民生東路三段8號B2',
+        venue: '晶宴會館（民生館）',
     },
 
     social: {

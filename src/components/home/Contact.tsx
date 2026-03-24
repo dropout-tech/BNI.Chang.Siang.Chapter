@@ -45,7 +45,8 @@ const Contact: React.FC = () => {
                         transition={{ delay: 0.1 }}
                         className="text-gray-400 text-lg max-w-2xl mx-auto"
                     >
-                        歡迎與台灣 BNI 長翔名人堂白金分會聯繫。無論是業務合作、商會參訪申請，或是想了解更多關於台灣 BNI 商會的資訊，我們隨時為您服務。
+                        歡迎與 BNI 長翔名人堂白金分會聯繫。無論是業務合作、商會參訪申請，或想了解更多資訊，我們隨時為您服務。<br /><br />
+                        📍 例會地點：晶宴會館（民生館）<br />台北市中山區民生東路三段8號B2
                     </motion.p>
                 </div>
 
