@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+
+/* Tailwind v4 自定義顏色配置 - 藍色主題 (Blue Theme) */
+@theme {
+  /* 核心顏色 */
+  --color-primary: #4CA8DF;
+  /* Sky Blue */
+  --color-primary-dark: #2C88BE;
+  --color-primary-light: #7CD0FF;
+
+  /* 核心顏色 (ChangSiang Blue) */
+  --color-primary: #4CA8DF;
+  /* Sky Blue */
+  --color-primary-dark: #2C88BE;
+  --color-primary-light: #7CD0FF;
+
+  /* 顏色映射 (將 Gold 映射至 Blue 以維持品牌色) */
+  --color-gold: #4CA8DF;
+  --color-gold-light: #7CD0FF;
+  --color-gold-dark: #2C88BE;
+
+  /* 背景顏色 */
+  --color-bg-dark: #06203a;
+}
+
+/* Global Reset & Base Styles */
+html,
+body {
+  background-color: #050505;
+  background-color: var(--color-bg-primary);
+  color: #ffffff;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Meteor Shower Animations */
+.meteor-shower {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.meteor {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 2px;
+  background: linear-gradient(-45deg, rgba(95, 145, 255, 1), rgba(0, 0, 255, 0));
+  filter: drop-shadow(0 0 6px rgba(105, 155, 255, 1));
+  animation: tail 3000ms ease-in-out infinite, shooting 3000ms ease-in-out infinite;
+  opacity: 0;
+}
+
+.meteor::before,
+.meteor::after {
+  content: '';
+  position: absolute;
+  top: calc(50% - 1px);
+  right: 0;
+  height: 2px;
+  background: linear-gradient(-45deg, rgba(0, 0, 255, 0), rgba(95, 145, 255, 1), rgba(0, 0, 255, 0));
+  border-radius: 100%;
+  transform: translateX(50%) rotateZ(45deg);
+  animation: shining 3000ms ease-in-out infinite;
+}
+
+.meteor::after {
+  transform: translateX(50%) rotateZ(-45deg);
+}
+
+@keyframes tail {
+  0% {
+    width: 0;
+  }
+
+  30% {
+    width: 100px;
+  }
+
+  100% {
+    width: 0;
+  }
+}
+
+@keyframes shooting {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(calc(300px + 100vh)) translateY(calc(300px + 100vh));
+    opacity: 0;
+  }
+}
+
+@keyframes shining {
+  0% {
+    width: 0;
+  }
+
+  50% {
+    width: 30px;
+  }
+
+  100% {
+    width: 0;
+  }
+}
+
+.mask-linear-gradient {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* 404 Page Gradient Animation */
+@keyframes gradient-x {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
