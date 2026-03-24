@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LogIn, LogOut, User, Facebook, Instagram, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { trackEvent } from '../../lib/analytics';
 import { siteConfig } from '../../config/site.config';
 
@@ -23,7 +23,7 @@ const Navbar: React.FC = () => {
 
     useEffect(() => {
         const checkAdmin = async () => {
-            if (!user) {
+            if (!user || !isSupabaseConfigured) {
                 setIsAdmin(false);
                 return;
             }

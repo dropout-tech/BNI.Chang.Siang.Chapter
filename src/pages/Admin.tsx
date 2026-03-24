@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import {
     Users, Activity, DollarSign, Calendar,
@@ -58,7 +58,7 @@ const Admin: React.FC = () => {
     }, [user]);
 
     const checkAdmin = async () => {
-        if (!user) {
+        if (!user || !isSupabaseConfigured) {
             navigate('/login');
             return;
         }
@@ -79,6 +79,7 @@ const Admin: React.FC = () => {
     };
 
     const fetchDashboardData = async () => {
+        if (!isSupabaseConfigured) { setLoading(false); return; }
         setLoading(true);
 
         try {

@@ -5,7 +5,7 @@ import MemberCard from '../components/members/MemberCard';
 import CategoryFilter from '../components/members/CategoryFilter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { Search, Edit } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SEO from '../components/common/SEO';
@@ -37,7 +37,7 @@ const Members: React.FC = () => {
     // Check Admin Status
     React.useEffect(() => {
         const checkAdmin = async () => {
-            if (!user) {
+            if (!user || !isSupabaseConfigured) {
                 setIsAdmin(false);
                 return;
             }

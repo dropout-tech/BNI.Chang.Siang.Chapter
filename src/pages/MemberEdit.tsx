@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Save, AlertCircle, X, Camera, ArrowLeft, LogOut } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import imageCompression from 'browser-image-compression';
 import { useAuth } from '../contexts/AuthContext';
 import type { Member } from '../types';
@@ -73,7 +73,7 @@ const MemberEdit: React.FC = () => {
     }, [user, authLoading, navigate]);
 
     const fetchMemberData = async () => {
-        if (!user) return;
+        if (!user || !isSupabaseConfigured) return;
         setLoading(true);
         try {
             // 1. Check if current user is Admin

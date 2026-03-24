@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
@@ -121,10 +121,9 @@ const Login: React.FC = () => {
     }, [mode]);
 
     const checkProfile = async () => {
-        if (!user) return;
+        if (!user || !isSupabaseConfigured) return;
 
         try {
-            // 1. Check if user already has a member profile
             const { data, error } = await supabase
                 .from('members')
                 .select('id, name')
