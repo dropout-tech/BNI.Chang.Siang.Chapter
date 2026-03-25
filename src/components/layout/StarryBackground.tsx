@@ -10,88 +10,109 @@ const StarryBackground: React.FC = () => {
         if (!ctx) return;
 
         let animationFrameId: number;
-        let particles: Particle[] = [];
+        let time = 0;
 
         const resize = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            initParticles();
         };
 
-        class Particle {
-            x: number; y: number; size: number;
-            speedX: number; speedY: number; brightness: number;
-            isGold: boolean;
-
-            constructor() {
-                this.x = Math.random() * canvas!.width;
-                this.y = Math.random() * canvas!.height;
-                this.size = Math.random() * 2 + 0.1;
-                this.speedX = (Math.random() - 0.5) * 0.15;
-                this.speedY = (Math.random() - 0.5) * 0.15;
-                this.brightness = Math.random();
-                this.isGold = Math.random() > 0.6;
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x < 0) this.x = canvas!.width;
-                if (this.x > canvas!.width) this.x = 0;
-                if (this.y < 0) this.y = canvas!.height;
-                if (this.y > canvas!.height) this.y = 0;
-                this.brightness += (Math.random() - 0.5) * 0.04;
-                if (this.brightness > 1) this.brightness = 1;
-                if (this.brightness < 0.15) this.brightness = 0.15;
-            }
-
-            draw() {
-                if (!ctx) return;
-                if (this.isGold) {
-                    ctx.fillStyle = `rgba(212, 175, 55, ${this.brightness * 0.6})`;
-                } else {
-                    ctx.fillStyle = `rgba(255, 255, 255, ${this.brightness * 0.4})`;
-                }
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
+        const goldParticles: { x: number; y: number; size: number; speed: number; opacity: number; drift: number }[] = [];
         const initParticles = () => {
-            particles = [];
-            const count = Math.min(window.innerWidth * 0.1, 100);
-            for (let i = 0; i < count; i++) particles.push(new Particle());
+            goldParticles.length = 0;
+            const count = Math.min(Math.floor(window.innerWidth * 0.04), 40);
+            for (let i = 0; i < count; i++) {
+                goldParticles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 1.5 + 0.3,
+                    speed: Math.random() * 0.15 + 0.05,
+                    opacity: Math.random() * 0.4 + 0.1,
+                    drift: (Math.random() - 0.5) * 0.3,
+                });
+            }
+        };
+
+        const drawWaves = (t: number) => {
+            const w = canvas.width, h = canvas.height;
+
+            const layers = [
+                { y: h * 0.55, amp: 25, freq: 0.003, speed: 0.0004, color: 'rgba(16, 42, 67, 0.6)' },
+                { y: h * 0.62, amp: 20, freq: 0.004, speed: -0.0003, color: 'rgba(26, 58, 92, 0.4)' },
+                { y: h * 0.70, amp: 30, freq: 0.002, speed: 0.0005, color: 'rgba(16, 42, 67, 0.5)' },
+                { y: h * 0.78, amp: 15, freq: 0.005, speed: -0.0006, color: 'rgba(10, 22, 40, 0.7)' },
+                { y: h * 0.85, amp: 20, freq: 0.003, speed: 0.0003, color: 'rgba(14, 31, 53, 0.6)' },
+            ];
+
+            layers.forEach(layer => {
+                ctx.beginPath();
+                ctx.moveTo(0, h);
+                for (let x = 0; x <= w; x += 2) {
+                    const y = layer.y +
+                        Math.sin(x * layer.freq + t * layer.speed) * layer.amp +
+                        Math.sin(x * layer.freq * 1.5 + t * layer.speed * 0.7) * layer.amp * 0.5;
+                    ctx.lineTo(x, y);
+                }
+                ctx.lineTo(w, h);
+                ctx.closePath();
+                ctx.fillStyle = layer.color;
+                ctx.fill();
+            });
+
+            // Gold accent lines on waves
+            const goldLines = [
+                { y: h * 0.57, amp: 22, freq: 0.003, speed: 0.0004, alpha: 0.15 },
+                { y: h * 0.72, amp: 28, freq: 0.002, speed: 0.0005, alpha: 0.08 },
+                { y: h * 0.83, amp: 18, freq: 0.004, speed: -0.0004, alpha: 0.12 },
+            ];
+
+            goldLines.forEach(line => {
+                ctx.beginPath();
+                for (let x = 0; x <= w; x += 2) {
+                    const y = line.y +
+                        Math.sin(x * line.freq + t * line.speed) * line.amp +
+                        Math.sin(x * line.freq * 1.8 + t * line.speed * 0.6) * line.amp * 0.4;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = `rgba(212, 175, 55, ${line.alpha})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+        };
+
+        const drawParticles = () => {
+            goldParticles.forEach(p => {
+                p.y -= p.speed;
+                p.x += p.drift;
+                p.opacity += (Math.random() - 0.5) * 0.02;
+                if (p.opacity > 0.5) p.opacity = 0.5;
+                if (p.opacity < 0.05) p.opacity = 0.05;
+                if (p.y < -5) { p.y = canvas.height + 5; p.x = Math.random() * canvas.width; }
+                if (p.x < -5) p.x = canvas.width + 5;
+                if (p.x > canvas.width + 5) p.x = -5;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(212, 175, 55, ${p.opacity})`;
+                ctx.fill();
+            });
         };
 
         const animate = () => {
             if (!ctx || !canvas) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
+            time++;
 
-            particles.forEach((a, i) => {
-                particles.slice(i + 1).forEach(b => {
-                    const dx = a.x - b.x, dy = a.y - b.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 120) {
-                        const alpha = (1 - dist / 120) * 0.08;
-                        ctx.strokeStyle = (a.isGold || b.isGold)
-                            ? `rgba(212, 175, 55, ${alpha})`
-                            : `rgba(255, 255, 255, ${alpha})`;
-                        ctx.lineWidth = 0.4;
-                        ctx.beginPath();
-                        ctx.moveTo(a.x, a.y);
-                        ctx.lineTo(b.x, b.y);
-                        ctx.stroke();
-                    }
-                });
-            });
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawWaves(time);
+            drawParticles();
 
             animationFrameId = requestAnimationFrame(animate);
         };
 
-        window.addEventListener('resize', resize);
+        window.addEventListener('resize', () => { resize(); initParticles(); });
         resize();
+        initParticles();
         animate();
 
         return () => {
@@ -105,7 +126,7 @@ const StarryBackground: React.FC = () => {
             <div
                 className="absolute inset-0"
                 style={{
-                    background: 'radial-gradient(ellipse at bottom, #102A43 0%, #0A1628 50%, #070E1A 100%)'
+                    background: 'linear-gradient(180deg, #0A1628 0%, #102A43 40%, #0E1F35 70%, #0A1628 100%)'
                 }}
             />
             <canvas ref={canvasRef} className="absolute inset-0 block" />
