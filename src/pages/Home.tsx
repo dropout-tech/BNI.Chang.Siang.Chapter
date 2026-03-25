@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { assetUrl } from '../lib/assets';
-import PageHero from '../components/common/PageHero';
+import HomeHero from '../components/home/HomeHero';
 import About from '../components/home/About';
 import Results from '../components/home/Results';
 import MemberWall from '../components/home/MemberWall';
@@ -27,28 +27,18 @@ const Home: React.FC = () => {
                 }}
             />
             {/* Hero Section */}
-            <PageHero
-                title={<>長翔展翼<br />商機無限</>}
-                subtitle={
-                    <>
-                        BNI 長翔名人堂白金分會<br />
-                        匯聚各產業精英的金質商務交流平台<br />
-                        <span className="text-[#D4AF37] font-sans font-medium mt-4 block text-2xl tracking-wide opacity-90">Changing the Way the World Does Business</span>
-                    </>
-                }
-                showScrollIndicator
-            >
-                <div className="flex flex-col md:flex-row gap-6 justify-center items-center mt-8 px-4">
+            <HomeHero>
+                <div className="flex flex-col md:flex-row gap-6 mt-8">
                     <motion.a
                         href="#contact"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="px-10 py-4 brushed-gold text-bg-dark font-bold text-lg rounded-full shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:shadow-[0_0_50px_rgba(212,175,55,0.5)] transition-all duration-300 transform border border-primary-light/30 w-full md:w-auto text-center"
+                        className="px-10 py-4 brushed-gold text-bg-dark font-bold text-lg rounded-full shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:shadow-[0_0_50px_rgba(212,175,55,0.5)] transition-all duration-300 transform border border-primary-light/30 text-center inline-block min-w-[200px] z-20"
                     >
                         加入我們
                     </motion.a>
                 </div>
-            </PageHero>
+            </HomeHero>
 
             <About />
 
