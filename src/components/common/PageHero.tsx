@@ -36,7 +36,7 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
                 className="relative z-10 px-4 mt-[-5vh] md:mt-[-10vh]"
             >
                 <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tight font-sans">
-                    <span className="bg-clip-text text-transparent bg-gradient-to-b from-[#E0F2FE] via-[#7DD3FC] to-[#0284C7] drop-shadow-[0_0_15px_rgba(14,165,233,0.6)]">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-b from-[#F5E6B8] via-[#D4AF37] to-[#B8960C] drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">
                         {title}
                     </span>
                 </h1>

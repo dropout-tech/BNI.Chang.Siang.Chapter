@@ -26,7 +26,7 @@ const BottomNav: React.FC = () => {
     ];
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#0a192f]/95 backdrop-blur-xl border-t border-white/10 pb-safe">
+        <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#1A0A12]/95 backdrop-blur-xl border-t border-white/10 pb-safe">
             <div className="flex justify-between items-center h-[70px] px-2 max-w-md mx-auto">
                 {navItems.map((item) => {
                     const active = isActive(item.path);
@@ -41,7 +41,7 @@ const BottomNav: React.FC = () => {
                             {active && (
                                 <motion.div
                                     layoutId="bottom-nav-active"
-                                    className="absolute top-0 w-8 h-[3px] bg-primary shadow-[0_0_8px_rgba(76,168,223,0.6)] rounded-b-full"
+                                    className="absolute top-0 w-8 h-[3px] bg-primary shadow-[0_0_8px_rgba(212,175,55,0.6)] rounded-b-full"
                                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                 />
                             )}

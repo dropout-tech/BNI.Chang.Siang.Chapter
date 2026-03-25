@@ -43,7 +43,7 @@ const Home: React.FC = () => {
                         href="#contact"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="px-10 py-4 bg-gradient-to-r from-primary to-primary-dark text-bg-dark font-bold text-lg rounded-full shadow-[0_0_30px_rgba(76,168,223,0.4)] hover:shadow-[0_0_50px_rgba(76,168,223,0.6)] transition-all duration-300 transform border border-primary-light/30 w-full md:w-auto text-center"
+                        className="px-10 py-4 brushed-gold text-bg-dark font-bold text-lg rounded-full shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:shadow-[0_0_50px_rgba(212,175,55,0.5)] transition-all duration-300 transform border border-primary-light/30 w-full md:w-auto text-center"
                     >
                         加入我們
                     </motion.a>
@@ -64,7 +64,7 @@ const Home: React.FC = () => {
                     <motion.div
                         animate={{ y: [0, -20, 0], opacity: [0.3, 0.6, 0.3] }}
                         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute top-1/4 left-10 w-32 h-32 bg-[#cf2030]/10 rounded-full blur-[40px]"
+                        className="absolute top-1/4 left-10 w-32 h-32 bg-[#D4AF37]/10 rounded-full blur-[40px]"
                     />
                     <motion.div
                         animate={{ y: [0, 30, 0], opacity: [0.2, 0.5, 0.2] }}
@@ -87,7 +87,7 @@ const Home: React.FC = () => {
                         className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-8 md:p-16 border border-white/20 flex flex-col lg:flex-row items-center justify-between gap-12 group shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden"
                     >
                         {/* Decorative glow inside card */}
-                        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#cf2030]/30 blur-[100px] rounded-full mix-blend-screen animate-pulse"></div>
+                        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#D4AF37]/30 blur-[100px] rounded-full mix-blend-screen animate-pulse"></div>
                         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/30 blur-[100px] rounded-full mix-blend-screen animate-pulse"></div>
 
                         {/* Floating Badge */}
@@ -100,7 +100,7 @@ const Home: React.FC = () => {
                             <motion.div
                                 animate={{ y: [0, -10, 0] }}
                                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                className="w-48 h-48 md:w-64 md:h-64 bg-white rounded-full flex items-center justify-center p-8 shadow-[0_0_50px_rgba(76,168,223,0.3)] relative z-10 border-4 border-white/10"
+                                className="w-48 h-48 md:w-64 md:h-64 bg-white rounded-full flex items-center justify-center p-8 shadow-[0_0_50px_rgba(212,175,55,0.3)] relative z-10 border-4 border-white/10"
                             >
                                 <img src={assetUrl('/images/assets/logo/bni-logo-new.png')} alt="BNI 全球商會暨商務引薦組織 — 台灣商會首選" className="w-full h-auto object-contain transform hover:scale-105 transition-transform duration-500" />
                             </motion.div>
@@ -116,7 +116,7 @@ const Home: React.FC = () => {
                         {/* Content Column */}
                         <div className="w-full lg:w-2/3 text-center lg:text-left relative z-10">
                             <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-                                什麼是 <span className="text-[#cf2030]">BNI</span>？全球最大商會組織
+                                什麼是 <span className="text-[#D4AF37]">BNI</span>？全球最大商會組織
                             </h2>
                             <h3 className="text-xl md:text-2xl text-primary-light font-medium mb-6">
                                 全球最大的商務引薦組織

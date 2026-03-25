@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
     ];
 
     return (
-        <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#0a192f]/95 backdrop-blur-md py-4 shadow-lg border-b border-white/10' : 'bg-gradient-to-b from-black/50 to-transparent py-6'}`}>
+        <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#1A0A12]/95 backdrop-blur-md py-4 shadow-lg border-b border-primary/10' : 'bg-gradient-to-b from-black/50 to-transparent py-6'}`}>
             <div className="container mx-auto px-4 flex justify-center md:justify-between items-center">
                 {/* Logo */}
                 <NavLink to="/" className="flex items-center gap-3 group">
