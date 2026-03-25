@@ -5,7 +5,7 @@ import { siteConfig } from '../../config/site.config';
 
 const Footer: React.FC = () => {
     return (
-        <footer className="relative z-10 bg-bg-dark border-t border-white/10 pt-16 pb-24 md:pb-8 mt-auto">
+        <footer className="relative z-10 bg-[#070E1A] border-t border-[#D4AF37]/10 pt-16 pb-24 md:pb-8 mt-auto grain">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 text-center md:text-left">
                     <div className="md:col-span-2 space-y-4 flex flex-col items-center md:items-start">

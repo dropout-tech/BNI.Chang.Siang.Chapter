@@ -84,7 +84,7 @@ const Home: React.FC = () => {
                         whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8, type: "spring" }}
-                        className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-8 md:p-16 border border-white/20 flex flex-col lg:flex-row items-center justify-between gap-12 group shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden"
+                        className="card-glass gold-border rounded-3xl p-8 md:p-16 flex flex-col lg:flex-row items-center justify-between gap-12 group shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden"
                     >
                         {/* Decorative glow inside card */}
                         <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#D4AF37]/30 blur-[100px] rounded-full mix-blend-screen animate-pulse"></div>

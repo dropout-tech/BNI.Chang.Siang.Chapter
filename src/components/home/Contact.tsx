@@ -59,7 +59,7 @@ const Contact: React.FC = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
-                            className="bg-bg-dark/60 backdrop-blur-md border border-primary/20 rounded-2xl p-6 hover:border-primary/50 transition-all duration-300 group text-center h-full flex flex-col"
+                            className="card-glass gold-border gold-border-hover rounded-2xl p-6 transition-all duration-300 group text-center h-full flex flex-col"
                         >
                             <div className="w-28 h-28 mx-auto rounded-full overflow-hidden border-2 border-primary/50 mb-4 group-hover:border-primary transition-colors shrink-0">
                                 <img

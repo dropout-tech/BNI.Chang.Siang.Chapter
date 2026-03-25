@@ -3,81 +3,54 @@ import { Target, Compass, Flag, Heart } from 'lucide-react';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 
-const AboutCard: React.FC<{ icon: React.ReactNode, title: string, children: React.ReactNode, delay: number, fullWidth?: boolean }> = ({ icon, title, children, delay, fullWidth }) => {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, delay, ease: "easeOut" }}
-            className={clsx(
-                "bg-bg-dark/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 flex flex-col items-center text-center hover:bg-bg-dark/60 hover:border-primary/30 transition-all duration-300 group shadow-lg hover:shadow-xl hover:-translate-y-1",
-                fullWidth ? "md:col-span-3" : ""
-            )}
-        >
-            <div className="text-primary mb-6 p-4 bg-white/5 rounded-full group-hover:bg-primary group-hover:text-bg-dark transition-all duration-300 transform group-hover:scale-110">
-                {icon}
+const AboutCard: React.FC<{ icon: React.ReactNode, title: string, children: React.ReactNode, delay: number, fullWidth?: boolean }> = ({ icon, title, children, delay, fullWidth }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6, delay, ease: "easeOut" }}
+        className={clsx(
+            "card-glass gold-border gold-border-hover rounded-2xl p-8 flex flex-col items-center text-center transition-all duration-300 group shadow-lg hover:shadow-[0_8px_40px_rgba(212,175,55,0.08)] hover:-translate-y-1",
+            fullWidth ? "md:col-span-3" : ""
+        )}
+    >
+        <div className="mb-6 p-4 rounded-full border border-[#D4AF37]/20 group-hover:border-[#D4AF37]/50 group-hover:bg-[#D4AF37]/10 transition-all duration-300">
+            <div className="text-[#D4AF37]">{icon}</div>
+        </div>
+        <h3 className="text-2xl font-bold text-white mb-4 tracking-wide">{title}</h3>
+        <div className="text-gray-300/80 leading-relaxed text-lg font-light">{children}</div>
+    </motion.div>
+);
+
+const About: React.FC = () => (
+    <section className="min-h-screen flex flex-col justify-center py-24 relative z-10 grain" id="about">
+        <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                    <h2 className="text-4xl md:text-5xl font-black mb-4 gold-text">關於 BNI 長翔名人堂白金分會</h2>
+                    <p className="text-gray-400 text-lg max-w-3xl mx-auto mb-6">以熱情積極、付出者著稱的金質商務交流平台。2022年9月創下97%綠燈紀錄，正邁向全綠燈分會</p>
+                    <div className="gold-line w-24 mx-auto" />
+                </motion.div>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-4 font-serif tracking-wide">{title}</h3>
-            <div className="text-gray-300 leading-relaxed text-lg font-light">
-                {children}
-            </div>
-        </motion.div>
-    );
-};
 
-const About: React.FC = () => {
-    return (
-        <section className="min-h-screen flex flex-col justify-center py-24 relative z-10" id="about">
-            <div className="container mx-auto px-4">
-                <div className="text-center mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2 className="text-4xl md:text-5xl font-black mb-4 text-primary">關於 BNI 長翔名人堂白金分會</h2>
-                        <p className="text-gray-400 text-lg max-w-3xl mx-auto mb-6">以熱情積極、付出者著稱的金質商務交流平台。2022年9月成功創造97%綠燈紀錄，正邁向全綠燈分會！每週三於晶宴會館（民生館）面對面深度交流</p>
-                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto rounded-full opacity-80"></div>
-                    </motion.div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto px-4">
-                    <div className="h-full">
-                        <AboutCard icon={<Target size={32} />} title="Core Purpose" delay={0}>
-                            <p>精進會員的個人成長<br />壯大夥伴彼此的事業</p>
-                        </AboutCard>
-                    </div>
-                    <div className="h-full">
-                        <AboutCard icon={<Compass size={32} />} title="Mission" delay={0.1}>
-                            <p>強化產業合作<br />發展強而有力的夥伴關係<br />創造持續不斷的引薦</p>
-                        </AboutCard>
-                    </div>
-                    <div className="h-full">
-                        <AboutCard icon={<Flag size={32} />} title="Vision" delay={0.2}>
-                            <p>成為企業家首選的<br />商務合作平台</p>
-                        </AboutCard>
-                    </div>
-
-                    <div className="md:col-span-3 h-full">
-                        <AboutCard icon={<Heart size={32} />} title="核心價值" delay={0.3} fullWidth>
-                            <div className="flex flex-wrap justify-center items-center gap-4 text-xl font-bold text-primary mb-4">
-                                <span>熱情</span>
-                                <span className="text-gray-600/50">|</span>
-                                <span>積極</span>
-                                <span className="text-gray-600/50">|</span>
-                                <span>付出</span>
-                                <span className="text-gray-600/50">|</span>
-                                <span>共好</span>
-                            </div>
-                            <p>長翔以「熱情積極、付出者」著稱，成會至今成績傲人，持續邁向全綠燈分會的目標</p>
-                        </AboutCard>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto px-4">
+                <div className="h-full"><AboutCard icon={<Target size={32} />} title="Core Purpose" delay={0}><p>精進會員的個人成長<br />壯大夥伴彼此的事業</p></AboutCard></div>
+                <div className="h-full"><AboutCard icon={<Compass size={32} />} title="Mission" delay={0.1}><p>強化產業合作<br />發展強而有力的夥伴關係<br />創造持續不斷的引薦</p></AboutCard></div>
+                <div className="h-full"><AboutCard icon={<Flag size={32} />} title="Vision" delay={0.2}><p>成為企業家首選的<br />商務合作平台</p></AboutCard></div>
+                <div className="md:col-span-3 h-full">
+                    <AboutCard icon={<Heart size={32} />} title="核心價值" delay={0.3} fullWidth>
+                        <div className="flex flex-wrap justify-center items-center gap-4 text-xl font-bold mb-4">
+                            <span className="gold-text">熱情</span><span className="text-gray-600/50">|</span>
+                            <span className="gold-text">積極</span><span className="text-gray-600/50">|</span>
+                            <span className="gold-text">付出</span><span className="text-gray-600/50">|</span>
+                            <span className="gold-text">共好</span>
+                        </div>
+                        <p>長翔以「熱情積極、付出者」著稱，成會至今成績傲人，持續邁向全綠燈分會的目標</p>
+                    </AboutCard>
                 </div>
             </div>
-        </section>
-    );
-};
+        </div>
+    </section>
+);
 
 export default About;
