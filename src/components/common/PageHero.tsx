@@ -9,97 +9,116 @@ interface PageHeroProps {
     children?: React.ReactNode;
 }
 
-const WaveLayers: React.FC = () => (
-    <svg className="absolute bottom-0 left-0 w-full h-[60%] opacity-80" viewBox="0 0 1440 600" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Deep wave layers */}
-        <path d="M0,300 C240,260 480,340 720,300 C960,260 1200,340 1440,300 L1440,600 L0,600Z" fill="#102A43" fillOpacity="0.5" />
-        <path d="M0,350 C180,310 420,390 660,340 C900,290 1140,380 1440,350 L1440,600 L0,600Z" fill="#0E1F35" fillOpacity="0.6" />
-        <path d="M0,400 C300,360 540,430 780,380 C1020,330 1260,420 1440,400 L1440,600 L0,600Z" fill="#0A1628" fillOpacity="0.7" />
-        <path d="M0,440 C200,420 480,470 720,440 C960,410 1200,460 1440,440 L1440,600 L0,600Z" fill="#081320" fillOpacity="0.8" />
-        {/* Gold accent lines */}
-        <path d="M0,310 C240,270 480,350 720,310 C960,270 1200,350 1440,310" stroke="#D4AF37" strokeWidth="0.8" strokeOpacity="0.2" fill="none" />
-        <path d="M0,370 C300,330 540,410 780,360 C1020,310 1260,400 1440,370" stroke="#D4AF37" strokeWidth="0.5" strokeOpacity="0.15" fill="none" />
-        <path d="M0,420 C200,400 480,450 720,420 C960,390 1200,440 1440,420" stroke="#E8C547" strokeWidth="0.5" strokeOpacity="0.1" fill="none" />
-    </svg>
-);
-
-const FloatingGoldParticles: React.FC = () => (
-    <>
-        {[...Array(12)].map((_, i) => (
-            <motion.div
-                key={i}
-                className="absolute w-1 h-1 rounded-full"
-                style={{
-                    left: `${10 + Math.random() * 80}%`,
-                    top: `${10 + Math.random() * 80}%`,
-                    backgroundColor: '#D4AF37',
-                }}
-                animate={{
-                    y: [0, -(15 + Math.random() * 20), 0],
-                    opacity: [0.1, 0.4 + Math.random() * 0.3, 0.1],
-                    scale: [1, 1.3, 1],
-                }}
-                transition={{
-                    duration: 4 + Math.random() * 4,
-                    repeat: Infinity,
-                    delay: Math.random() * 3,
-                    ease: 'easeInOut',
-                }}
-            />
-        ))}
-    </>
+const GoldArrows: React.FC<{ direction: 'left' | 'right'; className?: string }> = ({ direction, className = '' }) => (
+    <span className={`inline-block font-bold tracking-[0.3em] gold-gradient-text select-none ${className}`} aria-hidden="true">
+        {direction === 'left' ? '«' : '»'}
+    </span>
 );
 
 const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicator = false, children }) => {
     return (
         <section className="min-h-screen flex flex-col justify-center items-center text-center relative z-10 pt-20 overflow-hidden" aria-label="BNI 長翔名人堂白金分會">
-            {/* Gradient base */}
+            {/* === Background Layers === */}
+
+            {/* Base gradient */}
             <div className="absolute inset-0 z-0" style={{
-                background: 'linear-gradient(180deg, #0A1628 0%, #102A43 30%, #1A3A5C 50%, #102A43 70%, #0A1628 100%)'
+                background: 'linear-gradient(170deg, #0D1B2E 0%, #102A43 25%, #1A3A5C 45%, #102A43 65%, #0A1628 100%)'
             }} />
 
-            {/* Wave layers */}
-            <WaveLayers />
-
-            {/* Gold glow orbs */}
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#D4AF37] rounded-full blur-[200px] opacity-[0.04]" />
-                <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-[#D4AF37] rounded-full blur-[150px] opacity-[0.03]" />
+            {/* Fabric-like curved overlays */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <motion.div
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute top-[10%] -left-[10%] w-[70%] h-[60%] rounded-[50%] opacity-[0.08]"
+                    style={{ background: 'radial-gradient(ellipse, #1A3A5C 0%, transparent 70%)' }}
+                />
+                <motion.div
+                    animate={{ y: [0, 10, 0] }}
+                    transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                    className="absolute top-[20%] right-[-5%] w-[50%] h-[70%] rounded-[40%] opacity-[0.06]"
+                    style={{ background: 'radial-gradient(ellipse, #243B53 0%, transparent 70%)' }}
+                />
+                <motion.div
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+                    className="absolute bottom-[5%] left-[20%] w-[60%] h-[40%] rounded-[50%] opacity-[0.05]"
+                    style={{ background: 'radial-gradient(ellipse, #1A3A5C 0%, transparent 70%)' }}
+                />
             </div>
+
+            {/* Wave SVG bottom */}
+            <svg className="absolute bottom-0 left-0 w-full h-[40%] z-0" viewBox="0 0 1440 400" fill="none" preserveAspectRatio="none">
+                <path d="M0,200 C240,160 480,240 720,200 C960,160 1200,240 1440,200 L1440,400 L0,400Z" fill="#102A43" fillOpacity="0.4" />
+                <path d="M0,250 C180,210 420,290 660,240 C900,190 1140,280 1440,250 L1440,400 L0,400Z" fill="#0E1F35" fillOpacity="0.5" />
+                <path d="M0,290 C300,260 540,320 780,280 C1020,240 1260,310 1440,290 L1440,400 L0,400Z" fill="#0A1628" fillOpacity="0.7" />
+                {/* Gold accent lines */}
+                <path d="M0,210 C240,170 480,250 720,210 C960,170 1200,250 1440,210" stroke="#D4AF37" strokeWidth="0.7" strokeOpacity="0.15" fill="none" />
+                <path d="M0,260 C300,220 540,300 780,250 C1020,200 1260,290 1440,260" stroke="#D4AF37" strokeWidth="0.5" strokeOpacity="0.10" fill="none" />
+            </svg>
+
+            {/* Gold glow */}
+            <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] rounded-full opacity-[0.03] pointer-events-none z-0" style={{ background: 'radial-gradient(circle, #D4AF37, transparent 70%)' }} />
 
             {/* Horizontal gold lines */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute top-[25%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/10 to-transparent" />
-                <div className="absolute top-[45%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/5 to-transparent" />
-                <div className="absolute bottom-[35%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/8 to-transparent" />
-            </div>
+            <div className="absolute top-[30%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/[0.08] to-transparent z-0" />
+            <div className="absolute top-[50%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/[0.05] to-transparent z-0" />
 
-            {/* Floating particles */}
-            <FloatingGoldParticles />
+            {/* Grain overlay */}
+            <div className="absolute inset-0 z-[2] grain pointer-events-none" />
 
-            {/* Grain texture overlay */}
-            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none"
-                style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                }}
-            />
+            {/* Floating gold particles */}
+            {[...Array(15)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    className="absolute rounded-full z-[1] pointer-events-none"
+                    style={{
+                        left: `${5 + Math.random() * 90}%`,
+                        top: `${5 + Math.random() * 90}%`,
+                        width: `${Math.random() * 2 + 1}px`,
+                        height: `${Math.random() * 2 + 1}px`,
+                        backgroundColor: '#D4AF37',
+                    }}
+                    animate={{
+                        y: [0, -(10 + Math.random() * 25), 0],
+                        opacity: [0.05, 0.25 + Math.random() * 0.2, 0.05],
+                    }}
+                    transition={{
+                        duration: 5 + Math.random() * 6,
+                        repeat: Infinity,
+                        delay: Math.random() * 4,
+                        ease: 'easeInOut',
+                    }}
+                />
+            ))}
 
+            {/* === Content === */}
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-                className="relative z-10 px-4 mt-[-5vh] md:mt-[-10vh]"
+                transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
+                className="relative z-10 px-4 mt-[-5vh] md:mt-[-8vh] max-w-6xl mx-auto"
             >
-                <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tight font-sans">
-                    <span className="bg-clip-text text-transparent bg-gradient-to-b from-[#F5E6B8] via-[#D4AF37] to-[#B8960C] drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">
-                        {title}
-                    </span>
-                </h1>
+                {/* Gold arrows + title */}
+                <div className="flex items-start justify-center gap-2 md:gap-4 mb-4">
+                    <GoldArrows direction="left" className="text-3xl md:text-5xl mt-2 md:mt-4 opacity-60" />
+                    <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1]">
+                        <span className="gold-gradient-text">{title}</span>
+                    </h1>
+                    <GoldArrows direction="right" className="text-3xl md:text-5xl mt-2 md:mt-4 opacity-60" />
+                </div>
+
                 {subtitle && (
-                    <div className="text-base md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed font-light">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.6 }}
+                        className="text-base md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light mt-6"
+                    >
                         {subtitle}
-                    </div>
+                    </motion.div>
                 )}
+
                 {children}
             </motion.div>
 
@@ -108,15 +127,15 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 1.5 }}
+                    transition={{ delay: 2 }}
                     className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
                 >
                     <motion.div
                         animate={{ y: [0, 8, 0] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="w-6 h-10 rounded-full border-2 border-[#D4AF37]/30 flex items-start justify-center p-1.5"
+                        className="w-6 h-10 rounded-full border-2 border-[#D4AF37]/25 flex items-start justify-center p-1.5"
                     >
-                        <div className="w-1.5 h-3 rounded-full bg-[#D4AF37]/50" />
+                        <div className="w-1.5 h-3 rounded-full bg-[#D4AF37]/40" />
                     </motion.div>
                 </motion.div>
             )}
