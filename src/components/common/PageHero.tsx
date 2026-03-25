@@ -10,39 +10,42 @@ interface PageHeroProps {
 }
 
 const GoldArrows: React.FC<{ dir: 'l' | 'r'; className?: string }> = ({ dir, className = '' }) => (
-    <span className={`gold-text font-black tracking-[0.2em] select-none ${className}`} aria-hidden="true">
-        {dir === 'l' ? '《' : '》'}
+    <span className={`gold-chevron select-none flex items-center ${className}`} aria-hidden="true">
+        {dir === 'l' ? '>>>' : '>>>'}
     </span>
 );
 
 const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicator = false, children }) => (
-    <section className="min-h-screen flex flex-col justify-center items-center text-center relative z-10 pt-20 overflow-hidden grain">
-        {/* === BG: geometric wave layers === */}
-        <div className="absolute inset-0 z-0" style={{ background: 'linear-gradient(170deg, #0D1B2E 0%, #102A43 30%, #163550 50%, #102A43 75%, #0A1628 100%)' }} />
+    <section className="min-h-screen flex flex-col justify-center items-center text-center relative z-10 pt-20 overflow-hidden grain-heavy brushed-metal-dark">
+        {/* === BG: geometric wing layers === */}
 
-        {/* Fabric/silk curved overlays — 3 layers */}
-        <motion.div animate={{ y:[0,-12,0] }} transition={{ duration:10, repeat:Infinity, ease:'easeInOut' }}
-            className="absolute top-[5%] -left-[15%] w-[80%] h-[50%] rounded-[60%_40%_50%_40%] opacity-[0.07] z-0"
-            style={{ background:'radial-gradient(ellipse at 40% 50%, #1A3A5C, transparent 70%)' }} />
-        <motion.div animate={{ y:[0,15,0] }} transition={{ duration:12, repeat:Infinity, ease:'easeInOut', delay:1.5 }}
-            className="absolute top-[25%] right-[-10%] w-[55%] h-[60%] rounded-[40%_60%_45%_55%] opacity-[0.06] z-0"
-            style={{ background:'radial-gradient(ellipse at 60% 50%, #243B53, transparent 70%)' }} />
-        <motion.div animate={{ y:[0,-8,0] }} transition={{ duration:14, repeat:Infinity, ease:'easeInOut', delay:3 }}
-            className="absolute bottom-[0%] left-[10%] w-[70%] h-[35%] rounded-[50%_50%_40%_60%] opacity-[0.05] z-0"
-            style={{ background:'radial-gradient(ellipse at 50% 60%, #1A3A5C, transparent 70%)' }} />
-
-        {/* SVG wave bottom */}
-        <svg className="absolute bottom-0 left-0 w-full h-[45%] z-0" viewBox="0 0 1440 500" fill="none" preserveAspectRatio="none">
-            <path d="M0,250C240,200,480,300,720,250S1200,200,1440,250L1440,500L0,500Z" fill="#102A43" fillOpacity="0.45" />
-            <path d="M0,300C180,260,420,340,660,290S1140,320,1440,300L1440,500L0,500Z" fill="#0E1F35" fillOpacity="0.55" />
-            <path d="M0,360C300,330,540,390,780,350S1260,380,1440,360L1440,500L0,500Z" fill="#0A1628" fillOpacity="0.75" />
-            <path d="M0,260C240,220,480,300,720,260S1200,220,1440,260" stroke="#D4AF37" strokeWidth="0.7" strokeOpacity="0.12" fill="none" />
-            <path d="M0,320C300,280,540,360,780,310S1260,340,1440,320" stroke="#D4AF37" strokeWidth="0.5" strokeOpacity="0.08" fill="none" />
+        {/* Abstract Sweeping Geometric Waves (Wings) — Sharp, dynamic angles */}
+        <svg className="absolute top-[10%] -left-[10%] w-[120%] h-[120%] z-0 pointer-events-none opacity-40" viewBox="0 0 1440 1000" fill="none" preserveAspectRatio="none">
+            {/* Base Wing */}
+            <path d="M-200,800 C400,600 800,900 1600,0 L1600,1000 L-200,1000 Z" fill="url(#wing-grad-1)" />
+            {/* Mid Wing */}
+            <path d="M-200,900 C600,700 900,1000 1600,200 L1600,1000 L-200,1000 Z" fill="url(#wing-grad-2)" />
+            {/* Sharp Accent Lines */}
+            <path d="M-100,750 C500,550 850,850 1600,-50" stroke="#D4AF37" strokeWidth="1" strokeOpacity="0.4" fill="none" />
+            <path d="M-100,850 C650,650 950,950 1600,150" stroke="#E8C547" strokeWidth="1.5" strokeOpacity="0.2" fill="none" />
+            
+            <defs>
+                <linearGradient id="wing-grad-1" x1="0" y1="1000" x2="1600" y2="0" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#0E1F35" stopOpacity="0.8" />
+                    <stop offset="50%" stopColor="#163550" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#243B53" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="wing-grad-2" x1="0" y1="1000" x2="1600" y2="200" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#0A1628" stopOpacity="0.95" />
+                    <stop offset="50%" stopColor="#102A43" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="#1A3A5C" stopOpacity="0" />
+                </linearGradient>
+            </defs>
         </svg>
 
         {/* Gold glow orbs */}
-        <div className="absolute top-[20%] left-[30%] w-[600px] h-[600px] rounded-full opacity-[0.025] pointer-events-none z-0" style={{ background:'radial-gradient(circle, #D4AF37, transparent 65%)' }} />
-        <div className="absolute bottom-[20%] right-[20%] w-[400px] h-[400px] rounded-full opacity-[0.02] pointer-events-none z-0" style={{ background:'radial-gradient(circle, #E8C547, transparent 65%)' }} />
+        <div className="absolute top-[20%] left-[30%] w-[600px] h-[600px] rounded-full opacity-[0.035] pointer-events-none z-0 mix-blend-screen" style={{ background:'radial-gradient(circle, #D4AF37, transparent 70%)' }} />
+        <div className="absolute bottom-[20%] right-[20%] w-[400px] h-[400px] rounded-full opacity-[0.03] pointer-events-none z-0 mix-blend-screen" style={{ background:'radial-gradient(circle, #E8C547, transparent 70%)' }} />
 
         {/* Horizontal gold lines */}
         <div className="absolute top-[28%] left-0 right-0 h-px z-0" style={{ background:'linear-gradient(90deg, transparent, rgba(212,175,55,0.08), transparent)' }} />
@@ -62,11 +65,11 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
             className="relative z-10 px-4 mt-[-5vh] md:mt-[-8vh] max-w-6xl mx-auto w-full"
         >
             <div className="flex items-center justify-center gap-3 md:gap-5 mb-4">
-                <GoldArrows dir="l" className="text-2xl md:text-4xl opacity-50" />
+                <GoldArrows dir="l" className="text-2xl md:text-5xl opacity-80 rotate-180" />
                 <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1]">
                     <span className="gold-text">{title}</span>
                 </h1>
-                <GoldArrows dir="r" className="text-2xl md:text-4xl opacity-50" />
+                <GoldArrows dir="r" className="text-2xl md:text-5xl opacity-80" />
             </div>
             {subtitle && (
                 <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.8, delay:0.6 }}
