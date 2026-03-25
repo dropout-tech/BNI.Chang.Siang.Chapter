@@ -301,7 +301,7 @@ const Admin: React.FC = () => {
                         <StatsCard
                             title="總會員數"
                             value={stats.totalMembers}
-                            icon={<Users className="text-blue-400" />}
+                            icon={<Users className="text-primary" />}
                             diff="活躍中"
                         />
                         <StatsCard

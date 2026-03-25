@@ -34,10 +34,10 @@ const ResultsChart: React.FC = () => {
                     gradient = createGradient(ctx, 'rgba(212, 175, 55, 1)');
                     break;
                 case 'amounts':
-                    gradient = createGradient(ctx, 'rgba(135, 206, 250, 1)');
+                    gradient = createGradient(ctx, 'rgba(232, 197, 71, 1)');
                     break;
                 case 'guests':
-                    gradient = createGradient(ctx, 'rgba(100, 149, 237, 1)');
+                    gradient = createGradient(ctx, 'rgba(184, 150, 12, 1)');
                     break;
             }
         }
@@ -68,7 +68,7 @@ const ResultsChart: React.FC = () => {
                         label: '引薦金額 (萬)',
                         data: performanceData.amounts.map(v => Math.round(v / 10000)),
                         borderColor: '#E8C547',
-                        backgroundColor: gradient || 'rgba(135, 206, 250, 0.4)',
+                        backgroundColor: gradient || 'rgba(232, 197, 71, 0.4)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4,
@@ -86,7 +86,7 @@ const ResultsChart: React.FC = () => {
                         label: '來賓人數',
                         data: performanceData.guests,
                         borderColor: '#D4AF37',
-                        backgroundColor: gradient || 'rgba(100, 149, 237, 0.4)',
+                        backgroundColor: gradient || 'rgba(184, 150, 12, 0.4)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4,
@@ -114,7 +114,7 @@ const ResultsChart: React.FC = () => {
             tooltip: {
                 backgroundColor: 'rgba(5, 5, 5, 0.9)',
                 titleColor: '#D4AF37',
-                bodyColor: '#f4f9ff',
+                bodyColor: '#ffffff',
                 borderColor: '#D4AF37',
                 borderWidth: 1,
                 padding: 12,
@@ -127,7 +127,7 @@ const ResultsChart: React.FC = () => {
                     color: 'rgba(212, 175, 55, 0.1)',
                 },
                 ticks: {
-                    color: '#f4f9ff',
+                    color: '#ffffff',
                 }
             },
             y: {

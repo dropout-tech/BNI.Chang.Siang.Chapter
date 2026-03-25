@@ -8,7 +8,7 @@ const PersonAvatar: React.FC<{ name: string, photo: string, industry: string, is
 
     return (
         <div className="flex flex-col items-center text-center">
-            <div className={`w-14 h-14 rounded-full p-0.5 overflow-hidden mb-2 ${isReferee ? 'border-2 border-[#c5a47e] shadow-[0_0_10px_rgba(197,164,126,0.3)]' : 'border border-[#c5a47e]/40'}`}>
+            <div className={`w-14 h-14 rounded-full p-0.5 overflow-hidden mb-2 ${isReferee ? 'border-2 border-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.3)]' : 'border border-[#D4AF37]/40'}`}>
                 <img
                     src={imgSrc}
                     alt={name}
@@ -24,20 +24,20 @@ const PersonAvatar: React.FC<{ name: string, photo: string, industry: string, is
 
 const ReferralCard: React.FC<{ referral: Referral }> = ({ referral }) => {
     return (
-        <div className="bg-[rgba(6,32,58,0.6)] backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-[#c5a47e]/50 transition-all duration-300 group h-full flex flex-col">
+        <div className="bg-[rgba(16,42,67,0.6)] backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-[#D4AF37]/50 transition-all duration-300 group h-full flex flex-col">
             <div className="flex flex-col md:flex-row gap-6 flex-1">
                 {/* Left: Content */}
                 <div className="flex-1 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
-                        <span className="px-3 py-1 bg-[#c5a47e]/10 text-[#c5a47e] text-xs font-bold rounded-full uppercase tracking-wider border border-[#c5a47e]/20">
+                        <span className="px-3 py-1 bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-bold rounded-full uppercase tracking-wider border border-[#D4AF37]/20">
                             {referral.metrics.type}
                         </span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#c5a47e] transition-colors">{referral.title}</h3>
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#D4AF37] transition-colors">{referral.title}</h3>
 
                     <div className="relative pl-6 mb-4 flex-1">
-                        <Quote className="absolute left-0 top-0 text-[#c5a47e]/30" size={20} />
+                        <Quote className="absolute left-0 top-0 text-[#D4AF37]/30" size={20} />
                         <p className="text-gray-300 text-sm leading-relaxed italic line-clamp-4">
                             "{referral.description}"
                         </p>
@@ -45,7 +45,7 @@ const ReferralCard: React.FC<{ referral: Referral }> = ({ referral }) => {
 
                     <div className="flex items-baseline gap-2 mt-auto pt-4 border-t border-white/5">
                         <span className="text-gray-400 text-sm">成交金額</span>
-                        <span className="text-xl font-bold text-[#c5a47e] font-mono">
+                        <span className="text-xl font-bold text-[#D4AF37] font-mono">
                             {referral.metrics.amount}
                         </span>
                     </div>
@@ -59,7 +59,7 @@ const ReferralCard: React.FC<{ referral: Referral }> = ({ referral }) => {
                         industry={referral.referrer.industry}
                     />
 
-                    <div className="text-[#c5a47e]/50 flex flex-col items-center">
+                    <div className="text-[#D4AF37]/50 flex flex-col items-center">
                         <span className="text-[10px] mb-1">引薦</span>
                         <ArrowRight size={20} />
                     </div>

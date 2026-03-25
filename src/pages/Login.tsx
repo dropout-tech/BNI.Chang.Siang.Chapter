@@ -467,8 +467,8 @@ const Login: React.FC = () => {
                 {/* CLAIM PROFILE LIST */}
                 {mode === 'claim' && (
                     <div className="space-y-4">
-                        <div className="bg-blue-500/10 border border-blue-500/30 p-4 rounded-lg mb-4 flex gap-3 text-sm text-blue-200">
-                            <AlertCircle className="shrink-0 text-blue-400" size={20} />
+                        <div className="bg-primary/10 border border-primary/30 p-4 rounded-lg mb-4 flex gap-3 text-sm text-primary-light">
+                            <AlertCircle className="shrink-0 text-primary" size={20} />
                             <div>
                                 歡迎！請從下方選擇您的會員檔案進行綁定。<br />
                                 <span className="text-xs opacity-70">綁定後，只有您能編輯此檔案。</span>

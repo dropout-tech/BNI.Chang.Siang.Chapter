@@ -81,7 +81,7 @@ const NotFound: React.FC = () => {
                 >
                     <Link
                         to="/"
-                        className="group relative px-8 py-4 bg-gradient-to-r from-primary to-accent text-bg-dark font-bold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(197,164,126,0.5)] hover:scale-105 flex items-center gap-2"
+                        className="group relative px-8 py-4 bg-gradient-to-r from-primary to-primary-dark text-bg-dark font-bold rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] hover:scale-105 flex items-center gap-2"
                     >
                         <Home size={20} />
                         <span>返回首頁</span>

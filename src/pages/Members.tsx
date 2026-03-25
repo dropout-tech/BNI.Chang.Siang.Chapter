@@ -219,7 +219,7 @@ const Members: React.FC = () => {
                         <p className="text-xl">沒有找到符合條件的會員</p>
                         <button
                             onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}
-                            className="mt-4 px-6 py-2 bg-primary text-bg-dark rounded-full hover:bg-[#b08d55] transition-colors font-bold"
+                            className="mt-4 px-6 py-2 bg-primary text-bg-dark rounded-full hover:bg-[#B8960C] transition-colors font-bold"
                         >
                             清除搜尋條件
                         </button>
