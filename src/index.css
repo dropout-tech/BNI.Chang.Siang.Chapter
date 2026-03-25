@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
-/* BNI 長翔名人堂白金分會 — 視覺主題 */
-/* 酒紅 + 香檳金 + 深色 */
+/* BNI 長翔名人堂白金分會 — 深海藍 + 香檳金 視覺主題 */
 @theme {
   /* 主色：香檳金 */
   --color-primary: #D4AF37;
@@ -13,20 +12,21 @@
   --color-gold-light: #E8C547;
   --color-gold-dark: #B8960C;
 
-  /* 背景色：深酒紅 */
-  --color-bg-dark: #1A0A12;
-  --color-bg-card: #2A1520;
-  --color-bg-section: #220E18;
+  /* 背景色：深海藍 */
+  --color-bg-dark: #0A1628;
+  --color-bg-card: #102A43;
+  --color-bg-section: #0E1F35;
 
-  /* 酒紅 accent */
-  --color-accent: #5C0A1E;
-  --color-accent-light: #8B1538;
-  --color-accent-dark: #3D0614;
+  /* 深藍層次 */
+  --color-navy-900: #0A1628;
+  --color-navy-800: #102A43;
+  --color-navy-700: #1A3A5C;
+  --color-navy-600: #243B53;
 }
 
 html,
 body {
-  background-color: #1A0A12;
+  background-color: #0A1628;
   color: #ffffff;
   min-height: 100vh;
   margin: 0;
@@ -40,7 +40,7 @@ body {
   flex-direction: column;
 }
 
-/* Brushed gold gradient for buttons and accents */
+/* Brushed gold gradient */
 .brushed-gold {
   background: linear-gradient(135deg, #D4AF37 0%, #E8C547 15%, #D4AF37 30%, #B8960C 50%, #D4AF37 70%, #E8C547 85%, #D4AF37 100%);
 }
@@ -52,13 +52,12 @@ body {
   background-clip: text;
 }
 
-/* Gold line divider */
 .gold-line {
   height: 1px;
   background: linear-gradient(90deg, transparent, #D4AF37, transparent);
 }
 
-/* Meteor/particle animations repurposed for gold particles */
+/* Gold particle animations */
 .meteor-shower {
   position: fixed;
   top: 0;

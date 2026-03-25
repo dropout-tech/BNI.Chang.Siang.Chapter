@@ -24,7 +24,7 @@ const EditPage: React.FC = () => {
                 </p>
                 <a
                     href="/"
-                    className="inline-block w-full px-8 py-3 bg-gradient-to-r from-[#c5a47e] to-[#b08d55] text-[#1A0A12] font-bold rounded-lg hover:shadow-[0_0_20px_rgba(197,164,126,0.3)] transition-all transform hover:-translate-y-1"
+                    className="inline-block w-full px-8 py-3 bg-gradient-to-r from-[#c5a47e] to-[#b08d55] text-[#0A1628] font-bold rounded-lg hover:shadow-[0_0_20px_rgba(197,164,126,0.3)] transition-all transform hover:-translate-y-1"
                 >
                     返回首頁
                 </a>

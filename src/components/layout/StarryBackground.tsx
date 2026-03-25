@@ -105,7 +105,7 @@ const StarryBackground: React.FC = () => {
             <div
                 className="absolute inset-0"
                 style={{
-                    background: 'radial-gradient(ellipse at bottom, #2A1520 0%, #1A0A12 50%, #0D0508 100%)'
+                    background: 'radial-gradient(ellipse at bottom, #102A43 0%, #0A1628 50%, #070E1A 100%)'
                 }}
             />
             <canvas ref={canvasRef} className="absolute inset-0 block" />
