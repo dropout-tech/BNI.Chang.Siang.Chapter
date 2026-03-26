@@ -2,6 +2,7 @@ import React from 'react';
 import { useCountUp } from '../../hooks/useCountUp';
 import { FileText, TrendingUp, Users } from 'lucide-react';
 import ResultsChart from './ResultsChart';
+import { LuxuryBackground, GlowingChevron } from '../common/PremiumDecorations';
 
 const MetricCard: React.FC<{ icon: React.ReactNode, value: number, suffix: string, label: string, subtext?: string, isCurrency?: boolean }> = ({ icon, value, suffix, label, subtext, isCurrency }) => {
     const { count, elementRef } = useCountUp(value);
@@ -9,8 +10,8 @@ const MetricCard: React.FC<{ icon: React.ReactNode, value: number, suffix: strin
         <div ref={elementRef} className="card-glass gold-border gold-border-hover rounded-2xl p-8 flex flex-col items-center justify-center hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group">
             {/* Subtle card background wing wave */}
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#D4AF37]/5 rounded-full blur-[20px] group-hover:bg-[#D4AF37]/10 transition-colors" />
-            <div className="absolute top-4 right-4 text-xs opacity-50"><span className="gold-chevron">&gt;&gt;&gt;</span></div>
-            <div className="text-[#D4AF37] mb-6 p-4 rounded-full border border-[#D4AF37]/20 z-10">{icon}</div>
+            <div className="absolute top-4 right-4 text-xs opacity-50"><GlowingChevron direction="right" className="w-5 h-5" /></div>
+            <div className="text-[#D4AF37] mb-6 p-4 rounded-full border border-[#D4AF37]/20 z-10 drop-shadow-[0_0_10px_rgba(212,175,55,0.3)]">{icon}</div>
             <div className="text-4xl lg:text-5xl font-bold text-white mb-2 font-mono tabular-nums z-10">
                 {isCurrency ? (count / 100).toFixed(1) : count.toLocaleString()}
                 <span className="text-2xl ml-1 text-[#D4AF37]/70 font-sans">{suffix}</span>
@@ -28,6 +29,7 @@ const Results: React.FC = () => (
             <path d="M-200,800 C400,600 800,900 1600,0 L1600,1000 L-200,1000 Z" fill="#102A43" />
             <path d="M-100,750 C500,550 850,850 1600,-50" stroke="#D4AF37" strokeWidth="1" strokeOpacity="1" fill="none" />
         </svg>
+        <LuxuryBackground />
 
         <div className="container mx-auto px-4 relative z-10">
             <div className="text-center mb-16">
@@ -49,7 +51,7 @@ const Results: React.FC = () => (
                         <h3 className="text-2xl font-bold text-white mb-2">邀請來賓參與</h3>
                         <p className="text-gray-400 mb-6 text-base">誠摯邀請您前來體驗我們的聚會。</p>
                         <a href="#contact" className="inline-flex items-center gap-2 px-6 py-2 brushed-gold text-[#0A1628] font-bold rounded-full transition-all text-sm group-hover:shadow-[0_0_15px_rgba(212,175,55,0.4)]">
-                            聯繫我們 <span className="gold-chevron text-[#0A1628] drop-shadow-none scale-110 ml-1">&gt;&gt;&gt;</span>
+                            聯繫我們 <div className="ml-1 scale-75 opacity-90"><GlowingChevron direction="right" /></div>
                         </a>
                     </div>
                 </div>

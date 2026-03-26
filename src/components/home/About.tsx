@@ -2,6 +2,7 @@ import React from 'react';
 import { Target, Compass, Flag, Heart } from 'lucide-react';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
+import { LuxuryBackground, GlowingChevron } from '../common/PremiumDecorations';
 
 const AboutCard: React.FC<{ icon: React.ReactNode, title: string, children: React.ReactNode, delay: number, fullWidth?: boolean }> = ({ icon, title, children, delay, fullWidth }) => (
     <motion.div
@@ -23,13 +24,19 @@ const AboutCard: React.FC<{ icon: React.ReactNode, title: string, children: Reac
 );
 
 const About: React.FC = () => (
-    <section className="min-h-screen flex flex-col justify-center py-24 relative z-10 grain" id="about">
-        <div className="container mx-auto px-4">
+    <section className="min-h-screen flex flex-col justify-center py-24 relative overflow-hidden grain-heavy brushed-metal-dark" id="about">
+        <LuxuryBackground />
+        
+        <div className="container mx-auto px-4 relative z-10">
             <div className="text-center mb-16">
                 <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-                    <h2 className="text-4xl md:text-5xl font-black mb-4 gold-text">關於 BNI 長翔名人堂白金分會</h2>
-                    <p className="text-gray-400 text-lg max-w-3xl mx-auto mb-6">以熱情積極、付出者著稱的金質商務交流平台。2022年9月創下97%綠燈紀錄，正邁向全綠燈分會</p>
-                    <div className="gold-line w-24 mx-auto" />
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <GlowingChevron direction="left" className="hidden sm:block opacity-70" />
+                        <h2 className="text-4xl md:text-5xl font-black gold-text drop-shadow-md">關於 BNI 長翔名人堂白金分會</h2>
+                        <GlowingChevron direction="right" className="hidden sm:block opacity-70" />
+                    </div>
+                    <p className="text-gray-300 text-lg max-w-3xl mx-auto mb-6 leading-relaxed">以熱情積極、付出者著稱的金質商務交流平台。2022年9月創下97%綠燈紀錄，正邁向全綠燈分會</p>
+                    <div className="gold-line w-24 mx-auto shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
                 </motion.div>
             </div>
 

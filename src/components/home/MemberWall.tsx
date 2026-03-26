@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMembers } from '../../hooks/useMembers';
 import { motion } from 'framer-motion';
 import { assetUrl } from '../../lib/assets';
+import { LuxuryBackground, GlowingChevron } from '../common/PremiumDecorations';
 
 const MemberThumbnail: React.FC<{ photo: string, name: string, industry: string, photoPosition?: string }> = ({ photo, name, industry, photoPosition }) => {
     const getPhotoUrl = (p: string) => assetUrl(p);
@@ -57,6 +58,8 @@ const MemberWall: React.FC = () => {
 
     return (
         <section className="min-h-screen flex flex-col justify-center py-16 relative overflow-hidden grain-heavy brushed-metal-dark">
+            <LuxuryBackground />
+            
             {/* Elegant sweeping abstract geometric waves that evoke fluid, winged ascent */}
             <svg className="absolute top-[30%] -right-[20%] w-[120%] h-[120%] z-0 pointer-events-none opacity-25" viewBox="0 0 1440 1000" fill="none" preserveAspectRatio="none">
                 <path d="M1640,800 C1040,600 640,900 -160,0 L-160,1000 L1640,1000 Z" fill="#102A43" />
@@ -69,9 +72,9 @@ const MemberWall: React.FC = () => {
 
             <div className="text-center mb-12 relative z-10 flex flex-col items-center">
                 <div className="flex items-center gap-4 mb-3">
-                    <span className="gold-chevron text-2xl opacity-80 rotate-180">&gt;&gt;&gt;</span>
-                    <h2 className="text-4xl md:text-5xl font-black gold-text tracking-wider">精英成員</h2>
-                    <span className="gold-chevron text-2xl opacity-80">&gt;&gt;&gt;</span>
+                    <GlowingChevron direction="left" className="opacity-80" />
+                    <h2 className="text-4xl md:text-5xl font-black gold-text tracking-wider drop-shadow-md">精英成員</h2>
+                    <GlowingChevron direction="right" className="opacity-80" />
                 </div>
                 <p className="text-[#D4AF37]/60 text-sm font-medium tracking-[0.3em] uppercase mb-3">白金分會</p>
                 <div className="gold-line w-16 mx-auto mb-3" />
@@ -84,8 +87,10 @@ const MemberWall: React.FC = () => {
                 <MarqueeRow speed={60}><div className="flex">{row3.map(m => <MemberThumbnail key={m.id} photo={m.photo} name={m.name} industry={m.industry} photoPosition={m.photoPosition} />)}</div></MarqueeRow>
             </div>
 
-            <div className="flex justify-end px-8 mt-4 relative z-10">
-                <span className="gold-chevron text-2xl tracking-[0.3em] font-bold opacity-70">&gt;&gt;&gt;</span>
+            <div className="flex justify-end px-8 mt-4 relative z-10 opacity-70">
+                <GlowingChevron direction="right" />
+                <div className="-ml-8"><GlowingChevron direction="right" /></div>
+                <div className="-ml-8"><GlowingChevron direction="right" /></div>
             </div>
         </section>
     );

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Mail, Phone } from 'lucide-react';
 import { useMembers } from '../../hooks/useMembers';
 import { assetUrl } from '../../lib/assets';
+import { LuxuryBackground, GlowingChevron } from '../common/PremiumDecorations';
 
 const Contact: React.FC = () => {
     const { members } = useMembers();
@@ -24,21 +25,27 @@ const Contact: React.FC = () => {
     });
 
     return (
-        <section className="min-h-screen flex flex-col justify-center relative py-24 md:py-32 overflow-hidden" id="contact">
+        <section className="min-h-screen flex flex-col justify-center relative py-24 md:py-32 overflow-hidden grain-heavy brushed-metal-dark" id="contact">
+            <LuxuryBackground />
+            
             {/* Background Elements */}
             <div className="absolute top-0 right-0 w-1/2 h-full bg-bg-dark/50 -skew-x-12 transform origin-top-right"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] z-0"></div>
 
             <div className="container mx-auto px-4 relative z-10">
                 <div className="text-center mb-16 md:mb-24">
-                    <motion.h2
+                    <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-4xl md:text-5xl font-black text-white mb-6"
+                        className="flex items-center justify-center gap-4 mb-6"
                     >
-                        聯繫 <span className="text-primary">ChangSiang</span>
-                    </motion.h2>
+                        <GlowingChevron direction="left" className="hidden sm:block opacity-70" />
+                        <h2 className="text-4xl md:text-5xl font-black text-white m-0">
+                            聯繫 <span className="text-primary drop-shadow-[0_0_15px_rgba(212,175,55,0.6)]">ChangSiang</span>
+                        </h2>
+                        <GlowingChevron direction="right" className="hidden sm:block opacity-70" />
+                    </motion.div>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}

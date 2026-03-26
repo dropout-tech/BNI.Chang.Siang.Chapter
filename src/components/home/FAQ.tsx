@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
+import { LuxuryBackground, GlowingChevron } from '../common/PremiumDecorations';
 
 const FAQItem: React.FC<{ question: string, answer: React.ReactNode, isOpen: boolean, toggle: () => void, index: number }> = ({ question, answer, isOpen, toggle, index }) => {
     return (
@@ -49,7 +50,8 @@ const FAQ: React.FC = () => {
     };
 
     return (
-        <section className="min-h-screen flex flex-col justify-center py-20 relative overflow-hidden" id="faq">
+        <section className="min-h-screen flex flex-col justify-center py-20 relative overflow-hidden grain-heavy brushed-metal-dark" id="faq">
+            <LuxuryBackground />
             <div className="container mx-auto px-4 z-10 relative">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -57,7 +59,11 @@ const FAQ: React.FC = () => {
                     viewport={{ once: true }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-3xl md:text-5xl font-black mb-4 text-white">BNI 台灣商會常見問題</h2>
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <GlowingChevron direction="left" className="hidden sm:block opacity-70" />
+                        <h2 className="text-3xl md:text-5xl font-black text-white gold-text drop-shadow-md">BNI 台灣商會常見問題</h2>
+                        <GlowingChevron direction="right" className="hidden sm:block opacity-70" />
+                    </div>
                     <p className="text-gray-400 max-w-2xl mx-auto text-lg">
                         關於加入 BNI 長翔名人堂白金分會，我們整理了台灣企業主最關心的問題
                     </p>
