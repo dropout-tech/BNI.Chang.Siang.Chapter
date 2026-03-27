@@ -67,6 +67,10 @@ const MemberWall: React.FC = () => {
                 <path d="M1540,750 C940,550 590,850 -160,-50" stroke="#D4AF37" strokeWidth="1.5" strokeOpacity="0.8" fill="none" />
             </svg>
 
+            {/* Ambient Animated Lens Flares for extreme depth */}
+            <div className="absolute top-[20%] left-[10%] w-[500px] h-[500px] bg-[#D4AF37]/5 glow-orb animate-float-slow mix-blend-screen pointer-events-none" />
+            <div className="absolute bottom-[20%] right-[10%] w-[400px] h-[400px] bg-[#E8C547]/5 glow-orb animate-float-medium mix-blend-screen pointer-events-none" />
+
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[500px] opacity-[0.035] rounded-full -z-10 mix-blend-screen"
                 style={{ background: 'radial-gradient(ellipse, #D4AF37, transparent 70%)' }} />
 

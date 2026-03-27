@@ -23,35 +23,39 @@ export const GlowingChevron: React.FC<{ direction: 'left' | 'right', className?:
 export const LuxuryBackground: React.FC = () => {
     return (
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-            {/* Soft Breathing Lens Flare / Glow Backdrop */}
+            {/* Majestic Sweeping Light Beams replacing 'two soft dots' */}
             <motion.div 
-                animate={{ opacity: [0.05, 0.2, 0.05], scale: [1, 1.1, 1] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-[10%] left-[20%] w-[600px] h-[600px] bg-[#D4AF37]/5 blur-[100px] rounded-full mix-blend-screen"
+                animate={{ rotate: [0, 5, 0], opacity: [0.3, 0.7, 0.3], scale: [1, 1.1, 1] }}
+                transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-[10%] -left-[10%] w-[120%] h-[120%] origin-center mix-blend-screen"
+                style={{ background: 'conic-gradient(from 90deg at 20% 20%, transparent 0deg, rgba(212,175,55,0.06) 45deg, transparent 90deg)' }}
             />
             <motion.div 
-                animate={{ opacity: [0.05, 0.15, 0.05], scale: [1.1, 1, 1.1] }}
-                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-[#F5E6B8]/5 blur-[90px] rounded-full mix-blend-screen"
+                animate={{ rotate: [0, -5, 0], opacity: [0.2, 0.6, 0.2], scale: [1.1, 1, 1.1] }}
+                transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                className="absolute -bottom-[10%] -right-[10%] w-[120%] h-[120%] origin-center mix-blend-screen"
+                style={{ background: 'conic-gradient(from 270deg at 80% 80%, transparent 0deg, rgba(245,230,184,0.06) 45deg, transparent 90deg)' }}
             />
             
-            {/* Floating Gold Particles */}
-            {Array.from({length: 15}).map((_, i) => (
-                <motion.div key={`particle-${i}`} className="absolute rounded-full"
+            {/* Glowing Embers */}
+            {Array.from({length: 20}).map((_, i) => (
+                <motion.div key={`ember-${i}`} className="absolute rounded-full"
                     style={{ 
                         left: `${Math.random()*100}%`, top: `${Math.random()*100}%`, 
-                        width: `${Math.random()*3+1}px`, height: `${Math.random()*3+1}px`, 
-                        backgroundColor: '#D4AF37', boxShadow: '0 0 10px rgba(212,175,55,0.8)' 
+                        width: `${Math.random()*3+2}px`, height: `${Math.random()*3+2}px`, 
+                        background: 'radial-gradient(circle, #FFF 0%, #D4AF37 50%, transparent 100%)',
+                        boxShadow: '0 0 15px rgba(212,175,55,1)' 
                     }}
                     animate={{ 
-                        y: [0, -(30+Math.random()*50), 0], 
-                        opacity: [0, 0.4+Math.random()*0.4, 0], 
-                        scale: [1, 1.3, 1] 
+                        y: [0, -(50+Math.random()*80), 0], 
+                        x: [0, Math.random() > 0.5 ? 20 : -20, 0],
+                        opacity: [0, 0.6+Math.random()*0.4, 0], 
+                        scale: [1, 1.5, 1] 
                     }}
                     transition={{ 
-                        duration: 6+Math.random()*8, 
+                        duration: 8+Math.random()*10, 
                         repeat: Infinity, 
-                        delay: Math.random()*5, 
+                        delay: Math.random()*8, 
                         ease: 'easeInOut' 
                     }}
                 />

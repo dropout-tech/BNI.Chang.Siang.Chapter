@@ -118,22 +118,40 @@ html, body {
 .grain-heavy::after {
   content: '';
   position: absolute; inset: 0;
-  opacity: 0.08;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 1;
-  mix-blend-mode: overlay;
+  opacity: 0.15;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 50; /* Super heavy overlay across the whole section */
+  mix-blend-mode: color-dodge;
+}
+
+/* === Gold Foil Text === */
+.gold-foil-text {
+  background: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='0.3'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, #F5E6B8 0%, #D4AF37 25%, #8A6D1C 40%, #E8C547 60%, #B8960C 80%, #D4AF37 100%);
+  background-blend-mode: multiply;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 150px 150px, 200% auto;
+  animation: pan-metal 15s linear infinite;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
 }
 
 /* === Card glass effect === */
 .card-glass {
-  background: rgba(16, 42, 67, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 175, 55, 0.1);
+  background: rgba(16, 42, 67, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .card-glass:hover {
-  border-color: rgba(212, 175, 55, 0.3);
-  background: rgba(16, 42, 67, 0.6);
+  border-color: rgba(212, 175, 55, 0.4);
+  background: rgba(16, 42, 67, 0.4);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 175, 55, 0.15);
+  transform: translateY(-5px);
 }
 
 /* === Gold Meteor Particles === */
@@ -169,5 +187,31 @@ html, body {
 }
 @keyframes gradient-x { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
 .animate-gradient-x { background-size:200% 200%; animation:gradient-x 3s ease infinite; }
+
+/* Let's remove default scrollbar for a cleaner look */
 .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
 .scrollbar-hide::-webkit-scrollbar { display:none; }
+
+/* Lens Flare / Bokeh Animations */
+@keyframes float-slow {
+  0% { transform: translateY(0) scale(1); opacity: 0.3; }
+  50% { transform: translateY(-30px) scale(1.1); opacity: 0.6; }
+  100% { transform: translateY(0) scale(1); opacity: 0.3; }
+}
+.animate-float-slow { animation: float-slow 12s ease-in-out infinite; }
+
+@keyframes float-medium {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.2; }
+  50% { transform: translateY(-40px) translateX(20px) scale(1.15); opacity: 0.5; }
+  100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.2; }
+}
+.animate-float-medium { animation: float-medium 8s ease-in-out infinite; }
+
+/* Glowing Orb */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}

@@ -146,8 +146,13 @@ const StarryBackground: React.FC = () => {
                 background: 'linear-gradient(180deg, #0D1B2E 0%, #102A43 35%, #0A1628 65%, #070E1A 100%)'
             }} />
             <canvas ref={canvasRef} className="absolute inset-0 block" />
+            {/* Ambient Animated Lens Flares for extreme depth */}
+            <div className="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-[#D4AF37]/10 glow-orb animate-float-slow mix-blend-screen" />
+            <div className="absolute bottom-[20%] right-[15%] w-[600px] h-[600px] bg-[#E8C547]/5 glow-orb animate-float-medium mix-blend-screen" />
+            <div className="absolute top-[40%] right-[40%] w-[300px] h-[300px] bg-[#B8960C]/10 glow-orb animate-float-slow mix-blend-screen" style={{ animationDelay: '2s' }} />
+            
             {/* Grain texture overlay */}
-            <div className="absolute inset-0 grain pointer-events-none" />
+            <div className="absolute inset-0 grain pointer-events-none mix-blend-overlay" />
         </div>
     );
 };

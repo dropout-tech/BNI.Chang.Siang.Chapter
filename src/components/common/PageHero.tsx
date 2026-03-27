@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { assetUrl } from '../../lib/assets';
 
 interface PageHeroProps {
@@ -15,8 +15,17 @@ const GoldArrows: React.FC<{ dir: 'l' | 'r'; className?: string }> = ({ dir, cla
     </span>
 );
 
-const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicator = false, children }) => (
-    <section className="min-h-screen flex flex-col justify-center items-center text-center relative z-10 pt-20 overflow-hidden grain-heavy brushed-metal-dark">
+const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicator = false, children }) => {
+    const ref = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ["start start", "end start"]
+    });
+    const yParallax = useTransform(scrollYProgress, [0, 1], [0, 300]);
+    const opacityParallax = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+    return (
+    <section ref={ref} className="min-h-screen flex flex-col justify-center items-center text-center relative z-10 pt-20 overflow-hidden grain-heavy brushed-metal-dark">
         {/* === BG: geometric wing layers === */}
 
         {/* Abstract Sweeping Geometric Waves (Wings) — Sharp, dynamic angles */}
@@ -61,32 +70,37 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
         ))}
 
         {/* === CONTENT === */}
-        <motion.div initial={{ opacity:0, y:40 }} animate={{ opacity:1, y:0 }} transition={{ duration:1, ease:'easeOut', delay:0.3 }}
+        <motion.div 
+            initial={{ opacity:0, y:40 }} animate={{ opacity:1, y:0 }} transition={{ duration:1.2, ease:[0.16, 1, 0.3, 1], delay:0.2 }}
+            style={{ y: yParallax, opacity: opacityParallax }}
             className="relative z-10 px-4 mt-[-5vh] md:mt-[-8vh] max-w-6xl mx-auto w-full"
         >
-            <div className="flex items-center justify-center gap-3 md:gap-5 mb-4">
-                <GoldArrows dir="l" className="text-2xl md:text-5xl opacity-80 rotate-180" />
-                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1]">
+            <div className="flex items-center justify-center gap-3 md:gap-5 mb-4 relative">
+                {/* Decorative lines behind title */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent -z-10 blur-[1px]" />
+                <GoldArrows dir="l" className="text-2xl md:text-5xl opacity-80 rotate-180 drop-shadow-[0_0_15px_rgba(212,175,55,0.6)]" />
+                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[7.5rem] font-black tracking-tight leading-[1.1] drop-shadow-2xl">
                     <span className="gold-text">{title}</span>
                 </h1>
-                <GoldArrows dir="r" className="text-2xl md:text-5xl opacity-80" />
+                <GoldArrows dir="r" className="text-2xl md:text-5xl opacity-80 drop-shadow-[0_0_15px_rgba(212,175,55,0.6)]" />
             </div>
             {subtitle && (
-                <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.8, delay:0.6 }}
-                    className="text-base md:text-xl text-gray-300/90 max-w-3xl mx-auto leading-relaxed font-light mt-6"
+                <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:1, delay:0.4, ease:[0.16, 1, 0.3, 1] }}
+                    className="text-base md:text-xl lg:text-2xl text-gray-300/90 max-w-4xl mx-auto leading-relaxed font-light mt-8 tracking-wide drop-shadow-md"
                 >{subtitle}</motion.div>
             )}
             {children}
         </motion.div>
 
         {showScrollIndicator && (
-            <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:2 }} className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-                <motion.div animate={{ y:[0,8,0] }} transition={{ duration:2, repeat:Infinity }} className="w-6 h-10 rounded-full border-2 border-[#D4AF37]/20 flex items-start justify-center p-1.5">
-                    <div className="w-1.5 h-3 rounded-full bg-[#D4AF37]/35" />
+            <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:2 }} className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10">
+                <motion.div animate={{ y:[0,12,0] }} transition={{ duration:2.5, ease: "easeInOut", repeat:Infinity }} className="w-6 h-12 rounded-full border border-[#D4AF37]/30 flex items-start justify-center p-1.5 shadow-[0_0_15px_rgba(212,175,55,0.1)]">
+                    <div className="w-1 h-3 rounded-full bg-[#D4AF37] shadow-[0_0_8px_rgba(212,175,55,1)]" />
                 </motion.div>
             </motion.div>
         )}
     </section>
-);
+    );
+};
 
 export default PageHero;

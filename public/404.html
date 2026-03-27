@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <title>BNI 長翔名人堂白金分會</title>
   <script>
-    // GitHub Pages SPA redirect
-    // Converts /BNI.Chang.Siang.Chapter/bni to /BNI.Chang.Siang.Chapter/?/bni
-    var pathSegmentsToKeep = 1;
+    // GitHub Pages SPA redirect for root domain
+    // Converts /bni to /?/bni
+    var pathSegmentsToKeep = 0;
     var l = window.location;
     l.replace(
       l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +

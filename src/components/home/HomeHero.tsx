@@ -55,11 +55,11 @@ const HomeHero: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
                 />
 
                 {/* Floating Gold Particles for Luxury */}
-                {Array.from({length:30}).map((_,i) => (
+                {Array.from({length:20}).map((_,i) => (
                     <motion.div key={i} className="absolute rounded-full z-[1] pointer-events-none"
-                        style={{ left:`${Math.random()*100}%`, top:`${Math.random()*100}%`, width:`${Math.random()*3+1}px`, height:`${Math.random()*3+1}px`, backgroundColor:'#D4AF37', boxShadow: '0 0 10px #D4AF37' }}
-                        animate={{ y:[0,-(20+Math.random()*40),0], opacity:[0, 0.4+Math.random()*0.4, 0], scale: [1, 1.5, 1] }}
-                        transition={{ duration:4+Math.random()*8, repeat:Infinity, delay:Math.random()*5, ease:'easeInOut' }}
+                        style={{ left:`${Math.random()*100}%`, top:`${Math.random()*100}%`, width:`${Math.random()*3+1}px`, height:`${Math.random()*3+1}px`, backgroundColor:'#D4AF37', boxShadow: '0 0 15px rgba(212,175,55,1)' }}
+                        animate={{ y:[0,-(30+Math.random()*60),0], x:[0, Math.random() > 0.5 ? 20 : -20, 0], opacity:[0, 0.6+Math.random()*0.4, 0], scale: [1, 1.5, 1] }}
+                        transition={{ duration:8+Math.random()*10, repeat:Infinity, delay:Math.random()*8, ease:'easeInOut' }}
                     />
                 ))}
             </div>
@@ -77,41 +77,36 @@ const HomeHero: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
                     
                     {/* Top Text: 長翔展翼 */}
                     <motion.div 
-                        initial={{ opacity: 0, x: -30 }} 
-                        animate={{ opacity: 1, x: 0 }} 
-                        transition={{ duration: 1, delay: 0.4 }}
+                        initial={{ opacity: 0, x: -50, filter: "blur(10px)" }} 
+                        animate={{ opacity: 1, x: 0, filter: "blur(0px)" }} 
+                        transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
                         className="flex items-center gap-6 relative z-0"
                     >
                         {/* SVG Chevron Decorative icon replacing text */}
-                        <div className="animate-pulse opacity-80 mt-4 md:mt-8">
+                        <div className="animate-pulse opacity-90 mt-4 md:mt-8">
                             <GlowingChevron direction="left" />
                         </div>
                         
-                        <h1 
-                            className="text-6xl sm:text-7xl md:text-[6rem] lg:text-[8rem] font-black tracking-widest leading-none select-none text-[#A8986B]/90 whitespace-nowrap"
-                            style={{ 
-                                textShadow: '4px 4px 10px rgba(0,0,0,0.8), -1px -1px 0px rgba(255,255,255,0.1)'
-                            }}
-                        >
+                        <h1 className="text-6xl sm:text-7xl md:text-[6rem] lg:text-[8.5rem] font-black tracking-widest leading-none select-none whitespace-nowrap gold-foil-text">
                             長翔展翼
                         </h1>
                     </motion.div>
 
                     {/* Bottom Text: 商機無限 */}
                     <motion.div 
-                        initial={{ opacity: 0, x: -30 }} 
-                        animate={{ opacity: 1, x: 0 }} 
-                        transition={{ duration: 1, delay: 0.6 }}
+                        initial={{ opacity: 0, x: -50, filter: "blur(10px)" }} 
+                        animate={{ opacity: 1, x: 0, filter: "blur(0px)" }} 
+                        transition={{ duration: 1.5, delay: 0.4, ease: "easeOut" }}
                         className="flex items-end gap-6 md:ml-[15%] -mt-6 md:-mt-10 relative z-10"
                     >
                         {/* Glass box decoration matching reference */}
                         <div className="absolute -inset-x-10 inset-y-0 border border-[#D4AF37]/40 bg-gradient-to-r from-white/5 to-transparent pointer-events-none hidden md:block rounded-l-lg shadow-[inset_2px_0_10px_rgba(212,175,55,0.1)] backdrop-blur-[2px]" />
                         
-                        <h1 className="text-6xl sm:text-7xl md:text-[7rem] lg:text-[9.5rem] font-black tracking-[0.15em] leading-none select-none gold-text drop-shadow-[0_20px_35px_rgba(0,0,0,0.95)] whitespace-nowrap">
+                        <h1 className="text-6xl sm:text-7xl md:text-[7rem] lg:text-[10rem] font-black tracking-[0.15em] leading-none select-none whitespace-nowrap gold-foil-text">
                             商機無限
                         </h1>
 
-                        <div className="animate-pulse opacity-80 mb-4 md:mb-10">
+                        <div className="animate-pulse opacity-90 mb-4 md:mb-10">
                             <GlowingChevron direction="right" />
                         </div>
                     </motion.div>
