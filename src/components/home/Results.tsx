@@ -42,6 +42,9 @@ const Results: React.FC = () => (
                 <h2 className="text-4xl md:text-5xl font-black mb-4 gold-text drop-shadow-md">引薦成果</h2>
                 <div className="gold-line w-24 mx-auto mb-6 shadow-[0_0_15px_rgba(212,175,55,0.6)]" />
                 <p className="text-gray-300 text-lg tracking-wide uppercase">創會以來歷年累計實績</p>
+                <p className="mt-3 text-xs text-[#D4AF37]/50 tracking-[0.25em] uppercase border border-[#D4AF37]/20 rounded-full px-4 py-1 inline-block backdrop-blur-sm">
+                    ⏳ 等待資料更新 · 數字僅供展示參考
+                </p>
             </motion.div>
             
             <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="mb-24">
@@ -57,7 +60,7 @@ const Results: React.FC = () => (
                     <MetricCard icon={<FileText size={42} />} value={26459} suffix="張" label="總引薦單數" />
                 </div>
                 <div className="w-full">
-                    <MetricCard icon={<TrendingUp size={42} />} value={629} suffix="億+" label="總交易價值 (TWD)" subtext="NT$ 629,007,136" isCurrency />
+                    <MetricCard icon={<TrendingUp size={42} />} value={629} suffix="億+" label="總交易價值 (TWD)" subtext="⏳ 等待資料更新" isCurrency />
                 </div>
                 <div className="w-full h-full">
                     <motion.div 
