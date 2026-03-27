@@ -28,8 +28,14 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
     <section ref={ref} className="min-h-screen flex flex-col justify-center items-center text-center relative z-10 pt-20 overflow-hidden grain-heavy brushed-metal-dark">
         {/* === BG: geometric wing layers === */}
 
-        {/* Abstract Sweeping Geometric Waves (Wings) — Sharp, dynamic angles */}
-        <svg className="absolute top-[10%] -left-[10%] w-[120%] h-[120%] z-0 pointer-events-none opacity-40" viewBox="0 0 1440 1000" fill="none" preserveAspectRatio="none">
+        {/* === BG: geometric wing layers === */}
+
+        {/* Abstract Sweeping Geometric Waves (Wings) — Sharp, dynamic angles with exaggerated breathing animation */}
+        <motion.svg 
+            animate={{ scale: [1, 1.05, 1], rotate: [0, 2, -1, 0] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[10%] -left-[10%] w-[120%] h-[120%] z-0 pointer-events-none opacity-50" viewBox="0 0 1440 1000" fill="none" preserveAspectRatio="none"
+        >
             {/* Base Wing */}
             <path d="M-200,800 C400,600 800,900 1600,0 L1600,1000 L-200,1000 Z" fill="url(#wing-grad-1)" />
             {/* Mid Wing */}
@@ -50,11 +56,11 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
                     <stop offset="100%" stopColor="#1A3A5C" stopOpacity="0" />
                 </linearGradient>
             </defs>
-        </svg>
+        </motion.svg>
 
-        {/* Gold glow orbs */}
-        <div className="absolute top-[20%] left-[30%] w-[600px] h-[600px] rounded-full opacity-[0.035] pointer-events-none z-0 mix-blend-screen" style={{ background:'radial-gradient(circle, #D4AF37, transparent 70%)' }} />
-        <div className="absolute bottom-[20%] right-[20%] w-[400px] h-[400px] rounded-full opacity-[0.03] pointer-events-none z-0 mix-blend-screen" style={{ background:'radial-gradient(circle, #E8C547, transparent 70%)' }} />
+        {/* Massive Gold glow orbs with intense pulsing */}
+        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.03, 0.08, 0.03] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[10%] left-[20%] w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen" style={{ background:'radial-gradient(circle, #D4AF37, transparent 70%)' }} />
+        <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.03, 0.06, 0.03] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute bottom-[10%] right-[10%] w-[600px] h-[600px] rounded-full pointer-events-none z-0 mix-blend-screen" style={{ background:'radial-gradient(circle, #E8C547, transparent 70%)' }} />
 
         {/* Horizontal gold lines */}
         <div className="absolute top-[28%] left-0 right-0 h-px z-0" style={{ background:'linear-gradient(90deg, transparent, rgba(212,175,55,0.08), transparent)' }} />
@@ -71,22 +77,44 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
 
         {/* === CONTENT === */}
         <motion.div 
-            initial={{ opacity:0, y:40 }} animate={{ opacity:1, y:0 }} transition={{ duration:1.2, ease:[0.16, 1, 0.3, 1], delay:0.2 }}
-            style={{ y: yParallax, opacity: opacityParallax }}
+            initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }} transition={{ duration:1.5, ease:[0.16, 1, 0.3, 1] }}
+            style={{ y: yParallax, opacity: opacityParallax, perspective: 1000 }}
             className="relative z-10 px-4 mt-[-5vh] md:mt-[-8vh] max-w-6xl mx-auto w-full"
         >
             <div className="flex items-center justify-center gap-3 md:gap-5 mb-4 relative">
-                {/* Decorative lines behind title */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent -z-10 blur-[1px]" />
-                <GoldArrows dir="l" className="text-2xl md:text-5xl opacity-80 rotate-180 drop-shadow-[0_0_15px_rgba(212,175,55,0.6)]" />
-                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[7.5rem] font-black tracking-tight leading-[1.1] drop-shadow-2xl">
-                    <span className="gold-text">{title}</span>
-                </h1>
-                <GoldArrows dir="r" className="text-2xl md:text-5xl opacity-80 drop-shadow-[0_0_15px_rgba(212,175,55,0.6)]" />
+                {/* Exaggerated Deep Decorative lines behind title */}
+                <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 2, delay: 0.5, ease: "easeOut" }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[2px] bg-gradient-to-r from-transparent via-[#D4AF37]/50 to-transparent -z-10 blur-[2px]" />
+                
+                <motion.div initial={{ x: -100, opacity: 0, rotate: -45 }} animate={{ x: 0, opacity: 1, rotate: 180 }} transition={{ type: "spring", stiffness: 50, damping: 15, delay: 0.4 }}>
+                    <GoldArrows dir="l" className="text-3xl md:text-6xl opacity-90 drop-shadow-[0_0_25px_rgba(212,175,55,0.8)]" />
+                </motion.div>
+                
+                <motion.h1 
+                    initial={{ opacity: 0, scale: 0.5, rotateX: 60, y: 100, filter: "blur(20px)" }}
+                    animate={{ opacity: 1, scale: 1, rotateX: 0, y: 0, filter: "blur(0px)" }}
+                    transition={{ type: "spring", stiffness: 40, damping: 20, delay: 0.2 }}
+                    className="text-5xl sm:text-7xl md:text-[6rem] lg:text-[8.5rem] font-black tracking-tight leading-[1.1] drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
+                >
+                    <span className="gold-text inline-block animate-float-slow">{title}</span>
+                </motion.h1>
+                
+                <motion.div initial={{ x: 100, opacity: 0, rotate: 45 }} animate={{ x: 0, opacity: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 50, damping: 15, delay: 0.4 }}>
+                    <GoldArrows dir="r" className="text-3xl md:text-6xl opacity-90 drop-shadow-[0_0_25px_rgba(212,175,55,0.8)]" />
+                </motion.div>
             </div>
+            
+            {title && (
+                <motion.div 
+                    initial={{ opacity:0, y:50, scale: 0.9 }} 
+                    animate={{ opacity:1, y:0, scale: 1 }} 
+                    transition={{ duration:1.2, delay:0.8, ease:[0.16, 1, 0.3, 1] }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[300px] bg-[#D4AF37]/10 blur-[80px] -z-20 pointer-events-none rounded-full"
+                />
+            )}
+
             {subtitle && (
-                <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:1, delay:0.4, ease:[0.16, 1, 0.3, 1] }}
-                    className="text-base md:text-xl lg:text-2xl text-gray-300/90 max-w-4xl mx-auto leading-relaxed font-light mt-8 tracking-wide drop-shadow-md"
+                <motion.div initial={{ opacity:0, y:40, rotateX: -30 }} animate={{ opacity:1, y:0, rotateX: 0 }} transition={{ duration:1.5, delay:0.8, ease:[0.16, 1, 0.3, 1] }}
+                    className="text-lg md:text-2xl lg:text-3xl text-gray-300/90 max-w-4xl mx-auto leading-relaxed font-light mt-10 tracking-[0.1em] drop-shadow-xl"
                 >{subtitle}</motion.div>
             )}
             {children}
