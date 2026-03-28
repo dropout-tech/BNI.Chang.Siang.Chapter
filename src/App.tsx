@@ -9,8 +9,11 @@ import BackToTop from './components/common/BackToTop';
 import ScrollToTop from './components/common/ScrollToTop';
 import PageTracker from './components/common/PageTracker';
 import BottomNav from './components/layout/BottomNav';
+import CustomCursor from './components/common/CustomCursor';
 import { SkeletonHero } from './components/common/Skeleton';
 import { AuthProvider } from './contexts/AuthContext';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 
 const Home = lazy(() => import('./pages/Home'));
 const AboutBNI = lazy(() => import('./pages/AboutBNI'));
@@ -61,6 +64,26 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    
+    requestAnimationFrame(raf);
+    return () => lenis.destroy();
+  }, []);
+
   return (
     <AuthProvider>
       <Router basename={import.meta.env.BASE_URL}>
@@ -68,6 +91,7 @@ function App() {
         <PageTracker />
         <ScrollToTop />
         <StarryBackground />
+        <CustomCursor />
         <div className="flex flex-col min-h-screen relative z-10">
           <Navbar />
           <main className="flex-grow pb-[70px] md:pb-0">

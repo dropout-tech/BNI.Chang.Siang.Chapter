@@ -53,14 +53,16 @@ const StarryBackground: React.FC = () => {
 
                 ctx.beginPath();
                 ctx.moveTo(0, yBase + Math.sin(s.phase + t * 0.0003) * s.amp);
-                for (let x = 0; x <= w; x += 3) {
+                // PERFORMANCE FIX: step increased to 35px to drop CPU usage safely
+                for (let x = 0; x <= w + 35; x += 35) {
                     const y = yBase
                         + Math.sin(x * s.freq + t * 0.0004 + s.phase) * s.amp
                         + Math.sin(x * s.freq * 2.2 + t * 0.0002 + s.phase * 0.5) * s.amp * 0.3;
                     ctx.lineTo(x, y);
                 }
                 // Close downward
-                for (let x = w; x >= 0; x -= 3) {
+                // PERFORMANCE FIX: step increased to 35px
+                for (let x = w + 35; x >= -35; x -= 35) {
                     const y = yBase + hFill
                         + Math.sin(x * s.freq * 0.8 + t * 0.0003 + s.phase + 1) * s.amp * 0.4;
                     ctx.lineTo(x, y);

@@ -35,6 +35,7 @@ const MarqueeRow: React.FC<{ children: React.ReactNode, direction?: 'left' | 'ri
     <div className="flex overflow-hidden py-4 select-none">
         <motion.div
             className="flex items-center"
+            style={{ willChange: 'transform', WebkitTransform: 'translateZ(0)' }}
             initial={{ x: direction === 'left' ? '0%' : '-50%' }}
             animate={{ x: direction === 'left' ? '-50%' : '0%' }}
             transition={{ repeat: Infinity, ease: "linear", duration: speed }}

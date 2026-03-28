@@ -31,6 +31,7 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
 
         {/* Abstract Sweeping Geometric Waves (Wings) — Sharp, dynamic angles with exaggerated breathing animation */}
         <motion.svg 
+            style={{ WebkitTransform: 'translateZ(0)', willChange: 'transform' }}
             animate={{ scale: [1, 1.05, 1], rotate: [0, 2, -1, 0] }}
             transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
             className="absolute top-[10%] -left-[10%] w-[120%] h-[120%] z-0 pointer-events-none opacity-50" viewBox="0 0 1440 1000" fill="none" preserveAspectRatio="none"
@@ -82,22 +83,22 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
         >
             <div className="flex items-center justify-center gap-3 md:gap-5 mb-4 relative">
                 {/* Exaggerated Deep Decorative lines behind title */}
-                <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 2, delay: 0.5, ease: "easeOut" }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[2px] bg-gradient-to-r from-transparent via-[#D4AF37]/50 to-transparent -z-10 blur-[2px]" />
+                <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 2, delay: 0.5, ease: [0.76, 0, 0.24, 1] }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[2px] bg-gradient-to-r from-transparent via-[#D4AF37]/50 to-transparent -z-10 blur-[2px]" />
                 
-                <motion.div initial={{ x: -100, opacity: 0, rotate: -45 }} animate={{ x: 0, opacity: 1, rotate: 180 }} transition={{ type: "spring", stiffness: 50, damping: 15, delay: 0.4 }}>
+                <motion.div initial={{ x: -100, opacity: 0, rotate: -45 }} animate={{ x: 0, opacity: 1, rotate: 180 }} transition={{ duration: 1.5, ease: [0.76, 0, 0.24, 1], delay: 0.4 }}>
                     <GoldArrows dir="l" className="text-3xl md:text-6xl opacity-90 drop-shadow-[0_0_25px_rgba(212,175,55,0.8)]" />
                 </motion.div>
                 
                 <motion.h1 
-                    initial={{ opacity: 0, scale: 0.5, rotateX: 60, y: 100, filter: "blur(20px)" }}
+                    initial={{ opacity: 0, scale: 0.8, rotateX: 60, y: 100, filter: "blur(20px)" }}
                     animate={{ opacity: 1, scale: 1, rotateX: 0, y: 0, filter: "blur(0px)" }}
-                    transition={{ type: "spring", stiffness: 40, damping: 20, delay: 0.2 }}
+                    transition={{ duration: 1.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
                     className="text-5xl sm:text-7xl md:text-[6rem] lg:text-[8.5rem] font-black tracking-tight leading-[1.1] drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
                 >
                     <span className="gold-text inline-block animate-float-slow">{title}</span>
                 </motion.h1>
                 
-                <motion.div initial={{ x: 100, opacity: 0, rotate: 45 }} animate={{ x: 0, opacity: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 50, damping: 15, delay: 0.4 }}>
+                <motion.div initial={{ x: 100, opacity: 0, rotate: 45 }} animate={{ x: 0, opacity: 1, rotate: 0 }} transition={{ duration: 1.5, ease: [0.76, 0, 0.24, 1], delay: 0.4 }}>
                     <GoldArrows dir="r" className="text-3xl md:text-6xl opacity-90 drop-shadow-[0_0_25px_rgba(212,175,55,0.8)]" />
                 </motion.div>
             </div>
@@ -112,7 +113,7 @@ const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicato
             )}
 
             {subtitle && (
-                <motion.div initial={{ opacity:0, y:40, rotateX: -30 }} animate={{ opacity:1, y:0, rotateX: 0 }} transition={{ duration:1.5, delay:0.8, ease:[0.16, 1, 0.3, 1] }}
+                <motion.div initial={{ opacity:0, y:40, rotateX: -30 }} animate={{ opacity:1, y:0, rotateX: 0 }} transition={{ duration: 1.5, delay:0.6, ease: [0.76, 0, 0.24, 1] }}
                     className="text-lg md:text-2xl lg:text-3xl text-gray-300/90 max-w-4xl mx-auto leading-relaxed font-light mt-10 tracking-[0.1em] drop-shadow-xl"
                 >{subtitle}</motion.div>
             )}
