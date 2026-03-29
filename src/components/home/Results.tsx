@@ -28,7 +28,7 @@ const MetricCard: React.FC<{ icon: React.ReactNode, value: number, suffix: strin
 };
 
 const Results: React.FC = () => (
-    <section className="py-24 relative grain-heavy brushed-metal-dark overflow-hidden">
+    <section className="py-24 relative overflow-hidden bg-transparent">
         {/* Subtle geometric wing background for Results section */}
         <svg className="absolute top-[20%] left-[-20%] w-[140%] h-[140%] z-0 pointer-events-none opacity-20" viewBox="0 0 1440 1000" fill="none" preserveAspectRatio="none">
             <path d="M-200,800 C400,600 800,900 1600,0 L1600,1000 L-200,1000 Z" fill="#102A43" />

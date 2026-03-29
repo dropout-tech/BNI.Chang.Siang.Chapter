@@ -58,7 +58,7 @@ const MemberWall: React.FC = () => {
     const row3 = validMembers.slice(chunkSize * 2);
 
     return (
-        <section className="min-h-screen flex flex-col justify-center py-16 relative overflow-hidden grain-heavy brushed-metal-dark">
+        <section className="min-h-screen flex flex-col justify-center py-16 relative overflow-hidden bg-transparent">
             <LuxuryBackground />
             
             {/* Elegant sweeping abstract geometric waves that evoke fluid, winged ascent */}

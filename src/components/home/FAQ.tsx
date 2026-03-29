@@ -50,7 +50,7 @@ const FAQ: React.FC = () => {
     };
 
     return (
-        <section className="min-h-screen flex flex-col justify-center py-20 relative overflow-hidden grain-heavy brushed-metal-dark" id="faq">
+        <section className="min-h-screen flex flex-col justify-center py-20 relative overflow-hidden bg-transparent" id="faq">
             <LuxuryBackground />
             <div className="container mx-auto px-4 z-10 relative">
                 <motion.div

@@ -91,6 +91,11 @@ function App() {
         <PageTracker />
         <ScrollToTop />
         <StarryBackground />
+        
+        {/* Global Performance Overlays (AAA Game Rendering Strategy) */}
+        <div className="brushed-metal-dark" />
+        <div className="grain-heavy" />
+        
         <CustomCursor />
         <div className="flex flex-col min-h-screen relative z-10">
           <Navbar />

@@ -1,7 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { assetUrl } from '../../lib/assets';
-
 const GlowingChevron: React.FC<{ direction: 'left' | 'right', className?: string }> = ({ direction, className = '' }) => (
     <svg 
         className={`w-6 h-6 md:w-12 md:h-12 drop-shadow-[0_0_15px_rgba(212,175,55,0.8)] ${direction === 'left' ? 'rotate-180' : ''} ${className}`} 
@@ -23,7 +21,7 @@ const GlowingChevron: React.FC<{ direction: 'left' | 'right', className?: string
 
 const HomeHero: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return (
-        <section className="relative w-full min-h-screen overflow-hidden flex items-center justify-center pt-24 bg-[#0A1220] brushed-metal-dark grain-heavy">
+        <section className="relative w-full min-h-screen overflow-hidden flex items-center justify-center pt-24 bg-transparent">
             {/* === Deep Background Layer: The Wing Cascades === */}
             <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
                 {/* Massive curved wing panels with deep drop shadows to simulate texture depth */}

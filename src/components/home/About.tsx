@@ -26,7 +26,7 @@ const AboutCard: React.FC<{ icon: React.ReactNode, title: string, children: Reac
 );
 
 const About: React.FC = () => (
-    <section className="min-h-screen flex flex-col justify-center py-24 relative overflow-hidden grain-heavy brushed-metal-dark" id="about">
+    <section className="min-h-screen flex flex-col justify-center py-24 relative overflow-hidden bg-transparent" id="about">
         <LuxuryBackground />
         
         <div className="container mx-auto px-4 relative z-10">

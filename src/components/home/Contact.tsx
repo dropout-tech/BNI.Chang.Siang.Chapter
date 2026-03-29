@@ -25,7 +25,7 @@ const Contact: React.FC = () => {
     });
 
     return (
-        <section className="min-h-screen flex flex-col justify-center relative py-24 md:py-32 overflow-hidden grain-heavy brushed-metal-dark" id="contact">
+        <section className="min-h-screen flex flex-col justify-center relative py-24 md:py-32 overflow-hidden bg-transparent" id="contact">
             <LuxuryBackground />
             
             {/* Background Elements */}

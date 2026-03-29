@@ -16,7 +16,6 @@ const PageHero: React.FC<PageHeroProps> = ({ title, showScrollIndicator = false 
     const opacityParallax = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
     // Mouse interactive parallax
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const smoothMouseX = useSpring(0, { stiffness: 50, damping: 20 });
     const smoothMouseY = useSpring(0, { stiffness: 50, damping: 20 });
 
@@ -25,7 +24,6 @@ const PageHero: React.FC<PageHeroProps> = ({ title, showScrollIndicator = false 
             const { innerWidth, innerHeight } = window;
             const x = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
             const y = (e.clientY / innerHeight - 0.5) * 2; // -1 to 1
-            setMousePosition({ x, y });
             smoothMouseX.set(x * 40); // Max 40px movement
             smoothMouseY.set(y * 40);
         };
@@ -34,7 +32,7 @@ const PageHero: React.FC<PageHeroProps> = ({ title, showScrollIndicator = false 
     }, [smoothMouseX, smoothMouseY]);
 
     return (
-        <section className="min-h-screen flex flex-col justify-center items-center text-center relative z-10 pt-20 overflow-hidden grain-heavy brushed-metal-dark group">
+        <section className="min-h-screen flex flex-col justify-center items-center text-center relative z-10 pt-20 overflow-hidden bg-transparent group">
             
             {/* Massive Background Typography interacting with mouse */}
             <motion.div 
@@ -119,7 +117,7 @@ const PageHero: React.FC<PageHeroProps> = ({ title, showScrollIndicator = false 
                             <defs>
                                 <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" />
                             </defs>
-                            <text fontSize="10" fontLength="100" fontWeight="bold" letterSpacing="2.5" fill="currentColor">
+                            <text fontSize="10" textLength="100" fontWeight="bold" letterSpacing="2.5" fill="currentColor">
                                 <textPath href="#circlePath" startOffset="0%">
                                     SCROLL TO EXPLORE  •  BNI PLATINUM CHAPTER  •  
                                 </textPath>
