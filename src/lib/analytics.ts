@@ -8,7 +8,7 @@ interface AnalyticsConfig {
 
 // Load config from environment variables
 const config: AnalyticsConfig = {
-    gaId: import.meta.env.VITE_GA_ID || 'G-NX3BWTYJQ0', // Fallback to provided ID
+    gaId: import.meta.env.VITE_GA_ID || '', // 長翔分會的 GA4 ID 待設定
 };
 
 declare global {
