@@ -65,7 +65,7 @@ const NotFound: React.FC = () => {
                         { val: '8', label: '產業類別' },
                         { val: '∞', label: '商機無限' }
                     ].map((stat, i) => (
-                        <motion.div key={i} whileHover={{ y: -5, scale: 1.05 }} className="card-glass gold-border rounded-2xl p-6 relative overflow-hidden group">
+                        <motion.div key={i} whileHover={{ y: -5, scale: 1.05 }} className="bg-white border border-gray-100 shadow-sm  rounded-2xl p-6 relative overflow-hidden group">
                             <div className="absolute inset-0 bg-[#D4AF37]/0 group-hover:bg-[#D4AF37]/10 transition-colors duration-500" />
                             <div className="text-3xl font-black text-[#D4AF37] mb-2 drop-shadow-md group-hover:scale-110 transition-transform">{stat.val}</div>
                             <div className="text-sm text-gray-300 tracking-wider font-medium">{stat.label}</div>
@@ -82,7 +82,7 @@ const NotFound: React.FC = () => {
                 >
                     <Link
                         to="/"
-                        className="group relative px-8 py-4 brushed-gold text-[#0A1628] font-bold rounded-full overflow-hidden transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:shadow-[0_0_40px_rgba(212,175,55,0.7)] hover:-translate-y-1 flex items-center gap-2"
+                        className="group relative px-8 py-4 brushed-gold text-[#0A1628] font-bold rounded-full overflow-hidden transition-all duration-300 shadow-[0_0_20px_rgba(207,32,48,0.4)] hover:shadow-[0_0_40px_rgba(212,175,55,0.7)] hover:-translate-y-1 flex items-center gap-2"
                     >
                         <Home size={22} className="opacity-90" />
                         <span className="text-lg tracking-widest">返回首頁</span>
@@ -91,7 +91,7 @@ const NotFound: React.FC = () => {
 
                     <Link
                         to="/members"
-                        className="px-8 py-4 card-glass gold-border gold-border-hover text-white font-bold rounded-full hover:text-[#D4AF37] transition-all duration-300 flex items-center gap-2 text-lg tracking-widest hover:-translate-y-1"
+                        className="px-8 py-4 bg-white border border-gray-100 shadow-sm   text-white font-bold rounded-full hover:text-[#D4AF37] transition-all duration-300 flex items-center gap-2 text-lg tracking-widest hover:-translate-y-1"
                     >
                         <Users size={22} />
                         <span>認識會員</span>

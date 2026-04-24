@@ -9,8 +9,8 @@ const StatCard: React.FC<{ value: number, label: React.ReactNode, subtext?: stri
     const { count, elementRef } = useCountUp(value, 2000);
 
     return (
-        <div ref={elementRef} className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center ${isLarge ? 'md:col-span-2 md:row-span-2 flex flex-col justify-center items-center bg-primary/10 border-primary/30 shadow-[0_0_30px_rgba(212,175,55,0.1)]' : 'hover:bg-white/10 transition-colors'}`}>
-            <div className={`font-bold text-white mb-2 font-mono ${isLarge ? 'text-6xl md:text-7xl text-primary' : 'text-4xl md:text-5xl'}`}>
+        <div ref={elementRef} className={`bg-gray-50 backdrop-blur-sm border border-gray-200 rounded-xl p-6 text-center ${isLarge ? 'md:col-span-2 md:row-span-2 flex flex-col justify-center items-center bg-red-50 border-[#CF2030]/30 shadow-[0_0_30px_rgba(207,32,48,0.1)]' : 'hover:bg-gray-100 transition-colors'}`}>
+            <div className={`font-bold text-white mb-2 font-mono ${isLarge ? 'text-6xl md:text-7xl text-[#CF2030]' : 'text-4xl md:text-5xl'}`}>
                 {value >= 10000 ? (count / 10000).toFixed(0) + '萬' : count.toLocaleString()}
                 <span className="text-2xl ml-1 align-top">+</span>
             </div>
@@ -50,7 +50,7 @@ const BNIPage: React.FC = () => {
             />
 
             {/* Data Notice */}
-            <div className="bg-primary/10 border-y border-primary/20 py-3 text-center text-sm text-primary font-mono tracking-wide">
+            <div className="bg-red-50 border-y border-[#CF2030]/20 py-3 text-center text-sm text-[#CF2030] font-mono tracking-wide">
                 <strong>資料截止日期：2025年10月25日</strong>
                 <span className="mx-2 opacity-50">|</span>
                 實際數據可能因時間推移而有所變化
@@ -60,7 +60,7 @@ const BNIPage: React.FC = () => {
             <section className="py-20 container mx-auto px-4">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">BNI 全球商會影響力數據</h2>
-                    <div className="w-16 h-1 bg-primary mx-auto rounded-full"></div>
+                    <div className="w-16 h-1 bg-[#CF2030] mx-auto rounded-full"></div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 pb-6 md:pb-0 px-4">
@@ -83,7 +83,7 @@ const BNIPage: React.FC = () => {
             </section>
 
             {/* Taiwan Stats */}
-            <section className="py-20 bg-white/5 relative border-y border-white/5">
+            <section className="py-20 bg-gray-50 relative border-y border-gray-100">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">台灣商會 BNI 卓越表現</h2>
@@ -91,28 +91,28 @@ const BNIPage: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 max-w-4xl mx-auto text-center">
-                        <div className="p-4 rounded-lg hover:bg-white/5 transition-colors">
-                            <div className="text-4xl md:text-5xl font-bold text-primary mb-2 font-mono">245</div>
+                        <div className="p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div className="text-4xl md:text-5xl font-bold text-[#CF2030] mb-2 font-mono">245</div>
                             <div className="text-gray-300 font-medium">分會</div>
                         </div>
-                        <div className="p-4 rounded-lg hover:bg-white/5 transition-colors">
-                            <div className="text-4xl md:text-5xl font-bold text-primary mb-2 font-mono">9,932</div>
+                        <div className="p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div className="text-4xl md:text-5xl font-bold text-[#CF2030] mb-2 font-mono">9,932</div>
                             <div className="text-gray-300 font-medium">會員</div>
                         </div>
-                        <div className="p-4 rounded-lg hover:bg-white/5 transition-colors">
-                            <div className="text-4xl md:text-5xl font-bold text-primary mb-2 font-mono">72萬+</div>
+                        <div className="p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div className="text-4xl md:text-5xl font-bold text-[#CF2030] mb-2 font-mono">72萬+</div>
                             <div className="text-gray-300 font-medium">引薦單數<br /><span className="text-xs text-gray-500 font-normal">(過去12個月)</span></div>
                         </div>
-                        <div className="p-4 rounded-lg hover:bg-white/5 transition-colors">
-                            <div className="text-4xl md:text-5xl font-bold text-primary mb-2 font-mono">253</div>
+                        <div className="p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div className="text-4xl md:text-5xl font-bold text-[#CF2030] mb-2 font-mono">253</div>
                             <div className="text-gray-300 font-medium">成交金額<br /><span className="text-xs text-gray-500 font-normal">(億新台幣)</span></div>
                         </div>
-                        <div className="p-4 rounded-lg hover:bg-white/5 transition-colors">
-                            <div className="text-4xl md:text-5xl font-bold text-primary mb-2 font-mono">73</div>
+                        <div className="p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div className="text-4xl md:text-5xl font-bold text-[#CF2030] mb-2 font-mono">73</div>
                             <div className="text-gray-300 font-medium">平均每位會員<br /><span className="text-xs text-gray-500 font-normal">每年引薦數</span></div>
                         </div>
-                        <div className="p-4 rounded-lg hover:bg-white/5 transition-colors">
-                            <div className="text-4xl md:text-5xl font-bold text-primary mb-2 font-mono">255</div>
+                        <div className="p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div className="text-4xl md:text-5xl font-bold text-[#CF2030] mb-2 font-mono">255</div>
                             <div className="text-gray-300 font-medium">平均每位會員<br /><span className="text-xs text-gray-500 font-normal">每年成交價值 (萬)</span></div>
                         </div>
                     </div>
@@ -124,7 +124,7 @@ const BNIPage: React.FC = () => {
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">BNI 商會七大核心價值</h2>
                     <p className="text-gray-400 max-w-2xl mx-auto">這些核心價值是 BNI 商會文化與成功的基石，也是台灣 BNI 所有分會共同遵循的行事準則</p>
-                    <div className="w-16 h-1 bg-primary mx-auto rounded-full mt-4"></div>
+                    <div className="w-16 h-1 bg-[#CF2030] mx-auto rounded-full mt-4"></div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                     {[
@@ -139,9 +139,9 @@ const BNIPage: React.FC = () => {
                         <div key={idx} className="h-full">
                             <motion.div
                                 whileHover={{ y: -5 }}
-                                className="bg-white/5 border border-white/10 p-6 rounded-xl hover:bg-white/10 transition-all hover:border-primary/50 group h-full"
+                                className="bg-gray-50 border border-gray-200 p-6 rounded-xl hover:bg-gray-100 transition-all hover:border-[#CF2030]/50 group h-full"
                             >
-                                <h3 className="text-xl font-bold text-primary mb-3 group-hover:text-white transition-colors">{item.title}</h3>
+                                <h3 className="text-xl font-bold text-[#CF2030] mb-3 group-hover:text-white transition-colors">{item.title}</h3>
                                 <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
                             </motion.div>
                         </div>
@@ -151,7 +151,7 @@ const BNIPage: React.FC = () => {
 
             {/* Meeting Agenda */}
             {/* Meeting Agenda */}
-            <section className="py-20 bg-white/5 border-y border-white/5">
+            <section className="py-20 bg-gray-50 border-y border-gray-100">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">標準會議流程</h2>
@@ -182,8 +182,8 @@ const BNIPage: React.FC = () => {
                             "19. 門票抽獎 (Door Prize)",
                             "20. 主席結語及會議正式結束"
                         ].map((step, idx) => (
-                            <div key={idx} className="flex items-center gap-4 p-4 border-b border-white/5 hover:bg-white/5 transition-colors rounded-lg group">
-                                <div className="w-2 h-2 rounded-full bg-primary shrink-0 group-hover:scale-150 transition-transform"></div>
+                            <div key={idx} className="flex items-center gap-4 p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors rounded-lg group">
+                                <div className="w-2 h-2 rounded-full bg-[#CF2030] shrink-0 group-hover:scale-150 transition-transform"></div>
                                 <span className="text-gray-300 font-mono text-base group-hover:text-white transition-colors">{step}</span>
                             </div>
                         ))}
@@ -193,7 +193,7 @@ const BNIPage: React.FC = () => {
 
             {/* Why Join */}
             <section className="py-20 container mx-auto px-4">
-                <div className="max-w-5xl mx-auto bg-gradient-to-br from-primary/10 to-bg-dark border border-primary/20 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
+                <div className="max-w-5xl mx-auto bg-gradient-to-br from-primary/10 to-bg-dark border border-[#CF2030]/20 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
                     <h2 className="text-3xl font-bold text-white mb-6 relative z-10">為什麼台灣企業主選擇加入 BNI 線上商會？</h2>
                     <p className="text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed relative z-10">
                         BNI 長翔名人堂白金分會提供正向、支持及結構化的線上商務環境，100% 支援線上與會，透過線上人脈引薦發展您在台灣的業務。
@@ -230,16 +230,16 @@ const BNIPage: React.FC = () => {
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-2xl font-bold text-white mb-8">探索更多 BNI 長翔名人堂白金分會台灣商會</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <Link to="/members" className="group bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 hover:border-primary/50 transition-all">
-                            <h3 className="text-lg font-bold text-primary mb-2 group-hover:text-white transition-colors">認識商會會員</h3>
+                        <Link to="/members" className="group bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-gray-100 hover:border-[#CF2030]/50 transition-all">
+                            <h3 className="text-lg font-bold text-[#CF2030] mb-2 group-hover:text-white transition-colors">認識商會會員</h3>
                             <p className="text-gray-400 text-sm">探索 BNI 長翔名人堂白金分會 60+ 個產業的優秀台灣企業家</p>
                         </Link>
-                        <Link to="/referrals" className="group bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 hover:border-primary/50 transition-all">
-                            <h3 className="text-lg font-bold text-primary mb-2 group-hover:text-white transition-colors">引薦成功案例</h3>
+                        <Link to="/referrals" className="group bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-gray-100 hover:border-[#CF2030]/50 transition-all">
+                            <h3 className="text-lg font-bold text-[#CF2030] mb-2 group-hover:text-white transition-colors">引薦成功案例</h3>
                             <p className="text-gray-400 text-sm">見證台灣商會如何透過商務引薦創造雙贏合作</p>
                         </Link>
-                        <Link to="/#contact" className="group bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 hover:border-primary/50 transition-all">
-                            <h3 className="text-lg font-bold text-primary mb-2 group-hover:text-white transition-colors">聯繫我們</h3>
+                        <Link to="/#contact" className="group bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-gray-100 hover:border-[#CF2030]/50 transition-all">
+                            <h3 className="text-lg font-bold text-[#CF2030] mb-2 group-hover:text-white transition-colors">聯繫我們</h3>
                             <p className="text-gray-400 text-sm">加入台灣頂尖商會，開始您的商務引薦之旅</p>
                         </Link>
                     </div>

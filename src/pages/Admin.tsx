@@ -260,17 +260,17 @@ const Admin: React.FC = () => {
             <SEO title="管理後台" noindex />
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
-                    <Activity className="text-primary" size={24} /> 管理後台
+                    <Activity className="text-[#CF2030]" size={24} /> 管理後台
                     <button
                         onClick={fetchDashboardData}
-                        className={`p-2 rounded-full hover:bg-white/10 transition-all ${loading ? 'animate-spin text-primary' : 'text-gray-400'}`}
+                        className={`p-2 rounded-full hover:bg-gray-100 transition-all ${loading ? 'animate-spin text-[#CF2030]' : 'text-gray-400'}`}
                         title="重新整理數據"
                     >
                         <RefreshCw size={18} />
                     </button>
                 </h1>
                 <div className="w-full md:w-auto overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
-                    <div className="flex bg-white/5 p-1 rounded-lg backdrop-blur-sm border border-white/10 min-w-max">
+                    <div className="flex bg-gray-50 p-1 rounded-lg backdrop-blur-sm border border-gray-200 min-w-max">
                         {[
                             { id: 'overview', label: '總覽' },
                             { id: 'members', label: '會員' },
@@ -281,7 +281,7 @@ const Admin: React.FC = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={`px-4 py-2 rounded-md text-sm font-bold transition-colors whitespace-nowrap ${activeTab === tab.id
-                                    ? 'bg-primary text-bg-dark'
+                                    ? 'bg-[#CF2030] text-white'
                                     : 'text-gray-400 hover:text-white'
                                     }`}
                             >
@@ -301,7 +301,7 @@ const Admin: React.FC = () => {
                         <StatsCard
                             title="總會員數"
                             value={stats.totalMembers}
-                            icon={<Users className="text-primary" />}
+                            icon={<Users className="text-[#CF2030]" />}
                             diff="活躍中"
                         />
                         <StatsCard
@@ -343,16 +343,16 @@ const Admin: React.FC = () => {
 
 
                         {/* Recent Activity Section */}
-                        <div className="col-span-2 lg:col-span-3 bg-bg-dark/50 border border-white/10 rounded-2xl p-4 md:p-6 min-h-[280px]">
+                        <div className="col-span-2 lg:col-span-3 bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6 min-h-[280px]">
                             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                <Activity size={20} className="text-primary" /> 最近更新紀錄
+                                <Activity size={20} className="text-[#CF2030]" /> 最近更新紀錄
                             </h3>
                             <div className="grid gap-4">
                                 {recentUpdates.length === 0 ? (
                                     <div className="text-gray-400 text-center py-8">尚無更新紀錄</div>
                                 ) : (
                                     recentUpdates.map((item) => (
-                                        <div key={item.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-primary/50 transition-colors">
+                                        <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#CF2030]/50 transition-colors">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-800">
                                                     <img src={item.photo || siteConfig.defaultPhoto} alt={item.name} className="w-full h-full object-cover" />
@@ -363,7 +363,7 @@ const Admin: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-primary font-mono text-sm">
+                                                <div className="text-[#CF2030] font-mono text-sm">
                                                     {new Date(item.updatedAt || item.updated_at || item.createdAt || item.created_at || Date.now()).toLocaleDateString()}
                                                 </div>
                                                 <div className="text-xs text-gray-500">
@@ -377,24 +377,24 @@ const Admin: React.FC = () => {
                         </div>
 
                         {/* System Support Team */}
-                        <div className="col-span-2 lg:col-span-1 bg-primary/5 border border-primary/20 rounded-2xl p-4 md:p-6 min-h-[280px] flex flex-col">
+                        <div className="col-span-2 lg:col-span-1 bg-[#CF2030]/5 border border-[#CF2030]/20 rounded-2xl p-4 md:p-6 min-h-[280px] flex flex-col">
                             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                                <Shield size={20} className="text-primary" /> 系統維運團隊
+                                <Shield size={20} className="text-[#CF2030]" /> 系統維運團隊
                             </h3>
                             <div className="space-y-4 flex-grow">
                                 {['呂學承', '彭顯智', '潘芷盈'].map(name => (
-                                    <div key={name} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 hover:border-primary/30 transition-colors">
-                                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold border border-primary/30">
+                                    <div key={name} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#CF2030]/30 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-[#CF2030]/20 flex items-center justify-center text-[#CF2030] text-sm font-bold border border-[#CF2030]/30">
                                             {name[0]}
                                         </div>
                                         <div>
                                             <div className="text-sm font-bold text-white">{name}</div>
-                                            <div className="text-[10px] text-primary/70 uppercase tracking-widest font-medium">系統管理員</div>
+                                            <div className="text-[10px] text-[#CF2030]/70 uppercase tracking-widest font-medium">系統管理員</div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-6 pt-6 border-t border-white/10">
+                            <div className="mt-6 pt-6 border-t border-gray-200">
                                 <div className="text-[10px] text-gray-500 text-center uppercase tracking-widest">
                                     ChangSiang Tech Support
                                 </div>
@@ -405,7 +405,7 @@ const Admin: React.FC = () => {
 
                 {/* MEMBERS TAB */}
                 {activeTab === 'members' && (
-                    <div className="bg-bg-dark/50 border border-white/10 rounded-2xl p-4 md:p-6 overflow-hidden">
+                    <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6 overflow-hidden">
                         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mb-6">
                             <div className="relative flex-1 sm:max-w-xs">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
@@ -414,12 +414,12 @@ const Admin: React.FC = () => {
                                     placeholder="搜尋會員..."
                                     value={memberSearch}
                                     onChange={e => setMemberSearch(e.target.value)}
-                                    className="w-full bg-black/20 border border-white/10 rounded-full py-2.5 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-primary"
+                                    className="w-full bg-black/20 border border-gray-200 rounded-full py-2.5 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-[#CF2030]"
                                 />
                             </div>
                             <button
                                 onClick={handleAddMember}
-                                className="flex items-center justify-center gap-2 bg-primary text-bg-dark px-4 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-colors shrink-0"
+                                className="flex items-center justify-center gap-2 bg-[#CF2030] text-white px-4 py-2.5 rounded-lg font-bold hover:bg-[#CF2030]/90 transition-colors shrink-0"
                             >
                                 <Plus size={18} /> 新增會員
                             </button>
@@ -437,9 +437,9 @@ const Admin: React.FC = () => {
                 {activeTab === 'referrals' && (
                     <div className="space-y-6">
                         {/* Add New Case Form */}
-                        <div className="bg-bg-dark/50 border border-white/10 rounded-2xl p-4 md:p-6">
+                        <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6">
                             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                                <Plus size={20} className="text-primary" /> 新增引薦案例
+                                <Plus size={20} className="text-[#CF2030]" /> 新增引薦案例
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
@@ -448,7 +448,7 @@ const Admin: React.FC = () => {
                                         type="text"
                                         id="ref_title"
                                         placeholder="例如：【💼 合作共創新價值】"
-                                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                     />
                                 </div>
                                 <div>
@@ -457,7 +457,7 @@ const Admin: React.FC = () => {
                                         type="text"
                                         id="ref_desc"
                                         placeholder="例如：生醫公司新產品線包裝設計引薦"
-                                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                     />
                                 </div>
                                 <div>
@@ -465,7 +465,7 @@ const Admin: React.FC = () => {
                                     <input
                                         type="text"
                                         id="ref_referrer"
-                                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                     />
                                 </div>
                                 <div>
@@ -473,7 +473,7 @@ const Admin: React.FC = () => {
                                     <input
                                         type="text"
                                         id="ref_referee"
-                                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                     />
                                 </div>
                                 <div className="md:col-span-2">
@@ -481,7 +481,7 @@ const Admin: React.FC = () => {
                                     <textarea
                                         id="ref_referrer_story"
                                         rows={3}
-                                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                     ></textarea>
                                 </div>
                                 <div className="md:col-span-2">
@@ -489,7 +489,7 @@ const Admin: React.FC = () => {
                                     <textarea
                                         id="ref_referee_story"
                                         rows={3}
-                                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                     ></textarea>
                                 </div>
                             </div>
@@ -532,7 +532,7 @@ const Admin: React.FC = () => {
                                             (document.getElementById('ref_referee_story') as HTMLTextAreaElement).value = '';
                                         }
                                     }}
-                                    className="px-6 py-3 bg-primary text-bg-dark font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
+                                    className="px-6 py-3 bg-[#CF2030] text-white font-bold rounded-lg hover:bg-[#CF2030]/90 transition-colors flex items-center gap-2"
                                 >
                                     <Plus size={18} /> 提交引薦案例
                                 </button>
@@ -540,7 +540,7 @@ const Admin: React.FC = () => {
                         </div>
 
                         {/* Existing Referrals List */}
-                        <div className="bg-bg-dark/50 border border-white/10 rounded-2xl p-4 md:p-6 overflow-hidden">
+                        <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6 overflow-hidden">
                             <h3 className="text-lg md:text-xl font-bold text-white mb-4 md:mb-6">引薦案例列表</h3>
 
                             {/* Mobile: Card Layout */}
@@ -548,7 +548,7 @@ const Admin: React.FC = () => {
                                 {referrals.length === 0 ? (
                                     <div className="text-center text-gray-400 py-8">尚無引薦單資料</div>
                                 ) : referrals.map(ref => (
-                                    <div key={ref.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                    <div key={ref.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4">
                                         <div className="flex justify-between items-start mb-2">
                                             <div className="text-sm font-bold text-white line-clamp-1 flex-1 mr-2">{ref.title}</div>
                                             <button
@@ -560,7 +560,7 @@ const Admin: React.FC = () => {
                                         </div>
                                         <div className="text-xs text-gray-400 mb-2 line-clamp-1">{ref.description}</div>
                                         <div className="flex items-center justify-between text-xs">
-                                            <span className="text-primary">{ref.referrer_name} → {ref.referee_name}</span>
+                                            <span className="text-[#CF2030]">{ref.referrer_name} → {ref.referee_name}</span>
                                             <span className="text-gray-500">{new Date(ref.createdAt || ref.created_at).toLocaleDateString()}</span>
                                         </div>
                                     </div>
@@ -571,7 +571,7 @@ const Admin: React.FC = () => {
                             <div className="hidden md:block overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="text-gray-400 text-sm border-b border-white/10">
+                                        <tr className="text-gray-400 text-sm border-b border-gray-200">
                                             <th className="p-4">日期</th>
                                             <th className="p-4">引薦人</th>
                                             <th className="p-4">被引薦人</th>
@@ -583,7 +583,7 @@ const Admin: React.FC = () => {
                                         {referrals.length === 0 ? (
                                             <tr><td colSpan={5} className="p-8 text-center text-gray-400">尚無引薦單資料</td></tr>
                                         ) : referrals.map(ref => (
-                                            <tr key={ref.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                            <tr key={ref.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                                                 <td className="p-4 text-gray-300 text-sm">
                                                     {new Date(ref.createdAt || ref.created_at).toLocaleDateString()}
                                                 </td>
@@ -615,9 +615,9 @@ const Admin: React.FC = () => {
                     activeTab === 'settings' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {/* Homepage Stats Editor */}
-                            <div className="bg-bg-dark/50 border border-white/10 rounded-2xl p-6">
+                            <div className="bg-gray-500 border border-gray-200 rounded-2xl p-6">
                                 <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                                    <Activity size={20} className="text-primary" /> 首頁數據更新
+                                    <Activity size={20} className="text-[#CF2030]" /> 首頁數據更新
                                 </h3>
                                 <div className="space-y-4">
                                     <div>
@@ -626,7 +626,7 @@ const Admin: React.FC = () => {
                                             type="month"
                                             value={homeStats.month}
                                             onChange={e => setHomeStats({ ...homeStats, month: e.target.value })}
-                                            className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                            className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                         />
                                     </div>
                                     <div>
@@ -635,7 +635,7 @@ const Admin: React.FC = () => {
                                             type="number"
                                             value={homeStats.referral_count}
                                             onChange={e => setHomeStats({ ...homeStats, referral_count: Number(e.target.value) })}
-                                            className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                            className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                         />
                                     </div>
                                     <div>
@@ -644,7 +644,7 @@ const Admin: React.FC = () => {
                                             type="number"
                                             value={homeStats.referral_value}
                                             onChange={e => setHomeStats({ ...homeStats, referral_value: Number(e.target.value) })}
-                                            className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                            className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                         />
                                         <div className="text-right text-xs text-gray-500 mt-1">
                                             預覽: ${(homeStats.referral_value / 100000000).toFixed(2)} 億
@@ -652,14 +652,14 @@ const Admin: React.FC = () => {
                                     </div>
                                     <button
                                         onClick={updateHomeStats}
-                                        className="w-full py-3 bg-primary text-bg-dark font-bold rounded-lg hover:bg-primary/90 transition-colors flex justify-center items-center gap-2"
+                                        className="w-full py-3 bg-[#CF2030] text-white font-bold rounded-lg hover:bg-[#CF2030]/90 transition-colors flex justify-center items-center gap-2"
                                     >
                                         <Save size={18} /> 儲存數據
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="bg-bg-dark/50 border border-white/10 rounded-2xl p-6">
+                            <div className="bg-gray-500 border border-gray-200 rounded-2xl p-6">
                                 <h3 className="text-xl font-bold text-white mb-6">系統公告</h3>
                                 <p className="text-gray-400 text-sm mb-4">
                                     若需發布系統公告或暫停網站服務，請在此設定。目前功能開發中。

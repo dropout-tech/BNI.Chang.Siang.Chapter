@@ -91,7 +91,7 @@ const Members: React.FC = () => {
 
     if (loading) return (
         <div className="flex justify-center items-center min-h-[60vh]">
-            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-[#CF2030] border-t-transparent rounded-full animate-spin"></div>
         </div>
     );
 
@@ -122,21 +122,21 @@ const Members: React.FC = () => {
                 <div className="text-center mb-8 relative z-10">
 
                     {/* Search Bar - Sticky on Mobile */}
-                    <div className="sticky top-[60px] md:top-[80px] z-30 bg-bg-primary/95 backdrop-blur-xl py-4 -mx-4 px-4 mb-2 transition-all shadow-sm md:shadow-none md:static md:bg-transparent md:p-0">
+                    <div className="sticky top-[60px] md:top-[80px] z-30 bg-bg-[#CF2030]/95 backdrop-blur-xl py-4 -mx-4 px-4 mb-2 transition-all shadow-sm md:shadow-none md:static md:bg-transparent md:p-0">
                         <motion.div
                             initial={{ opacity: 0, width: "80%" }}
                             animate={{ opacity: 1, width: "100%" }}
                             className="relative max-w-lg mx-auto group"
                         >
                             <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                <Search className="text-gray-400 group-focus-within:text-primary transition-colors" size={20} />
+                                <Search className="text-gray-400 group-focus-within:text-[#CF2030] transition-colors" size={20} />
                             </div>
                             <input
                                 type="text"
                                 placeholder="搜尋會員名字、行業、公司..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-bg-dark/80 backdrop-blur-sm border border-gray-600 rounded-full py-3.5 pl-12 pr-6 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-lg"
+                                className="w-full bg-white/80 backdrop-blur-sm border border-gray-600 rounded-full py-3.5 pl-12 pr-6 text-white placeholder-gray-500 focus:outline-none focus:border-[#CF2030] focus:ring-1 focus:ring-primary transition-all shadow-lg"
                             />
                         </motion.div>
                     </div>
@@ -170,7 +170,7 @@ const Members: React.FC = () => {
                                             e.stopPropagation();
                                             navigate(`/member-edit?id=${member.id}`);
                                         }}
-                                        className="absolute top-2 right-2 z-20 p-2 bg-black/60 hover:bg-primary text-white hover:text-bg-dark rounded-full backdrop-blur-sm transition-all shadow-lg opacity-0 group-hover:opacity-100 placeholder-admin-edit"
+                                        className="absolute top-2 right-2 z-20 p-2 bg-black/60 hover:bg-[#CF2030] text-white hover:text-white rounded-full backdrop-blur-sm transition-all shadow-lg opacity-0 group-hover:opacity-100 placeholder-admin-edit"
                                         title="管理員編輯"
                                     >
                                         <Edit size={16} />
@@ -187,11 +187,11 @@ const Members: React.FC = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.3, duration: 0.6 }}
-                    className="bg-white/5 backdrop-blur-md rounded-2xl p-6 md:p-8 max-w-3xl mx-auto mb-20 border border-white/10 text-left"
+                    className="bg-gray-50 backdrop-blur-md rounded-2xl p-6 md:p-8 max-w-3xl mx-auto mb-20 border border-gray-200 text-left"
                 >
                     <div className="text-center mb-6">
-                        <h3 className="text-xl md:text-2xl font-bold text-primary mb-2">BNI 會員宣示</h3>
-                        <div className="w-12 h-1 bg-primary/50 mx-auto rounded-full"></div>
+                        <h3 className="text-xl md:text-2xl font-bold text-[#CF2030] mb-2">BNI 會員宣示</h3>
+                        <div className="w-12 h-1 bg-[#CF2030]/50 mx-auto rounded-full"></div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-x-8 gap-y-4 text-gray-300 text-sm md:text-base">
                         {[
@@ -203,7 +203,7 @@ const Members: React.FC = () => {
                             "我願意遵守我行業的道德標準"
                         ].map((text, idx) => (
                             <div key={idx} className="flex items-start gap-3">
-                                <span className="text-primary font-bold font-mono text-lg">{idx + 1}.</span>
+                                <span className="text-[#CF2030] font-bold font-mono text-lg">{idx + 1}.</span>
                                 <p>{text}</p>
                             </div>
                         ))}
@@ -214,12 +214,12 @@ const Members: React.FC = () => {
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="col-span-full text-center text-gray-400 py-16 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm"
+                        className="col-span-full text-center text-gray-400 py-16 bg-gray-50 rounded-2xl border border-gray-100 backdrop-blur-sm"
                     >
                         <p className="text-xl">沒有找到符合條件的會員</p>
                         <button
                             onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}
-                            className="mt-4 px-6 py-2 bg-primary text-bg-dark rounded-full hover:bg-[#B8960C] transition-colors font-bold"
+                            className="mt-4 px-6 py-2 bg-[#CF2030] text-white rounded-full hover:bg-[#B8960C] transition-colors font-bold"
                         >
                             清除搜尋條件
                         </button>

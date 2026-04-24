@@ -4,11 +4,11 @@ import { Wrench } from 'lucide-react';
 
 const EditPage: React.FC = () => {
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center text-center px-4 pt-20 bg-[#0A1628]">
+        <div className="min-h-screen flex flex-col justify-center items-center text-center px-4 pt-20 bg-white">
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-12 max-w-md w-full shadow-2xl relative overflow-hidden"
+                className="bg-gray-50 backdrop-blur-md border border-gray-200 rounded-2xl p-12 max-w-md w-full shadow-2xl relative overflow-hidden"
             >
                 <div className="absolute top-0 right-0 w-24 h-24 bg-[#D4AF37]/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#D4AF37]/10 rounded-full blur-2xl -ml-10 -mb-10"></div>
@@ -24,7 +24,7 @@ const EditPage: React.FC = () => {
                 </p>
                 <a
                     href="/"
-                    className="inline-block w-full px-8 py-3 bg-gradient-to-r from-[#D4AF37] to-[#B8960C] text-[#0A1628] font-bold rounded-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all transform hover:-translate-y-1"
+                    className="inline-block w-full px-8 py-3 bg-gradient-to-r from-[#D4AF37] to-[#B8960C] text-[#0A1628] font-bold rounded-lg hover:shadow-[0_0_20px_rgba(207,32,48,0.3)] transition-all transform hover:-translate-y-1"
                 >
                     返回首頁
                 </a>

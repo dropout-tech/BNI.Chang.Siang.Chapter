@@ -293,7 +293,7 @@ const MemberEdit: React.FC = () => {
                 className="space-y-6"
             >
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 sticky top-20 z-[40] bg-bg-dark/80 backdrop-blur-lg p-4 -mx-4 rounded-b-2xl border-b border-white/5 md:bg-transparent md:backdrop-blur-none md:border-none md:static md:p-0 md:mx-0">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 sticky top-20 z-[40] bg-white/80 backdrop-blur-lg p-4 -mx-4 rounded-b-2xl border-b border-gray-100 md:bg-transparent md:backdrop-blur-none md:border-none md:static md:p-0 md:mx-0">
                     <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                         <button onClick={() => navigate('/members')} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0">
                             <ArrowLeft size={20} /> <span className="hidden sm:inline">返回列表</span><span className="sm:hidden text-sm">返回</span>
@@ -306,8 +306,8 @@ const MemberEdit: React.FC = () => {
                             onClick={handleSubmit}
                             disabled={loading}
                             className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold transition-all duration-300 ${hasChanges
-                                ? 'bg-primary text-bg-dark shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:scale-105 active:scale-95'
-                                : 'bg-white/10 text-gray-400 border border-white/10'
+                                ? 'bg-[#CF2030] text-white shadow-[0_0_20px_rgba(207,32,48,0.3)] hover:scale-105 active:scale-95'
+                                : 'bg-gray-100 text-gray-400 border border-gray-200'
                                 } disabled:opacity-50`}
                         >
                             {loading ? (
@@ -353,10 +353,10 @@ const MemberEdit: React.FC = () => {
 
                     {/* Left Column: Photo & Basic Info */}
                     <div className="space-y-6 md:col-span-1">
-                        <div className="bg-bg-dark/80 backdrop-blur border border-white/10 rounded-2xl p-6">
-                            <h3 className="text-lg font-bold text-primary mb-4">大頭貼</h3>
+                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6">
+                            <h3 className="text-lg font-bold text-[#CF2030] mb-4">大頭貼</h3>
 
-                            <div className="aspect-square rounded-full border-4 border-primary/30 overflow-hidden relative group mb-4 bg-black">
+                            <div className="aspect-square rounded-full border-4 border-[#CF2030]/30 overflow-hidden relative group mb-4 bg-black">
                                 <img
                                     src={previewUrl || (photo ? photo.trim() : '') || `${import.meta.env.BASE_URL}images/assets/logo/白色正方形logo.png`}
                                     alt="Profile"
@@ -371,7 +371,7 @@ const MemberEdit: React.FC = () => {
                                     </div>
                                 </label>
                             </div>
-                            <label className="md:hidden flex items-center justify-center gap-2 w-full py-2.5 bg-white/10 border border-white/20 rounded-lg text-sm text-gray-300 active:bg-primary/20 active:text-primary transition-colors cursor-pointer mb-4">
+                            <label className="md:hidden flex items-center justify-center gap-2 w-full py-2.5 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-300 active:bg-[#CF2030]/20 active:text-[#CF2030] transition-colors cursor-pointer mb-4">
                                 <input type="file" onChange={handleFileUpload} accept="image/*" className="hidden" />
                                 <Camera size={16} />
                                 <span>更換大頭貼</span>
@@ -382,7 +382,7 @@ const MemberEdit: React.FC = () => {
                                 <select
                                     value={photoPosition}
                                     onChange={(e) => updateField(setPhotoPosition, e.target.value)}
-                                    className="w-full bg-black/30 border border-white/20 rounded-lg p-2 text-sm text-white focus:border-primary focus:outline-none"
+                                    className="w-full bg-black/30 border border-gray-200 rounded-lg p-2 text-sm text-white focus:border-[#CF2030] focus:outline-none"
                                 >
                                     <option value="top">上方 (Top)</option>
                                     <option value="center">居中 (Center)</option>
@@ -392,8 +392,8 @@ const MemberEdit: React.FC = () => {
 
                             <div className="text-center">
                                 <p className="text-xl font-bold text-white mb-1">{name || '您的名字'}</p>
-                                <p className="text-sm text-primary">{industry || '行業別'}</p>
-                                <div className="mt-2 inline-block px-3 py-1 bg-white/10 rounded-full text-xs text-gray-400">
+                                <p className="text-sm text-[#CF2030]">{industry || '行業別'}</p>
+                                <div className="mt-2 inline-block px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-400">
                                     會員編號: {memberId || '-'}
                                 </div>
                             </div>
@@ -404,8 +404,8 @@ const MemberEdit: React.FC = () => {
                     <div className="space-y-6 md:col-span-2">
 
                         {/* Basic Info Section */}
-                        <div className="bg-bg-dark/80 backdrop-blur border border-white/10 rounded-2xl p-6 md:p-8">
-                            <h2 className="text-xl font-bold text-primary mb-6 border-b border-white/10 pb-4">📝 基本資料</h2>
+                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8">
+                            <h2 className="text-xl font-bold text-[#CF2030] mb-6 border-b border-gray-200 pb-4">📝 基本資料</h2>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-gray-300 mb-2 font-medium">真實姓名</label>
@@ -413,7 +413,7 @@ const MemberEdit: React.FC = () => {
                                         type="text"
                                         value={name}
                                         onChange={(e) => updateField(setName, e.target.value)}
-                                        className="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-base text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                        className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
                                     />
                                 </div>
 
@@ -424,7 +424,7 @@ const MemberEdit: React.FC = () => {
                                             type="text"
                                             value={company}
                                             onChange={(e) => updateField(setCompany, e.target.value)}
-                                            className="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-base text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
                                         />
                                     </div>
                                     <div>
@@ -433,7 +433,7 @@ const MemberEdit: React.FC = () => {
                                             type="text"
                                             value={position}
                                             onChange={(e) => updateField(setPosition, e.target.value)}
-                                            className="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-base text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
                                         />
                                     </div>
                                 </div>
@@ -446,7 +446,7 @@ const MemberEdit: React.FC = () => {
                                             value={phone}
                                             onChange={(e) => updateField(setPhone, e.target.value)}
                                             placeholder="例：0912-345-678"
-                                            className="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-base text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
                                         />
                                     </div>
                                     <div>
@@ -456,7 +456,7 @@ const MemberEdit: React.FC = () => {
                                             value={email}
                                             onChange={(e) => updateField(setEmail, e.target.value)}
                                             placeholder="例：name@example.com"
-                                            className="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-base text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
                                         />
                                     </div>
                                 </div>
@@ -469,7 +469,7 @@ const MemberEdit: React.FC = () => {
                                     {/* Selected Tags Display */}
                                     <div className="flex flex-wrap gap-2 mb-3">
                                         {selectedCategories.map(cat => (
-                                            <span key={cat} className="px-3 py-1 bg-primary text-bg-dark font-bold rounded-full text-sm flex items-center gap-2">
+                                            <span key={cat} className="px-3 py-1 bg-[#CF2030] text-white font-bold rounded-full text-sm flex items-center gap-2">
                                                 {cat}
                                                 <button
                                                     type="button"
@@ -488,8 +488,8 @@ const MemberEdit: React.FC = () => {
                                                 type="button"
                                                 onClick={() => toggleCategory(cat)}
                                                 className={`px-3 py-1.5 rounded-full text-sm border transition-all cursor-pointer ${selectedCategories.includes(cat)
-                                                    ? 'bg-primary text-bg-dark border-primary font-bold shadow-[0_0_15px_rgba(212,175,55,0.3)]'
-                                                    : 'bg-transparent text-gray-400 border-white/20 hover:border-white/50 hover:text-white'
+                                                    ? 'bg-[#CF2030] text-white border-[#CF2030] font-bold shadow-[0_0_15px_rgba(212,175,55,0.3)]'
+                                                    : 'bg-transparent text-gray-400 border-gray-200 hover:border-gray-1000 hover:text-white'
                                                     }`}
                                             >
                                                 {cat}
@@ -501,8 +501,8 @@ const MemberEdit: React.FC = () => {
                         </div>
 
                         {/* Intro Section */}
-                        <div className="bg-bg-dark/80 backdrop-blur border border-white/10 rounded-2xl p-6 md:p-8">
-                            <h2 className="text-xl font-bold text-primary mb-6 border-b border-white/10 pb-4">📣 自我介紹</h2>
+                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8">
+                            <h2 className="text-xl font-bold text-[#CF2030] mb-6 border-b border-gray-200 pb-4">📣 自我介紹</h2>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-gray-300 mb-2 font-medium">簡短介紹 (列表頁顯示)</label>
@@ -510,7 +510,7 @@ const MemberEdit: React.FC = () => {
                                         value={shortIntro}
                                         onChange={(e) => updateField(setShortIntro, e.target.value)}
                                         maxLength={100}
-                                        className="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-base text-white focus:border-primary focus:outline-none h-24 resize-none"
+                                        className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none h-24 resize-none"
                                         placeholder="一句話介紹您的專業..."
                                     />
                                     <div className="text-right text-xs text-gray-500">{shortIntro.length}/100</div>
@@ -520,10 +520,10 @@ const MemberEdit: React.FC = () => {
                                     <textarea
                                         value={fullIntro}
                                         onChange={(e) => updateField(setFullIntro, e.target.value)}
-                                        className="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-base text-white focus:border-primary focus:outline-none h-48"
+                                        className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none h-48"
                                         placeholder="詳細說明您的服務內容、經歷與優勢..."
                                     />
-                                    <p className="mt-2 text-xs text-primary/70 leading-relaxed italic">
+                                    <p className="mt-2 text-xs text-[#CF2030]/70 leading-relaxed italic">
                                         💡 <strong>AI 搜尋優化小提醒：</strong>建議使用自然語言描述。例如：「我是一位專門協助電商企業處理節稅問題的專業會計師...」這能幫助 AI 搜尋引擎 (如 ChatGPT/Perplexity) 更精準地將您推薦給目標客戶。
                                     </p>
                                 </div>
@@ -531,8 +531,8 @@ const MemberEdit: React.FC = () => {
                         </div>
 
                         {/* Services & Hashtags */}
-                        <div className="bg-bg-dark/80 backdrop-blur border border-white/10 rounded-2xl p-6 md:p-8">
-                            <h2 className="text-xl font-bold text-primary mb-6 border-b border-white/10 pb-4">✨ 服務與標籤</h2>
+                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8">
+                            <h2 className="text-xl font-bold text-[#CF2030] mb-6 border-b border-gray-200 pb-4">✨ 服務與標籤</h2>
 
                             <div className="mb-6">
                                 <label className="block text-gray-300 mb-2 font-medium">主要服務 (最多3項)</label>
@@ -547,7 +547,7 @@ const MemberEdit: React.FC = () => {
                                                 newServices[idx] = e.target.value;
                                                 updateField(setServices, newServices);
                                             }}
-                                            className="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-base text-white focus:border-primary focus:outline-none"
+                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none"
                                             placeholder={`服務項目 ${idx + 1}`}
                                         />
                                     ))}
@@ -568,7 +568,7 @@ const MemberEdit: React.FC = () => {
                                                     newTags[idx] = e.target.value;
                                                     updateField(setHashtags, newTags);
                                                 }}
-                                                className="w-full bg-black/30 border border-white/20 rounded-lg p-3 pl-7 text-base text-white focus:border-primary focus:outline-none"
+                                                className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 pl-7 text-base text-white focus:border-[#CF2030] focus:outline-none"
                                             />
                                         </div>
                                     ))}
@@ -577,8 +577,8 @@ const MemberEdit: React.FC = () => {
                         </div>
 
                         {/* Social Links */}
-                        <div className="bg-bg-dark/80 backdrop-blur border border-white/10 rounded-2xl p-6 md:p-8">
-                            <h2 className="text-xl font-bold text-primary mb-6 border-b border-white/10 pb-4">🔗 社群連結</h2>
+                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8">
+                            <h2 className="text-xl font-bold text-[#CF2030] mb-6 border-b border-gray-200 pb-4">🔗 社群連結</h2>
                             <div className="space-y-3">
                                 {links.map((link, idx) => (
                                     <div key={link.type} className="flex gap-2 items-center">
@@ -591,7 +591,7 @@ const MemberEdit: React.FC = () => {
                                                 newLinks[idx].url = e.target.value;
                                                 updateField(setLinks, newLinks);
                                             }}
-                                            className="flex-1 bg-black/30 border border-white/20 rounded-lg p-3 text-base text-white focus:border-primary focus:outline-none"
+                                            className="flex-1 bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none"
                                             placeholder="https://..."
                                         />
                                     </div>
@@ -605,8 +605,8 @@ const MemberEdit: React.FC = () => {
                                 onClick={handleSubmit}
                                 disabled={loading}
                                 className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 shadow-xl transition-all duration-300 ${hasChanges
-                                    ? 'bg-primary text-bg-dark shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]'
-                                    : 'bg-white/10 text-gray-400'
+                                    ? 'bg-[#CF2030] text-white shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]'
+                                    : 'bg-gray-100 text-gray-400'
                                     }`}
                             >
                                 {loading ? (

@@ -50,21 +50,21 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh }) => {
             {/* Mobile: Card Layout */}
             <div className="md:hidden space-y-3">
                 {displayed.map(member => (
-                    <div key={member.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div key={member.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 shrink-0">
                                 {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
                             </div>
                             <div className="min-w-0 flex-1">
                                 <div className="font-bold text-white truncate">{member.name}</div>
-                                <div className="text-sm text-primary truncate">{member.industry}</div>
+                                <div className="text-sm text-[#CF2030] truncate">{member.industry}</div>
                                 <div className="text-xs text-gray-400 truncate">{member.company} {member.position || member.title ? `· ${member.position || member.title}` : ''}</div>
                             </div>
                         </div>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => navigate(`/member-edit?id=${member.id}`)}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors text-sm font-medium"
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-50 hover:bg-[#CF2030]/20 text-[#CF2030] rounded-lg transition-colors text-sm font-medium"
                             >
                                 <Edit size={14} /> 編輯
                             </button>
@@ -83,7 +83,7 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh }) => {
             <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="text-gray-400 text-sm border-b border-white/10">
+                        <tr className="text-gray-400 text-sm border-b border-gray-200">
                             <th className="p-4">會員</th>
                             <th className="p-4">產業/公司</th>
                             <th className="p-4">職稱</th>
@@ -92,7 +92,7 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh }) => {
                     </thead>
                     <tbody>
                         {displayed.map(member => (
-                            <tr key={member.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                                 <td className="p-4 flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-700 shrink-0">
                                         {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
@@ -110,7 +110,7 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh }) => {
                                     <div className="flex gap-2 justify-end">
                                         <button
                                             onClick={() => navigate(`/member-edit?id=${member.id}`)}
-                                            className="px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary rounded-full transition-colors text-sm flex items-center gap-1"
+                                            className="px-3 py-1 bg-red-50 hover:bg-[#CF2030]/20 text-[#CF2030] rounded-full transition-colors text-sm flex items-center gap-1"
                                         >
                                             <Edit size={14} /> 編輯
                                         </button>
@@ -129,20 +129,20 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh }) => {
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-white/5 text-sm text-gray-400">
+            <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-100 text-sm text-gray-400">
                 <span>第 {page} / {totalPages} 頁 · 共 {members.length} 筆</span>
                 <div className="flex gap-2">
                     <button
                         onClick={() => setPage(p => Math.max(p - 1, 1))}
                         disabled={page === 1}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-black/30 rounded-lg disabled:opacity-30 hover:bg-white/10 transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-black/30 rounded-lg disabled:opacity-30 hover:bg-gray-100 transition-colors"
                     >
                         <ChevronLeft size={14} /> 上一頁
                     </button>
                     <button
                         onClick={() => setPage(p => Math.min(p + 1, totalPages))}
                         disabled={page === totalPages}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-black/30 rounded-lg disabled:opacity-30 hover:bg-white/10 transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-black/30 rounded-lg disabled:opacity-30 hover:bg-gray-100 transition-colors"
                     >
                         下一頁 <ChevronRight size={14} />
                     </button>

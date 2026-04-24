@@ -12,7 +12,7 @@ const PersonAvatar: React.FC<{ name: string, photo: string, industry: string, is
                 <img
                     src={imgSrc}
                     alt={name}
-                    className="w-full h-full rounded-full object-cover bg-[#0A1628]"
+                    className="w-full h-full rounded-full object-cover bg-white"
                     onError={() => setImgSrc(assetUrl('/images/assets/logo/白色正方形logo.png'))}
                 />
             </div>
@@ -24,7 +24,7 @@ const PersonAvatar: React.FC<{ name: string, photo: string, industry: string, is
 
 const ReferralCard: React.FC<{ referral: Referral }> = ({ referral }) => {
     return (
-        <div className="bg-[rgba(16,42,67,0.6)] backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-[#D4AF37]/50 transition-all duration-300 group h-full flex flex-col">
+        <div className="bg-[rgba(16,42,67,0.6)] backdrop-blur-md border border-gray-200 rounded-2xl p-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-[#D4AF37]/50 transition-all duration-300 group h-full flex flex-col">
             <div className="flex flex-col md:flex-row gap-6 flex-1">
                 {/* Left: Content */}
                 <div className="flex-1 flex flex-col">
@@ -43,7 +43,7 @@ const ReferralCard: React.FC<{ referral: Referral }> = ({ referral }) => {
                         </p>
                     </div>
 
-                    <div className="flex items-baseline gap-2 mt-auto pt-4 border-t border-white/5">
+                    <div className="flex items-baseline gap-2 mt-auto pt-4 border-t border-gray-100">
                         <span className="text-gray-400 text-sm">成交金額</span>
                         <span className="text-xl font-bold text-[#D4AF37] font-mono">
                             {referral.metrics.amount}
@@ -52,7 +52,7 @@ const ReferralCard: React.FC<{ referral: Referral }> = ({ referral }) => {
                 </div>
 
                 {/* Right: People */}
-                <div className="flex items-center justify-between md:justify-center md:gap-4 md:w-auto border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6 bg-white/5 md:bg-transparent rounded-xl md:rounded-none p-4 md:p-0">
+                <div className="flex items-center justify-between md:justify-center md:gap-4 md:w-auto border-t md:border-t-0 md:border-l border-gray-200 pt-4 md:pt-0 md:pl-6 bg-gray-50 md:bg-transparent rounded-xl md:rounded-none p-4 md:p-0">
                     <PersonAvatar
                         name={referral.referrer.name}
                         photo={referral.referrer.photo}

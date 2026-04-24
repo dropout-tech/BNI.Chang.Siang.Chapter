@@ -271,7 +271,7 @@ const Login: React.FC = () => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-md bg-bg-dark/80 backdrop-blur border border-white/10 rounded-2xl p-6 md:p-8 shadow-xl"
+                className="w-full max-w-md bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8 shadow-xl"
             >
                 <h1 className="text-2xl font-bold text-center text-white mb-6">
                     {mode === 'login' && '會員登入'}
@@ -318,7 +318,7 @@ const Login: React.FC = () => {
                                     type="email"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    className="w-full bg-black/30 border border-white/20 rounded-lg py-3 pl-10 pr-4 text-white focus:border-primary focus:outline-none"
+                                    className="w-full bg-black/30 border border-gray-200 rounded-lg py-3 pl-10 pr-4 text-white focus:border-[#CF2030] focus:outline-none"
                                     placeholder="name@example.com"
                                     required
                                 />
@@ -335,7 +335,7 @@ const Login: React.FC = () => {
                                             type="password"
                                             value={password}
                                             onChange={e => setPassword(e.target.value)}
-                                            className="w-full bg-black/30 border border-white/20 rounded-lg py-3 pl-10 pr-4 text-white focus:border-primary focus:outline-none"
+                                            className="w-full bg-black/30 border border-gray-200 rounded-lg py-3 pl-10 pr-4 text-white focus:border-[#CF2030] focus:outline-none"
                                             placeholder="••••••••"
                                             required
                                             minLength={8}
@@ -355,7 +355,7 @@ const Login: React.FC = () => {
                                                 type="password"
                                                 value={confirmPassword}
                                                 onChange={e => setConfirmPassword(e.target.value)}
-                                                className="w-full bg-black/30 border border-white/20 rounded-lg py-3 pl-10 pr-4 text-white focus:border-primary focus:outline-none"
+                                                className="w-full bg-black/30 border border-gray-200 rounded-lg py-3 pl-10 pr-4 text-white focus:border-[#CF2030] focus:outline-none"
                                                 placeholder="••••••••"
                                                 required
                                                 minLength={8}
@@ -381,7 +381,7 @@ const Login: React.FC = () => {
                         <button
                             type="submit"
                             disabled={loading || ((mode === 'login' || mode === 'signup') && !captchaToken)}
-                            className="w-full bg-primary hover:bg-primary-dark text-bg-dark font-bold py-3 rounded-lg transition-colors mt-2 disabled:opacity-50"
+                            className="w-full bg-[#CF2030] hover:bg-[#CF2030]-dark text-white font-bold py-3 rounded-lg transition-colors mt-2 disabled:opacity-50"
                         >
                             {loading ? '處理中...' :
                                 mode === 'login' ? '登入' :
@@ -392,10 +392,10 @@ const Login: React.FC = () => {
                             <>
                                 <div className="relative my-6">
                                     <div className="absolute inset-0 flex items-center">
-                                        <div className="w-full border-t border-white/10"></div>
+                                        <div className="w-full border-t border-gray-200"></div>
                                     </div>
                                     <div className="relative flex justify-center text-sm">
-                                        <span className="px-2 bg-bg-dark text-gray-400">或</span>
+                                        <span className="px-2 bg-white text-gray-400">或</span>
                                     </div>
                                 </div>
 
@@ -421,7 +421,7 @@ const Login: React.FC = () => {
 
                                 <p className="text-xs text-center text-gray-500 mt-3">
                                     登入即代表您同意本站的
-                                    <Link to="/privacy" className="text-primary hover:underline mx-1">
+                                    <Link to="/privacy" className="text-[#CF2030] hover:underline mx-1">
                                         隱私權政策與服務條款
                                     </Link>
                                 </p>
@@ -433,7 +433,7 @@ const Login: React.FC = () => {
                                 <>
                                     <p>
                                         還沒有帳號？
-                                        <button type="button" onClick={() => setMode('signup')} className="text-primary hover:underline ml-1">
+                                        <button type="button" onClick={() => setMode('signup')} className="text-[#CF2030] hover:underline ml-1">
                                             立即註冊
                                         </button>
                                     </p>
@@ -447,7 +447,7 @@ const Login: React.FC = () => {
                             {mode === 'signup' && (
                                 <p>
                                     已有帳號？
-                                    <button type="button" onClick={() => setMode('login')} className="text-primary hover:underline ml-1">
+                                    <button type="button" onClick={() => setMode('login')} className="text-[#CF2030] hover:underline ml-1">
                                         直接登入
                                     </button>
                                 </p>
@@ -455,7 +455,7 @@ const Login: React.FC = () => {
                             {mode === 'forgot' && (
                                 <p>
                                     想起密碼了？
-                                    <button type="button" onClick={() => setMode('login')} className="text-primary hover:underline ml-1">
+                                    <button type="button" onClick={() => setMode('login')} className="text-[#CF2030] hover:underline ml-1">
                                         返回登入
                                     </button>
                                 </p>
@@ -467,8 +467,8 @@ const Login: React.FC = () => {
                 {/* CLAIM PROFILE LIST */}
                 {mode === 'claim' && (
                     <div className="space-y-4">
-                        <div className="bg-primary/10 border border-primary/30 p-4 rounded-lg mb-4 flex gap-3 text-sm text-primary-light">
-                            <AlertCircle className="shrink-0 text-primary" size={20} />
+                        <div className="bg-red-50 border border-[#CF2030]/30 p-4 rounded-lg mb-4 flex gap-3 text-sm text-[#E8394A]">
+                            <AlertCircle className="shrink-0 text-[#CF2030]" size={20} />
                             <div>
                                 歡迎！請從下方選擇您的會員檔案進行綁定。<br />
                                 <span className="text-xs opacity-70">綁定後，只有您能編輯此檔案。</span>
@@ -486,8 +486,8 @@ const Login: React.FC = () => {
                                         key={m.id}
                                         onClick={() => setSelectedMemberId(m.id)}
                                         className={`p-3 rounded-lg cursor-pointer border transition-all flex items-center justify-between ${selectedMemberId === m.id
-                                            ? 'bg-primary/20 border-primary text-primary'
-                                            : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10'
+                                            ? 'bg-[#CF2030]/20 border-[#CF2030] text-[#CF2030]'
+                                            : 'bg-gray-50 border-gray-200 text-gray-300 hover:bg-gray-100'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -501,7 +501,7 @@ const Login: React.FC = () => {
                             )}
                         </div>
 
-                        <div className="mt-6 border-t border-white/10 pt-6">
+                        <div className="mt-6 border-t border-gray-200 pt-6">
                             <label className="block text-gray-400 text-sm mb-2">請輸入分會認證密碼</label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
@@ -509,7 +509,7 @@ const Login: React.FC = () => {
                                     type="password"
                                     value={claimPassword}
                                     onChange={e => setClaimPassword(e.target.value)}
-                                    className="w-full bg-black/30 border border-white/20 rounded-lg py-3 pl-10 pr-4 text-white focus:border-primary focus:outline-none"
+                                    className="w-full bg-black/30 border border-gray-200 rounded-lg py-3 pl-10 pr-4 text-white focus:border-[#CF2030] focus:outline-none"
                                     placeholder="分會密碼"
                                     required
                                 />

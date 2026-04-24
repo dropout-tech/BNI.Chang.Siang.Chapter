@@ -123,7 +123,7 @@ const HomeHero: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
                     </div>
                     
                     {/* Separator line */}
-                    <div className="w-[110%] h-[2px] mt-4 mb-4 bg-gradient-to-r from-transparent via-[#D4AF37] to-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,1)]" />
+                    <div className="w-[110%] h-[2px] mt-4 mb-4 bg-gradient-to-r from-transparent via-[#D4AF37] to-[#D4AF37] shadow-[0_0_20px_rgba(207,32,48,1)]" />
                     
                     {/* Subtitle */}
                     <h2 className="text-[#D4AF37] text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-[0.6em] md:tracking-[1.2em] font-serif text-center md:text-right drop-shadow-[0_5px_10px_rgba(0,0,0,0.8)] whitespace-nowrap">

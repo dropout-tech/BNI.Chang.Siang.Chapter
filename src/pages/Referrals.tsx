@@ -12,7 +12,7 @@ const Referrals: React.FC = () => {
 
     if (loading) return (
         <div className="flex justify-center items-center min-h-[60vh]">
-            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-[#CF2030] border-t-transparent rounded-full animate-spin"></div>
         </div>
     );
 
@@ -54,8 +54,8 @@ const Referrals: React.FC = () => {
             <div className="container mx-auto px-4 py-12 relative z-10">
 
                 {/* Weekly Feature Note */}
-                <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-8 text-center max-w-2xl mx-auto">
-                    <p className="text-primary font-bold text-lg mb-1">每週精選案例</p>
+                <div className="bg-red-50 border border-[#CF2030]/20 rounded-xl p-4 mb-8 text-center max-w-2xl mx-auto">
+                    <p className="text-[#CF2030] font-bold text-lg mb-1">每週精選案例</p>
                     <p className="text-gray-400 text-sm">
                         實際上門引薦單遠大於此，目前已累積 <span className="text-white font-mono font-bold">16,800+</span> 筆引薦商機，這裡僅展示每週精選的成功故事。
                     </p>
@@ -72,18 +72,18 @@ const Referrals: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1, duration: 0.5 }}
                                     onClick={() => toggleReferral(referral.id)}
-                                    className={`bg-bg-dark/60 backdrop-blur-md border rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] group flex flex-col cursor-pointer h-full ${isSelected ? 'border-primary ring-1 ring-primary z-20 scale-[1.02]' : 'border-white/10 hover:border-primary/50'
+                                    className={`bg-white/60 backdrop-blur-md border rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] group flex flex-col cursor-pointer h-full ${isSelected ? 'border-[#CF2030] ring-1 ring-primary z-20 scale-[1.02]' : 'border-gray-200 hover:border-[#CF2030]/50'
                                         }`}
                                 >
                                     <div className="h-2 bg-gradient-to-r from-primary-light via-primary to-primary-dark transition-opacity" />
 
                                     <div className="p-6 md:p-8 flex-grow flex flex-col">
-                                        <h3 className={`text-xl md:text-2xl font-bold mb-4 transition-colors leading-snug ${isSelected ? 'text-primary' : 'text-white group-hover:text-primary'}`}>
+                                        <h3 className={`text-xl md:text-2xl font-bold mb-4 transition-colors leading-snug ${isSelected ? 'text-[#CF2030]' : 'text-white group-hover:text-[#CF2030]'}`}>
                                             {referral.title}
                                         </h3>
 
                                         <div className="flex items-start gap-4 mb-6">
-                                            <Quote className="text-primary/40 shrink-0 transform rotate-180" size={32} />
+                                            <Quote className="text-[#CF2030]/40 shrink-0 transform rotate-180" size={32} />
                                             <div className="flex-1">
                                                 <p className={`text-gray-300 text-base leading-relaxed ${isSelected ? '' : 'line-clamp-3'}`}>
                                                     {referral.description}
@@ -91,30 +91,30 @@ const Referrals: React.FC = () => {
                                                 {isSelected && (
                                                     <div className="mt-8 space-y-6">
                                                         {referral.referrer?.story && (
-                                                            <div className="bg-white/5 rounded-2xl p-5 border-l-4 border-primary/50 relative">
-                                                                <div className="absolute -top-3 left-6 px-2 bg-bg-dark text-primary text-[10px] font-bold uppercase tracking-widest">
+                                                            <div className="bg-gray-50 rounded-2xl p-5 border-l-4 border-[#CF2030]/50 relative">
+                                                                <div className="absolute -top-3 left-6 px-2 bg-white text-[#CF2030] text-[10px] font-bold uppercase tracking-widest">
                                                                     引薦人真心話
                                                                 </div>
                                                                 <p className="text-gray-300 text-sm leading-relaxed italic">
                                                                     "{referral.referrer.story}"
                                                                 </p>
                                                                 <div className="mt-2 text-right">
-                                                                    <span className="text-xs text-primary/70">— {referral.referrer.name}</span>
+                                                                    <span className="text-xs text-[#CF2030]/70">— {referral.referrer.name}</span>
                                                                 </div>
                                                             </div>
                                                         )}
 
                                                         {referral.referee?.story && (
-                                                            <div className="bg-primary/5 rounded-2xl p-5 border-r-4 border-primary-light/50 relative">
-                                                                <div className="absolute -top-3 right-6 px-2 bg-bg-dark text-primary-light text-[10px] font-bold uppercase tracking-widest">
+                                                            <div className="bg-[#CF2030]/5 rounded-2xl p-5 border-r-4 border-[#CF2030]-light/50 relative">
+                                                                <div className="absolute -top-3 right-6 px-2 bg-white text-[#E8394A] text-[10px] font-bold uppercase tracking-widest">
                                                                     被引薦人回饋
                                                                 </div>
                                                                 <p className="text-gray-200 text-sm leading-relaxed">
                                                                     {referral.referee.story}
                                                                 </p>
                                                                 <div className="mt-2 flex items-center gap-2">
-                                                                    <div className="h-px flex-grow bg-white/10"></div>
-                                                                    <span className="text-xs text-primary-light/70">{referral.referee.name} 回應</span>
+                                                                    <div className="h-px flex-grow bg-gray-100"></div>
+                                                                    <span className="text-xs text-[#E8394A]/70">{referral.referee.name} 回應</span>
                                                                 </div>
                                                             </div>
                                                         )}
@@ -124,20 +124,20 @@ const Referrals: React.FC = () => {
                                         </div>
 
                                         {/* Metrics Badge */}
-                                        <div className="bg-primary/10 rounded-xl p-6 mb-8 border border-primary/20 mt-auto">
-                                            <div className="text-xs text-primary-light uppercase tracking-wider mb-2 font-bold">成效數據</div>
+                                        <div className="bg-red-50 rounded-xl p-6 mb-8 border border-[#CF2030]/20 mt-auto">
+                                            <div className="text-xs text-[#E8394A] uppercase tracking-wider mb-2 font-bold">成效數據</div>
                                             <div className="flex justify-between items-end">
                                                 <div className="font-bold text-white text-2xl">{referral.metrics.amount}</div>
-                                                <div className="text-sm text-gray-400 font-medium px-2 py-1 bg-white/5 rounded">{referral.metrics.type}</div>
+                                                <div className="text-sm text-gray-400 font-medium px-2 py-1 bg-gray-50 rounded">{referral.metrics.type}</div>
                                             </div>
                                         </div>
 
                                         {/* Members Connection */}
-                                        <div className="mt-auto border-t border-white/5 pt-6">
+                                        <div className="mt-auto border-t border-gray-100 pt-6">
                                             <div className="flex items-center justify-between relative">
                                                 {/* Referrer */}
                                                 <div className="flex items-center gap-4 w-[45%]">
-                                                    <div className="w-12 h-12 rounded-full overflow-hidden border border-white/20 shrink-0">
+                                                    <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 shrink-0">
                                                         <img
                                                             src={assetUrl(referral.referrer.photo || '/images/assets/logo/白色正方形logo.png')}
                                                             alt={referral.referrer.name}
@@ -153,8 +153,8 @@ const Referrals: React.FC = () => {
                                                 </div>
 
                                                 {/* Arrow */}
-                                                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-primary/50 flex flex-col items-center">
-                                                    <span className="text-[10px] text-primary/70 mb-1">引薦給</span>
+                                                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[#CF2030]/50 flex flex-col items-center">
+                                                    <span className="text-[10px] text-[#CF2030]/70 mb-1">引薦給</span>
                                                     <ArrowRight size={20} />
                                                 </div>
 
@@ -165,7 +165,7 @@ const Referrals: React.FC = () => {
                                                         <div className="font-bold text-base truncate text-white">{referral.referee.name}</div>
                                                         <div className="text-xs text-gray-400 truncate">{referral.referee.industry}</div>
                                                     </div>
-                                                    <div className="w-12 h-12 rounded-full overflow-hidden border border-white/20 shrink-0">
+                                                    <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 shrink-0">
                                                         <img
                                                             src={assetUrl(referral.referee.photo || '/images/assets/logo/白色正方形logo.png')}
                                                             alt={referral.referee.name}
