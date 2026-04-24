@@ -23,20 +23,20 @@ const Events: React.FC = () => (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
                 {events.map((e, i) => (
                     <motion.div key={e.title} {...f} transition={{ ...f.transition, delay: i * 0.1 }}
-                        className="card-glass gold-border gold-border-hover rounded-2xl overflow-hidden group transition-all duration-300 hover:-translate-y-1">
+                        className="bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-[#CF2030]/20 rounded-2xl overflow-hidden group transition-all duration-300 hover:-translate-y-1">
                         <div className="h-48 bg-gradient-to-br from-[#102A43] to-[#0A1628] flex items-center justify-center relative overflow-hidden">
                             <div className="absolute inset-0 opacity-[0.05]" style={{ background: `radial-gradient(circle at 30% 50%, ${e.color}, transparent 70%)` }} />
-                            <e.icon size={48} className="text-[#D4AF37]/30 group-hover:text-[#D4AF37]/50 transition-colors" />
+                            <e.icon size={48} className="text-[#CF2030]/30 group-hover:text-[#CF2030]/50 transition-colors" />
                             <div className="absolute top-4 right-4">
-                                <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20">{e.cat}</span>
+                                <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#CF2030]/10 text-[#CF2030] border border-[#CF2030]/20">{e.cat}</span>
                             </div>
                         </div>
                         <div className="p-6">
-                            <div className="flex items-center gap-2 text-sm text-[#D4AF37]/70 mb-2">
+                            <div className="flex items-center gap-2 text-sm text-[#CF2030]/70 mb-2">
                                 <Calendar size={14} /><span>{e.date}</span>
                             </div>
-                            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-[#D4AF37] transition-colors">{e.title}</h3>
-                            <p className="text-gray-400 text-sm leading-relaxed">{e.desc}</p>
+                            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-[#CF2030] transition-colors">{e.title}</h3>
+                            <p className="text-gray-500 text-sm leading-relaxed">{e.desc}</p>
                         </div>
                     </motion.div>
                 ))}
@@ -46,7 +46,7 @@ const Events: React.FC = () => (
         <SectionWrapper className="text-center py-16" dark>
             <motion.div {...f}>
                 <p className="text-gray-500 text-lg mb-2">更多活動照片與紀錄即將上線</p>
-                <p className="text-gray-600 text-sm">歡迎追蹤我們的 <a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer" className="text-[#D4AF37] hover:underline">Facebook 粉專</a></p>
+                <p className="text-gray-600 text-sm">歡迎追蹤我們的 <a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer" className="text-[#CF2030] hover:underline">Facebook 粉專</a></p>
             </motion.div>
         </SectionWrapper>
     </div>

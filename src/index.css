@@ -1,29 +1,26 @@
 @import "tailwindcss";
 
 /* ================================================
-   BNI 長翔名人堂白金分會 — 設計系統 v3
-   高端商務 / 專業信賴 / 科技感 / 精英感
+   BNI 長翔名人堂白金分會 — BNI 傳統風格
+   白底 / BNI紅 / 深灰文字
    ================================================ */
 
 @theme {
-  --color-primary: #D4AF37;
-  --color-primary-dark: #B8960C;
-  --color-primary-light: #E8C547;
+  --color-primary: #CF2030;
+  --color-primary-dark: #A51926;
+  --color-primary-light: #E8394A;
+  --color-bni-red: #CF2030;
+  --color-bni-red-dark: #A51926;
+  --color-bni-gray: #333333;
+  --color-bg-dark: #FFFFFF;
+  --color-bg-card: #F8F9FA;
+  --color-bg-section: #F1F3F5;
   --color-gold: #D4AF37;
-  --color-gold-light: #E8C547;
-  --color-gold-dark: #B8960C;
-  --color-bg-dark: #0A1628;
-  --color-bg-card: #102A43;
-  --color-bg-section: #0E1F35;
-  --color-navy-900: #0A1628;
-  --color-navy-800: #102A43;
-  --color-navy-700: #1A3A5C;
-  --color-navy-600: #243B53;
 }
 
 html, body {
-  background-color: #0A1628;
-  color: #fff;
+  background-color: #FFFFFF;
+  color: #333333;
   min-height: 100vh;
   margin: 0; padding: 0;
   overflow-x: hidden;
@@ -31,218 +28,73 @@ html, body {
 }
 #root { min-height: 100vh; display: flex; flex-direction: column; }
 
-@keyframes pan-metal {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* === BNI Red Button === */
+.bni-btn {
+  background: #CF2030;
+  color: #FFFFFF;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.bni-btn:hover {
+  background: #A51926;
 }
 
-/* === Brushed Gold — 拉絲金屬質感 === */
-.brushed-gold {
-  background: linear-gradient(
-    135deg,
-    #B8960C 0%, #D4AF37 10%, #E8C547 22%, #D4AF37 34%,
-    #B8960C 46%, #D4AF37 58%, #E8C547 70%, #D4AF37 82%, #B8960C 100%
-  );
-  background-size: 200% 200%;
-  animation: pan-metal 15s ease-in-out infinite;
-}
+/* === BNI Red Text === */
+.bni-red { color: #CF2030; }
 
-/* === Gold Text === */
+/* === Gold accent (for 長翔 identity) === */
 .gold-text {
-  background: linear-gradient(135deg, #F5E6B8 0%, #E8C547 20%, #D4AF37 45%, #B8960C 70%, #D4AF37 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  background-size: 200% auto;
-  animation: pan-metal 8s linear infinite;
+  color: #D4AF37;
 }
-
-.gold-gradient-text { /* alias */
+.gold-gradient-text {
   background: linear-gradient(135deg, #E8C547 0%, #D4AF37 35%, #B8960C 65%, #D4AF37 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
-/* === Gold Chevrons (>>>) === */
-.gold-chevron {
-  background: linear-gradient(135deg, #F5E6B8 0%, #E8C547 40%, #D4AF37 60%, #B8960C 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-  background-size: 200% auto;
-  animation: pan-metal 6s ease-in-out infinite;
+.brushed-gold {
+  background: linear-gradient(135deg, #B8960C 0%, #D4AF37 15%, #E8C547 30%, #D4AF37 50%, #B8960C 70%, #D4AF37 85%, #E8C547 100%);
 }
 
-/* === Gold Borders === */
-.gold-border {
-  border: 1px solid rgba(212, 175, 55, 0.2);
-}
-.gold-border-hover:hover {
-  border-color: rgba(212, 175, 55, 0.5);
-}
-
-/* === Gold Line Divider === */
-.gold-line {
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #D4AF37 50%, transparent 100%);
-}
-
-/* === Dark Background Layer (Global Fixed, Optimized with GPU Transform) === */
-.brushed-metal-dark {
-  position: fixed;
-  inset: -50%;
-  background: linear-gradient(
-    135deg,
-    #0A1628 0%, #102A43 15%, #0E1F35 30%, #102A43 50%,
-    #0A1628 65%, #102A43 80%, #0E1F35 100%
-  );
-  background-size: 100% 100%;
-  animation: pan-metal-transform 30s ease-in-out infinite alternate;
-  will-change: transform;
-  z-index: -10;
-  pointer-events: none;
-}
-@keyframes pan-metal-transform {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  100% { transform: translate3d(15%, 15%, 0) scale(1.1); }
-}
-
-/* === Grain Texture — 顆粒紋理 === */
-.grain { position: relative; }
-.grain::after {
-  content: '';
-  position: absolute; inset: 0;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 1;
-  mix-blend-mode: overlay;
-}
-
-/* === Global Grain Texture — 全域固定顆粒濾鏡 === */
-.grain-heavy {
-  position: fixed;
-  inset: -10%;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: overlay;
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* === Gold Foil Text === */
-.gold-foil-text {
-  background: 
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='0.3'/%3E%3C/svg%3E"),
-    linear-gradient(135deg, #F5E6B8 0%, #D4AF37 25%, #8A6D1C 40%, #E8C547 60%, #B8960C 80%, #D4AF37 100%);
-  background-blend-mode: multiply;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  background-size: 150px 150px, 200% auto;
-  animation: pan-metal 15s linear infinite;
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
-}
-
-/* === Outline Text for Parallax Backgrounds === */
-.text-outline-gold {
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(212, 175, 55, 0.2);
-  transition: -webkit-text-stroke-color 0.5s ease;
-}
-.group:hover .text-outline-gold {
-  -webkit-text-stroke: 1px rgba(212, 175, 55, 0.6);
-}
-
-.spin-slow {
-  animation: spin 20s linear infinite;
-}
-
-
-/* === Card glass effect (Optimized for Glassmorphism & Performance) === */
+/* === Card === */
 .card-glass {
-  background: rgba(10, 22, 40, 0.45);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(212, 175, 55, 0.15);
-  border-top-color: rgba(255, 255, 255, 0.15);
-  border-left-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-  will-change: transform, backdrop-filter;
-  transform: translateZ(0); 
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .card-glass:hover {
-  border-color: rgba(212, 175, 55, 0.5);
-  background: rgba(16, 42, 67, 0.65);
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(212, 175, 55, 0.25);
-  transform: translateY(-5px) translateZ(0);
+  border-color: #CF2030;
+  box-shadow: 0 4px 12px rgba(207,32,48,0.08);
 }
 
-/* === Gold Meteor Particles === */
-.meteor-shower {
-  position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: -1; pointer-events: none; overflow: hidden;
+/* === Gold Border (for 長翔 specific sections) === */
+.gold-border { border: 1px solid rgba(212,175,55,0.2); }
+.gold-border-hover:hover { border-color: rgba(212,175,55,0.5); }
+
+/* === Dividers === */
+.gold-line { height: 1px; background: linear-gradient(90deg, transparent, #D4AF37, transparent); }
+.red-line { height: 3px; width: 60px; background: #CF2030; border-radius: 2px; }
+
+/* === Section backgrounds === */
+.bg-light { background: #F8F9FA; }
+.bg-white { background: #FFFFFF; }
+
+/* === Grain (subtle on white) === */
+.grain { position: relative; }
+.grain::after {
+  content: ''; position: absolute; inset: 0;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 1; mix-blend-mode: multiply;
 }
-.meteor {
-  position: absolute; top: 50%; left: 50%; height: 2px;
-  background: linear-gradient(-45deg, rgba(212,175,55,1), rgba(212,175,55,0));
-  filter: drop-shadow(0 0 6px rgba(212,175,55,0.8));
-  animation: tail 3s ease-in-out infinite, shooting 3s ease-in-out infinite;
-  opacity: 0;
-}
-.meteor::before, .meteor::after {
-  content: ''; position: absolute;
-  top: calc(50% - 1px); right: 0; height: 2px;
-  background: linear-gradient(-45deg, rgba(212,175,55,0), rgba(232,197,71,1), rgba(212,175,55,0));
-  border-radius: 100%;
-  transform: translateX(50%) rotateZ(45deg);
-  animation: shining 3s ease-in-out infinite;
-}
-.meteor::after { transform: translateX(50%) rotateZ(-45deg); }
-@keyframes tail { 0%{width:0} 30%{width:100px} 100%{width:0} }
-@keyframes shooting { 0%{transform:translateX(0);opacity:0} 10%{opacity:1} 100%{transform:translateX(calc(300px+100vh)) translateY(calc(300px+100vh));opacity:0} }
-@keyframes shining { 0%{width:0} 50%{width:30px} 100%{width:0} }
 
 /* === Utilities === */
 .mask-linear-gradient {
   mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
-@keyframes gradient-x { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
-.animate-gradient-x { background-size:200% 200%; animation:gradient-x 3s ease infinite; }
-
-/* Let's remove default scrollbar for a cleaner look */
 .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
 .scrollbar-hide::-webkit-scrollbar { display:none; }
 
-/* Lens Flare / Bokeh Animations */
-@keyframes float-slow {
-  0% { transform: translateY(0) scale(1); opacity: 0.3; }
-  50% { transform: translateY(-30px) scale(1.1); opacity: 0.6; }
-  100% { transform: translateY(0) scale(1); opacity: 0.3; }
-}
-.animate-float-slow { animation: float-slow 12s ease-in-out infinite; }
-
-@keyframes float-medium {
-  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.2; }
-  50% { transform: translateY(-40px) translateX(20px) scale(1.15); opacity: 0.5; }
-  100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.2; }
-}
-.animate-float-medium { animation: float-medium 8s ease-in-out infinite; }
-
-/* Glowing Orb */
-.glow-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  pointer-events: none;
-  mix-blend-mode: screen;
-}
+/* === Remove dark-theme meteors === */
+.meteor-shower { display: none; }

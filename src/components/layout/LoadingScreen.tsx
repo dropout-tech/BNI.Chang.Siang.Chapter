@@ -9,8 +9,7 @@ const LoadingScreen: React.FC = () => {
 
     useEffect(() => {
         if (!authLoading) {
-            const elapsed = performance.now() - loadStartTime.current;
-            const remaining = Math.max(0, 800 - elapsed);
+            const remaining = Math.max(0, 600 - (performance.now() - loadStartTime.current));
             const timer = setTimeout(() => setIsLoading(false), remaining);
             return () => clearTimeout(timer);
         }
@@ -21,20 +20,11 @@ const LoadingScreen: React.FC = () => {
     return (
         <AnimatePresence>
             {isLoading && (
-                <motion.div initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}
-                    className="fixed inset-0 z-[9999] flex items-center justify-center"
-                    style={{ background: 'linear-gradient(170deg, #0D1B2E 0%, #102A43 50%, #0A1628 100%)' }}>
-                    <div className="flex flex-col items-center gap-6">
-                        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative">
-                            <div className="w-16 h-16 rounded-full border-2 border-[#D4AF37]/20 border-t-[#D4AF37] animate-spin" />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-[#D4AF37] font-black text-xs">BNi</span>
-                            </div>
-                        </motion.div>
-                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-                            className="text-[#D4AF37]/50 text-sm tracking-[0.3em]">
-                            長翔名人堂白金分會
-                        </motion.p>
+                <motion.div initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
+                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 rounded-full border-2 border-gray-200 border-t-[#CF2030] animate-spin" />
+                        <p className="text-gray-400 text-sm tracking-widest">BNI 長翔</p>
                     </div>
                 </motion.div>
             )}

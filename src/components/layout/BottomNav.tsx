@@ -11,14 +11,14 @@ const tabs = [
 ];
 
 const BottomNav: React.FC = () => (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#0A1628]/95 backdrop-blur-xl border-t border-[#D4AF37]/10 pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-gray-200 pb-safe">
         <div className="flex justify-around items-center h-16">
             {tabs.map(tab => (
                 <NavLink key={tab.path} to={tab.path}
-                    className={({ isActive }) => `flex flex-col items-center justify-center gap-0.5 w-full h-full transition-colors ${isActive ? 'text-[#D4AF37]' : 'text-gray-500'}`}>
+                    className={({ isActive }) => `flex flex-col items-center justify-center gap-0.5 w-full h-full transition-colors relative ${isActive ? 'text-[#CF2030]' : 'text-gray-400'}`}>
                     {({ isActive }) => (
                         <>
-                            {isActive && <span className="absolute top-0 w-8 h-[3px] bg-[#D4AF37] shadow-[0_0_8px_rgba(212,175,55,0.6)] rounded-b-full" />}
+                            {isActive && <span className="absolute top-0 w-8 h-[3px] bg-[#CF2030] rounded-b-full" />}
                             <tab.icon size={20} />
                             <span className="text-[10px] font-medium">{tab.label}</span>
                         </>

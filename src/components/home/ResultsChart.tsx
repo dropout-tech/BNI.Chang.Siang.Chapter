@@ -31,13 +31,13 @@ const ResultsChart: React.FC = () => {
         if (ctx) {
             switch (activeTab) {
                 case 'referrals':
-                    gradient = createGradient(ctx, 'rgba(212, 175, 55, 1)');
+                    gradient = createGradient(ctx, 'rgba(207, 32, 48, 1)');
                     break;
                 case 'amounts':
-                    gradient = createGradient(ctx, 'rgba(232, 197, 71, 1)');
+                    gradient = createGradient(ctx, 'rgba(232, 57, 74, 1)');
                     break;
                 case 'guests':
-                    gradient = createGradient(ctx, 'rgba(184, 150, 12, 1)');
+                    gradient = createGradient(ctx, 'rgba(165, 25, 38, 1)');
                     break;
             }
         }
@@ -49,14 +49,14 @@ const ResultsChart: React.FC = () => {
                     datasets: [{
                         label: '引薦單數',
                         data: performanceData.referrals,
-                        borderColor: '#D4AF37',
-                        backgroundColor: gradient || 'rgba(212, 175, 55, 0.4)',
+                        borderColor: '#CF2030',
+                        backgroundColor: gradient || 'rgba(207, 32, 48, 0.4)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4,
                         pointRadius: 6,
                         pointHoverRadius: 8,
-                        pointBackgroundColor: '#D4AF37',
+                        pointBackgroundColor: '#CF2030',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                     }]
@@ -67,14 +67,14 @@ const ResultsChart: React.FC = () => {
                     datasets: [{
                         label: '引薦金額 (萬)',
                         data: performanceData.amounts.map(v => Math.round(v / 10000)),
-                        borderColor: '#E8C547',
-                        backgroundColor: gradient || 'rgba(232, 197, 71, 0.4)',
+                        borderColor: '#E8394A',
+                        backgroundColor: gradient || 'rgba(232, 57, 74, 0.4)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4,
                         pointRadius: 6,
                         pointHoverRadius: 8,
-                        pointBackgroundColor: '#E8C547',
+                        pointBackgroundColor: '#E8394A',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                     }]
@@ -85,14 +85,14 @@ const ResultsChart: React.FC = () => {
                     datasets: [{
                         label: '來賓人數',
                         data: performanceData.guests,
-                        borderColor: '#D4AF37',
-                        backgroundColor: gradient || 'rgba(184, 150, 12, 0.4)',
+                        borderColor: '#CF2030',
+                        backgroundColor: gradient || 'rgba(165, 25, 38, 0.4)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4,
                         pointRadius: 6,
                         pointHoverRadius: 8,
-                        pointBackgroundColor: '#D4AF37',
+                        pointBackgroundColor: '#CF2030',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                     }]
@@ -112,10 +112,10 @@ const ResultsChart: React.FC = () => {
                 display: false
             },
             tooltip: {
-                backgroundColor: 'rgba(5, 5, 5, 0.9)',
-                titleColor: '#D4AF37',
-                bodyColor: '#ffffff',
-                borderColor: '#D4AF37',
+                backgroundColor: 'rgba(255,255,255,0.95)',
+                titleColor: '#CF2030',
+                bodyColor: '#333333',
+                borderColor: '#CF2030',
                 borderWidth: 1,
                 padding: 12,
                 displayColors: true,
@@ -124,19 +124,19 @@ const ResultsChart: React.FC = () => {
         scales: {
             x: {
                 grid: {
-                    color: 'rgba(212, 175, 55, 0.1)',
+                    color: 'rgba(207, 32, 48, 0.1)',
                 },
                 ticks: {
-                    color: '#ffffff',
+                    color: '#333333',
                 }
             },
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: 'rgba(212, 175, 55, 0.1)',
+                    color: 'rgba(207, 32, 48, 0.1)',
                 },
                 ticks: {
-                    color: '#D4AF37',
+                    color: '#CF2030',
                 }
             }
         },
@@ -146,13 +146,13 @@ const ResultsChart: React.FC = () => {
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto card-glass gold-border rounded-2xl p-6 md:p-8 shadow-2xl">
+        <div className="w-full max-w-4xl mx-auto bg-white border border-gray-100 shadow-sm rounded-2xl p-6 md:p-8 shadow-2xl">
             <div className="flex flex-wrap justify-center gap-4 mb-8">
                 <button
                     onClick={() => setActiveTab('referrals')}
                     className={`px-6 py-2 rounded-full font-bold transition-all duration-300 ${activeTab === 'referrals'
-                        ? 'bg-primary text-bg-dark shadow-[0_0_20px_rgba(212,175,55,0.4)]'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        ? 'bg-[#CF2030] text-white shadow-[0_0_20px_rgba(207,32,48,0.4)]'
+                        : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
                         }`}
                 >
                     引薦單數
@@ -160,8 +160,8 @@ const ResultsChart: React.FC = () => {
                 <button
                     onClick={() => setActiveTab('amounts')}
                     className={`px-6 py-2 rounded-full font-bold transition-all duration-300 ${activeTab === 'amounts'
-                        ? 'bg-primary text-bg-dark shadow-[0_0_20px_rgba(212,175,55,0.4)]'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        ? 'bg-[#CF2030] text-white shadow-[0_0_20px_rgba(207,32,48,0.4)]'
+                        : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
                         }`}
                 >
                     引薦金額
@@ -169,8 +169,8 @@ const ResultsChart: React.FC = () => {
                 <button
                     onClick={() => setActiveTab('guests')}
                     className={`px-6 py-2 rounded-full font-bold transition-all duration-300 ${activeTab === 'guests'
-                        ? 'bg-primary text-bg-dark shadow-[0_0_20px_rgba(212,175,55,0.4)]'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        ? 'bg-[#CF2030] text-white shadow-[0_0_20px_rgba(207,32,48,0.4)]'
+                        : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
                         }`}
                 >
                     來賓人數

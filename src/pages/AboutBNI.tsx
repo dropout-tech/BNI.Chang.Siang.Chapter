@@ -52,18 +52,18 @@ const AboutBNI: React.FC = () => (
         <SectionWrapper title="BNI 全球數據">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-16">
                 {stats.map((s, i) => (
-                    <motion.div key={s.label} {...f} transition={{ ...f.transition, delay: i * 0.1 }} className="card-glass gold-border rounded-xl p-6 text-center">
-                        <div className="text-3xl font-black gold-text mb-2">{s.value}</div>
-                        <div className="text-gray-400 text-sm">{s.label}</div>
+                    <motion.div key={s.label} {...f} transition={{ ...f.transition, delay: i * 0.1 }} className="bg-white border border-gray-100 shadow-sm rounded-xl p-6 text-center">
+                        <div className="text-3xl font-black text-[#333] mb-2">{s.value}</div>
+                        <div className="text-gray-500 text-sm">{s.label}</div>
                     </motion.div>
                 ))}
             </div>
             <h3 className="text-2xl font-bold text-white text-center mb-8">BNI 台灣成績</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
                 {twStats.map((s, i) => (
-                    <motion.div key={s.label} {...f} transition={{ ...f.transition, delay: i * 0.1 }} className="card-glass gold-border rounded-xl p-6 text-center">
-                        <div className="text-3xl font-black gold-text mb-2">{s.value}</div>
-                        <div className="text-gray-400 text-sm">{s.label}</div>
+                    <motion.div key={s.label} {...f} transition={{ ...f.transition, delay: i * 0.1 }} className="bg-white border border-gray-100 shadow-sm rounded-xl p-6 text-center">
+                        <div className="text-3xl font-black text-[#333] mb-2">{s.value}</div>
+                        <div className="text-gray-500 text-sm">{s.label}</div>
                     </motion.div>
                 ))}
             </div>
@@ -73,12 +73,12 @@ const AboutBNI: React.FC = () => (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                 {values.map((v, i) => (
                     <motion.div key={v.title} {...f} transition={{ ...f.transition, delay: i * 0.1 }}
-                        className="card-glass gold-border gold-border-hover rounded-2xl p-6 group transition-all duration-300 hover:-translate-y-1">
-                        <div className="w-12 h-12 rounded-full border border-[#D4AF37]/20 flex items-center justify-center mb-4 group-hover:border-[#D4AF37]/50 group-hover:bg-[#D4AF37]/10 transition-all">
-                            <v.icon size={24} className="text-[#D4AF37]" />
+                        className="bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-[#CF2030]/20 rounded-2xl p-6 group transition-all duration-300 hover:-translate-y-1">
+                        <div className="w-12 h-12 rounded-full border border-[#CF2030]/20 flex items-center justify-center mb-4 group-hover:border-[#CF2030]/50 group-hover:bg-[#CF2030]/10 transition-all">
+                            <v.icon size={24} className="text-[#CF2030]" />
                         </div>
-                        <h3 className="text-lg font-bold text-white mb-2">{v.title}</h3>
-                        <p className="text-gray-400 text-sm leading-relaxed">{v.desc}</p>
+                        <h3 className="text-lg font-bold text-[#333] mb-2">{v.title}</h3>
+                        <p className="text-gray-500 text-sm leading-relaxed">{v.desc}</p>
                     </motion.div>
                 ))}
             </div>
@@ -88,11 +88,11 @@ const AboutBNI: React.FC = () => (
             <div className="max-w-3xl mx-auto space-y-4">
                 {basics.map((b, i) => (
                     <motion.div key={b.n} {...f} transition={{ ...f.transition, delay: i * 0.08 }}
-                        className="card-glass gold-border rounded-xl p-5 flex items-center gap-4 hover:border-[#D4AF37]/30 transition-all">
-                        <div className="w-10 h-10 rounded-full brushed-gold flex items-center justify-center text-[#0A1628] font-bold text-sm shrink-0">{i + 1}</div>
+                        className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 flex items-center gap-4 hover:border-[#CF2030]/30 transition-all">
+                        <div className="w-10 h-10 rounded-full bg-[#CF2030] flex items-center justify-center text-white font-bold text-sm shrink-0">{i + 1}</div>
                         <div>
-                            <h4 className="font-bold text-white">{b.n} <span className="text-[#D4AF37]/60 text-sm font-normal">({b.en})</span></h4>
-                            <p className="text-gray-400 text-sm">{b.desc}</p>
+                            <h4 className="font-bold text-white">{b.n} <span className="text-[#CF2030]/60 text-sm font-normal">({b.en})</span></h4>
+                            <p className="text-gray-500 text-sm">{b.desc}</p>
                         </div>
                     </motion.div>
                 ))}
@@ -101,10 +101,10 @@ const AboutBNI: React.FC = () => (
 
         <SectionWrapper className="text-center py-24">
             <motion.div {...f}>
-                <h2 className="text-3xl md:text-4xl font-black gold-text mb-6">Changing the Way the World Does Business</h2>
-                <p className="text-gray-400 text-lg mb-8">改變全世界做生意的方式 — 從加入長翔開始</p>
+                <h2 className="text-3xl md:text-4xl font-black text-[#333] mb-6">Changing the Way the World Does Business</h2>
+                <p className="text-gray-500 text-lg mb-8">改變全世界做生意的方式 — 從加入長翔開始</p>
                 <a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-10 py-4 brushed-gold text-[#0A1628] font-bold text-lg rounded-full hover:opacity-90 transition-opacity">
+                    className="inline-flex items-center gap-2 px-10 py-4 bg-[#CF2030] text-white font-bold text-lg rounded-full hover:bg-[#A51926] transition-opacity">
                     預約參訪長翔分會 <span className="tracking-wider">›››</span>
                 </a>
             </motion.div>
