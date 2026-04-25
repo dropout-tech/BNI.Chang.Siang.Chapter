@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { insforge, isBackendConfigured } from '../../lib/insforge';
 
 interface Member {
     id: string;
@@ -31,8 +31,8 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh }) => {
 
     const handleDelete = async (id: string) => {
         if (!confirm('確定要刪除這位會員嗎？此動作無法復原。')) return;
-        if (!isSupabaseConfigured) return;
-        const { error } = await supabase.from('members').delete().eq('id', id);
+        if (!isBackendConfigured) return;
+        const { error } = await insforge.database.from('members').delete().eq('id', id);
         if (error) {
             alert('刪除失敗: ' + error.message);
         } else {

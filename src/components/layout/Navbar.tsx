@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LogIn, LogOut, User, Shield, Menu, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { insforge, isBackendConfigured } from '../../lib/insforge';
 import { assetUrl } from '../../lib/assets';
 
 const navLinks = [
@@ -27,8 +27,8 @@ const Navbar: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (!user || !isSupabaseConfigured) { setIsAdmin(false); return; }
-        supabase.from('members').select('is_admin').eq('user_id', user.id).single().then(({ data }) => setIsAdmin(data?.is_admin === true));
+        if (!user || !isBackendConfigured) { setIsAdmin(false); return; }
+        insforge.database.from('members').select('is_admin').eq('user_id', user.id).single().then(({ data }) => setIsAdmin(data?.is_admin === true));
     }, [user]);
 
     return (

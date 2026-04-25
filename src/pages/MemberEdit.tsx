@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Save, AlertCircle, X, Camera, ArrowLeft, LogOut } from 'lucide-react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { insforge, isBackendConfigured } from '../lib/insforge';
 import imageCompression from 'browser-image-compression';
 import { useAuth } from '../contexts/AuthContext';
 import type { Member } from '../types';
@@ -73,11 +73,11 @@ const MemberEdit: React.FC = () => {
     }, [user, authLoading, navigate]);
 
     const fetchMemberData = async () => {
-        if (!user || !isSupabaseConfigured) return;
+        if (!user || !isBackendConfigured) return;
         setLoading(true);
         try {
             // 1. Check if current user is Admin
-            const { data: currentUserData } = await supabase
+            const { data: currentUserData } = await insforge.database
                 .from('members')
                 .select('is_admin')
                 .eq('user_id', user.id)
@@ -89,7 +89,7 @@ const MemberEdit: React.FC = () => {
             const searchParams = new URLSearchParams(window.location.search);
             const targetId = searchParams.get('id');
 
-            let query = supabase.from('members').select('*');
+            let query = insforge.database.from('members').select('*');
 
             if (targetId && isAdmin) {
                 // Admin editing another member by ID
@@ -225,17 +225,12 @@ const MemberEdit: React.FC = () => {
                 const fileName = `${user.id}-${Date.now()}.${fileExt}`;
                 const filePath = `${fileName}`;
 
-                const { error: uploadError } = await supabase.storage
+                const { data: uploadData, error: uploadError } = await insforge.storage
                     .from('member-photos')
                     .upload(filePath, photoFile);
 
                 if (uploadError) throw uploadError;
-
-                const { data: { publicUrl } } = supabase.storage
-                    .from('member-photos')
-                    .getPublicUrl(filePath);
-
-                currentPhotoUrl = publicUrl;
+                currentPhotoUrl = uploadData?.url || '';
             }
 
             const linksObject: { [key: string]: string } = {};
@@ -262,7 +257,7 @@ const MemberEdit: React.FC = () => {
                 updatedAt: new Date().toISOString(),
             };
 
-            const { error } = await supabase
+            const { error } = await insforge.database
                 .from('members')
                 .update(updates)
                 .eq('id', memberId);

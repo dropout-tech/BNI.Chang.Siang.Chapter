@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { insforge, isBackendConfigured } from '../../lib/insforge';
 import { initAnalytics, trackPageView } from '../../lib/analytics';
 
 const PageTracker = () => {
@@ -18,12 +18,12 @@ const PageTracker = () => {
         const track = async () => {
             trackPageView(location.pathname);
 
-            if (!isSupabaseConfigured) return;
+            if (!isBackendConfigured) return;
             try {
-                await supabase.from('page_views').insert({
+                await insforge.database.from('page_views').insert([{
                     path: location.pathname,
                     user_agent: navigator.userAgent,
-                });
+                }]);
             } catch (error) {
                 // Ignore errors
             }

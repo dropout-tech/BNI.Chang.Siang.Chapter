@@ -5,7 +5,7 @@ import MemberCard from '../components/members/MemberCard';
 import CategoryFilter from '../components/members/CategoryFilter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { insforge, isBackendConfigured } from '../lib/insforge';
 import { Search, Edit } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SEO from '../components/common/SEO';
@@ -37,11 +37,11 @@ const Members: React.FC = () => {
     // Check Admin Status
     React.useEffect(() => {
         const checkAdmin = async () => {
-            if (!user || !isSupabaseConfigured) {
+            if (!user || !isBackendConfigured) {
                 setIsAdmin(false);
                 return;
             }
-            const { data } = await supabase
+            const { data } = await insforge.database
                 .from('members')
                 .select('is_admin')
                 .eq('user_id', user.id)

@@ -1,5 +1,5 @@
 
-import { supabase, isSupabaseConfigured } from './supabase';
+import { insforge, isBackendConfigured } from './insforge';
 
 // Define the shape of our analytics configuration
 interface AnalyticsConfig {
@@ -49,15 +49,14 @@ export const trackEvent = async (eventName: string, details: any = {}) => {
         window.gtag('event', eventName, details);
     }
 
-    // 2. Send to Supabase (Internal High-Value Tracking)
-    if (!isSupabaseConfigured) return;
+    if (!isBackendConfigured) return;
     try {
-        await supabase.from('analytics_events').insert({
+        await insforge.database.from('analytics_events').insert([{
             event_name: eventName,
             event_data: details,
             user_agent: navigator.userAgent,
             path: window.location.pathname
-        });
+        }]);
     } catch (error) {
         // Silent fail for analytics
     }

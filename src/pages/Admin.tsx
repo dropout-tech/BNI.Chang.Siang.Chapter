@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { insforge, isBackendConfigured } from '../lib/insforge';
 import { useAuth } from '../contexts/AuthContext';
 import {
     Users, Activity, DollarSign, Calendar,
@@ -58,13 +58,13 @@ const Admin: React.FC = () => {
     }, [user]);
 
     const checkAdmin = async () => {
-        if (!user || !isSupabaseConfigured) {
+        if (!user || !isBackendConfigured) {
             navigate('/login');
             return;
         }
 
         try {
-            const { data, error } = await supabase
+            const { data, error } = await insforge.database
                 .from('members')
                 .select('is_admin')
                 .eq('user_id', user.id)
@@ -79,7 +79,7 @@ const Admin: React.FC = () => {
     };
 
     const fetchDashboardData = async () => {
-        if (!isSupabaseConfigured) { setLoading(false); return; }
+        if (!isBackendConfigured) { setLoading(false); return; }
         setLoading(true);
 
         try {
@@ -94,40 +94,40 @@ const Admin: React.FC = () => {
                 // 1. Members - Resilient Fetching
                 (async () => {
                     // Try createdAt first
-                    let res = await supabase.from('members').select('*').order('createdAt', { ascending: false });
+                    let res = await insforge.database.from('members').select('*').order('createdAt', { ascending: false });
                     if (res.error) {
                         console.warn('Attempted createdAt order failed, trying created_at...', res.error.message);
-                        res = await supabase.from('members').select('*').order('created_at', { ascending: false });
+                        res = await insforge.database.from('members').select('*').order('created_at', { ascending: false });
                     }
                     if (res.error) {
                         console.warn('Attempted created_at order failed, trying default order...', res.error.message);
-                        res = await supabase.from('members').select('*');
+                        res = await insforge.database.from('members').select('*');
                     }
                     return res;
                 })(),
                 // 2. Homepage Stats
                 // 2. Homepage Stats - Fail-safe
                 (async () => {
-                    try { return await supabase.from('homepage_stats').select('*').order('month', { ascending: false }).limit(1).maybeSingle(); }
+                    try { return await insforge.database.from('homepage_stats').select('*').order('month', { ascending: false }).limit(1).maybeSingle(); }
                     catch { return { data: null, error: null }; }
                 })(),
                 // 3. Page Views - Fail-safe
                 (async () => {
-                    try { return await supabase.from('page_views').select('*', { count: 'exact', head: true }); }
+                    try { return await insforge.database.from('page_views').select('*', { count: 'exact', head: true }); }
                     catch { return { count: 0, data: null, error: null }; }
                 })(),
                 // 4. Referrals - Resilient Fetching
                 (async () => {
                     try {
-                        let res = await supabase.from('referrals').select('*').order('created_at', { ascending: false });
-                        if (res.error) res = await supabase.from('referrals').select('*').order('createdAt', { ascending: false });
-                        if (res.error) res = await supabase.from('referrals').select('*');
+                        let res = await insforge.database.from('referrals').select('*').order('created_at', { ascending: false });
+                        if (res.error) res = await insforge.database.from('referrals').select('*').order('createdAt', { ascending: false });
+                        if (res.error) res = await insforge.database.from('referrals').select('*');
                         return res;
                     } catch { return { data: [], error: null }; }
                 })(),
                 // 5. Social Clicks - Fail-safe
                 (async () => {
-                    try { return await supabase.from('analytics_events').select('*', { count: 'exact', head: true }).eq('event_name', 'click_social'); }
+                    try { return await insforge.database.from('analytics_events').select('*', { count: 'exact', head: true }).eq('event_name', 'click_social'); }
                     catch { return { count: 0, data: null, error: null }; }
                 })()
             ]);
@@ -204,13 +204,13 @@ const Admin: React.FC = () => {
         if (!name) { alert('名稱無效'); return; }
 
         try {
-            const { error } = await supabase.from('members').insert({
+            const { error } = await insforge.database.from('members').insert([{
                 name,
                 industry: '新產業',
                 company: '新公司',
                 photo: siteConfig.defaultPhoto,
                 createdAt: new Date().toISOString()
-            }).select().single();
+            }]).select().single();
 
             if (error) throw error;
             alert(`已新增會員 ${name}，請點擊編輯按鈕完善資料。`);
@@ -223,7 +223,7 @@ const Admin: React.FC = () => {
     const handleDeleteReferral = async (id: string) => {
         if (!confirm('確定要刪除這筆引薦單嗎？此動作無法復原。')) return;
         try {
-            const { error } = await supabase.from('referrals').delete().eq('id', id);
+            const { error } = await insforge.database.from('referrals').delete().eq('id', id);
             if (error) throw error;
             setReferrals(referrals.filter(r => r.id !== id));
             alert('已刪除');
@@ -234,7 +234,7 @@ const Admin: React.FC = () => {
 
     const updateHomeStats = async () => {
         try {
-            const { error } = await supabase
+            const { error } = await insforge.database
                 .from('homepage_stats')
                 .upsert(homeStats, { onConflict: 'month' });
 
@@ -508,7 +508,7 @@ const Admin: React.FC = () => {
                                             return;
                                         }
 
-                                        const { error } = await supabase.from('referrals').insert({
+                                        const { error } = await insforge.database.from('referrals').insert([{
                                             title,
                                             description,
                                             referrer_name,
@@ -516,7 +516,7 @@ const Admin: React.FC = () => {
                                             referrer_story,
                                             referee_story,
                                             metrics: { amount: '洽談中', type: '專案合作' }
-                                        });
+                                        }]);
 
                                         if (error) {
                                             alert('新增失敗: ' + error.message);

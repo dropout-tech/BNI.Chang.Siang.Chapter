@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { insforge, isBackendConfigured } from '../lib/insforge';
 
 export interface Member {
     id: number;
@@ -15,7 +15,6 @@ export interface Member {
     services: string[];
     hashtags: string[];
     links: { [key: string]: string } | { type: string; url: string; icon?: string }[];
-
     editCount?: number;
     updatedAt?: string;
     phone?: string;
@@ -28,7 +27,7 @@ export const useMembers = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!isSupabaseConfigured) {
+        if (!isBackendConfigured) {
             setMembers([]);
             setLoading(false);
             return;
@@ -37,7 +36,7 @@ export const useMembers = () => {
         const fetchMembers = async () => {
             try {
                 setLoading(true);
-                const { data, error } = await supabase
+                const { data, error } = await insforge.database
                     .from('members')
                     .select('*')
                     .order('id', { ascending: true });
@@ -53,15 +52,6 @@ export const useMembers = () => {
         };
 
         fetchMembers();
-
-        const subscription = supabase
-            .channel('members_changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'members' }, fetchMembers)
-            .subscribe();
-
-        return () => {
-            subscription.unsubscribe();
-        };
     }, []);
 
     return { members, loading, error };

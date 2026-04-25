@@ -8,7 +8,7 @@ import { siteConfig } from '../../config/site.config';
 const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
     const [expanded, setExpanded] = useState(false);
 
-    // Handle both local paths and Supabase URLs
+    // Handle both local paths and InsForge URLs
     const getPhotoUrl = (photo: string) => {
         if (!photo) return siteConfig.defaultPhoto;
 

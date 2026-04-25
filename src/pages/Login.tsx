@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { insforge, isBackendConfigured } from '../lib/insforge';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
@@ -121,10 +121,10 @@ const Login: React.FC = () => {
     }, [mode]);
 
     const checkProfile = async () => {
-        if (!user || !isSupabaseConfigured) return;
+        if (!user || !isBackendConfigured) return;
 
         try {
-            const { data, error } = await supabase
+            const { data, error } = await insforge.database
                 .from('members')
                 .select('id, name')
                 .eq('user_id', user.id)
@@ -153,7 +153,7 @@ const Login: React.FC = () => {
 
     const loadUnclaimedMembers = async () => {
         // Fetch all members who don't have a user_id yet
-        const { data } = await supabase
+        const { data } = await insforge.database
             .from('members')
             .select('id, name, industry, photo')
             .is('user_id', null)
@@ -186,12 +186,9 @@ const Login: React.FC = () => {
                     throw new Error('兩次輸入的密碼不一致');
                 }
 
-                const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+                const { data: signUpData, error: signUpErr } = await insforge.auth.signUp({
                     email,
                     password,
-                    options: {
-                        captchaToken: captchaToken || undefined,
-                    }
                 });
 
                 if (signUpErr) {
@@ -201,9 +198,9 @@ const Login: React.FC = () => {
                     throw signUpErr;
                 }
 
-                // If signUpData.user is null but there was no error, it usually means 
-                // the user already exists (Supabase security feature)
-                if (signUpData?.user && signUpData.session === null && signUpData.user.identities?.length === 0) {
+                // If signUpData?.user is null but there was no error, it usually means 
+                // the user already exists (InsForge security feature)
+                if (signUpData?.user && signUpData?.accessToken === null && signUpData?.user.identities?.length === 0) {
                     setMessage({ text: '此 Email 已被註冊，請直接登入。', type: 'error' });
                     setMode('login');
                     return;
@@ -213,17 +210,15 @@ const Login: React.FC = () => {
                 setMode('login');
                 setCaptchaToken(null); // Reset captcha on success
             } else if (mode === 'login') {
-                const { error } = await supabase.auth.signInWithPassword({
+                const { error } = await insforge.auth.signInWithPassword({
                     email,
                     password,
-                    options: {
-                        captchaToken: captchaToken || undefined,
-                    }
                 });
                 if (error) throw error;
                 // useEffect will trigger checkProfile
             } else if (mode === 'forgot') {
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                const { error } = await insforge.auth.sendResetPasswordEmail({
+                    email,
                     redirectTo: `${window.location.origin}/member-edit?reset=true`,
                 });
                 if (error) throw error;
@@ -248,7 +243,7 @@ const Login: React.FC = () => {
             }
 
             // Update the selected member with current user's UUID
-            const { error } = await supabase
+            const { error } = await insforge.database
                 .from('members')
                 .update({ user_id: user.id })
                 .eq('id', selectedMemberId);
@@ -402,9 +397,9 @@ const Login: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={async () => {
-                                        const { error } = await supabase.auth.signInWithOAuth({
+                                        const { error } = await insforge.auth.signInWithOAuth({
                                             provider: 'google',
-                                            options: { redirectTo: window.location.origin }
+                                            redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
                                         });
                                         if (error) setMessage({ text: error.message, type: 'error' });
                                     }}
@@ -534,7 +529,7 @@ const Login: React.FC = () => {
                         <button
                             type="button"
                             onClick={async () => {
-                                await supabase.auth.signOut();
+                                await insforge.auth.signOut();
                                 setMode('login');
                             }}
                             className="w-full text-gray-500 text-sm py-2 hover:text-gray-300 mt-2"

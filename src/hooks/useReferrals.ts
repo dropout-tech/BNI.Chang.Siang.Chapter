@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { insforge, isBackendConfigured } from '../lib/insforge';
 
 export interface MemberInfo {
     name: string;
@@ -24,7 +24,7 @@ export const useReferrals = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!isSupabaseConfigured) {
+        if (!isBackendConfigured) {
             setReferrals([]);
             setLoading(false);
             return;
@@ -33,59 +33,39 @@ export const useReferrals = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                let { data: refsData, error: refsError } = await supabase
+                let { data: refsData, error: refsError } = await insforge.database
                     .from('referrals')
                     .select('*')
                     .order('created_at', { ascending: false });
 
                 if (refsError) {
-                    const altRes = await supabase
-                        .from('referrals')
-                        .select('*')
-                        .order('createdAt', { ascending: false });
-                    if (!altRes.error) { refsData = altRes.data; refsError = null; }
-                }
-
-                if (refsError) {
-                    const fallbackRes = await supabase.from('referrals').select('*');
-                    if (!fallbackRes.error) { refsData = fallbackRes.data; refsError = null; }
+                    const alt = await insforge.database.from('referrals').select('*');
+                    if (!alt.error) { refsData = alt.data; refsError = null; }
                 }
 
                 if (refsError) throw refsError;
                 if (!refsData || refsData.length === 0) { setReferrals([]); return; }
 
-                const { data: membersData } = await supabase
+                const { data: membersData } = await insforge.database
                     .from('members')
                     .select('name, industry, photo');
 
-                const membersMap = new Map(membersData?.map(m => [m.name, m]));
+                const membersMap = new Map(membersData?.map((m: any) => [m.name, m]));
 
-                const formattedReferrals: Referral[] = refsData.map((ref: any) => {
-                    const referrerDetails = membersMap.get(ref.referrer_name);
-                    const refereeDetails = membersMap.get(ref.referee_name);
+                const formatted: Referral[] = refsData.map((ref: any) => {
+                    const referrer = membersMap.get(ref.referrer_name);
+                    const referee = membersMap.get(ref.referee_name);
                     return {
                         id: ref.id,
                         title: ref.title,
                         description: ref.description,
                         metrics: ref.metrics || { amount: '0', type: 'TWD' },
-                        referrer: {
-                            name: ref.referrer_name,
-                            industry: referrerDetails?.industry || 'Unknown',
-                            photo: referrerDetails?.photo || '',
-                            story: ref.referrer_story,
-                            testimonial: ref.referrer_testimonial
-                        },
-                        referee: {
-                            name: ref.referee_name,
-                            industry: refereeDetails?.industry || 'Unknown',
-                            photo: refereeDetails?.photo || '',
-                            story: ref.referee_story,
-                            value: ref.referee_value || ''
-                        }
+                        referrer: { name: ref.referrer_name, industry: referrer?.industry || '', photo: referrer?.photo || '', story: ref.referrer_story },
+                        referee: { name: ref.referee_name, industry: referee?.industry || '', photo: referee?.photo || '', story: ref.referee_story, value: ref.referee_value || '' }
                     };
                 });
 
-                setReferrals(formattedReferrals);
+                setReferrals(formatted);
             } catch (err: any) {
                 console.error("Error loading referrals:", err);
                 setReferrals([]);
