@@ -10,6 +10,7 @@ export default defineConfig({
   ],
   build: {
     outDir: 'docs',
+    emptyOutDir: false,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
