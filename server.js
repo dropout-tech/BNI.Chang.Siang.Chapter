@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 8080;
 const DIST = path.join(__dirname, 'dist');
+const LEGACY_BASE_PATH = '/BNI.Chang.Siang.Chapter';
 
 console.log('Starting simple node server (v2.0 - SEO Enhanced)...');
 console.log(`PORT: ${PORT}`);
@@ -119,6 +120,11 @@ const server = http.createServer((req, res) => {
     }
 
     let requestPath = decodeURIComponent(req.url.split('?')[0]);
+    if (requestPath === LEGACY_BASE_PATH) {
+        requestPath = '/';
+    } else if (requestPath.startsWith(`${LEGACY_BASE_PATH}/`)) {
+        requestPath = requestPath.slice(LEGACY_BASE_PATH.length);
+    }
 
     if (requestPath === '/') {
         requestPath = '/index.html';

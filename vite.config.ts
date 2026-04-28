@@ -3,13 +3,13 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/BNI.Chang.Siang.Chapter/',
+  base: process.env.VITE_BASE_PATH || '/',
   plugins: [
     react(),
     tailwindcss(),
   ],
   build: {
-    outDir: 'docs',
+    outDir: 'dist',
     emptyOutDir: false,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
