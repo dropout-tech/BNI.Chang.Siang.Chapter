@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { insforge, isBackendConfigured } from '../lib/insforge';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/auth-context';
 import {
     Users, Activity, DollarSign, Calendar,
     Trash2, Plus, Save, Search, Shield, RefreshCw

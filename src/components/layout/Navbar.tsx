@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LogIn, LogOut, User, Shield, Menu, X } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/auth-context';
 import { insforge, isBackendConfigured } from '../../lib/insforge';
 import { assetUrl } from '../../lib/assets';
 

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Save, AlertCircle, X, Camera, ArrowLeft, LogOut } from 'lucide-react';
 import { insforge, isBackendConfigured } from '../lib/insforge';
 import imageCompression from 'browser-image-compression';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/auth-context';
 import type { Member } from '../types';
 import SEO from '../components/common/SEO';
 import { sanitizeText, sanitizeUrl } from '../lib/sanitize';

@@ -11,7 +11,7 @@ import PageTracker from './components/common/PageTracker';
 import BottomNav from './components/layout/BottomNav';
 import CustomCursor from './components/common/CustomCursor';
 import { SkeletonHero } from './components/common/Skeleton';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthProvider';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 

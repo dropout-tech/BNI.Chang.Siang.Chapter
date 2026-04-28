@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { insforge, isBackendConfigured } from '../lib/insforge';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/auth-context';
 import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
@@ -57,7 +57,7 @@ const TurnstileWidget: React.FC<{ siteKey: string, onVerify: (token: string) => 
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, refreshUser } = useAuth();
     const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'claim'>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -215,7 +215,8 @@ const Login: React.FC = () => {
                     password,
                 });
                 if (error) throw error;
-                // useEffect will trigger checkProfile
+                await refreshUser();
+                // useEffect will trigger checkProfile once user is set
             } else if (mode === 'forgot') {
                 const { error } = await insforge.auth.sendResetPasswordEmail({
                     email,
@@ -397,9 +398,10 @@ const Login: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={async () => {
+                                        const redirectTo = `${window.location.origin}${import.meta.env.BASE_URL}login`;
                                         const { error } = await insforge.auth.signInWithOAuth({
                                             provider: 'google',
-                                            redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
+                                            redirectTo,
                                         });
                                         if (error) setMessage({ text: error.message, type: 'error' });
                                     }}

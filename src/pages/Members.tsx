@@ -4,7 +4,7 @@ import { useMembers } from '../hooks/useMembers';
 import MemberCard from '../components/members/MemberCard';
 import CategoryFilter from '../components/members/CategoryFilter';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/auth-context';
 import { insforge, isBackendConfigured } from '../lib/insforge';
 import { Search, Edit } from 'lucide-react';
 import PageHero from '../components/common/PageHero';

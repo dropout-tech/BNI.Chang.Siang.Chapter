@@ -1,63 +1,33 @@
 
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-dotenv.config();
+/**
+ * InsForge 後台資料表 DDL 已移至同目錄：
+ *   scripts/insforge-schema.sql
+ *
+ * 請在 InsForge（或 Postgres）SQL Editor 貼上並執行該檔案。
+ * 舊版 Supabase 專用說明請見 scripts/supabase-rls.sql（若仍使用 Supabase）。
+ */
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-// Note: User needs SERVICE_ROLE_KEY to actually create tables via API if RLS is strict, 
-// but often we can just print the SQL.
-// Actually, I will just print the SQL for the user.
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const sqlPath = path.join(__dirname, 'insforge-schema.sql');
 
 console.log(`
--- 請在 Supabase SQL Editor 中執行以下 SQL 指令以建立必要的資料表 --
+============================================================
+InsForge 後台資料庫結構（homepage_stats / referrals / members 等）
+============================================================
+請將以下檔案內容貼到 InsForge Database → SQL Editor 執行：
 
--- 1. 建立網站數據表 (homepage_stats)
-CREATE TABLE IF NOT EXISTS homepage_stats (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    month VARCHAR(7) NOT NULL, -- Format: YYYY-MM
-    referral_count INTEGER DEFAULT 0,
-    referral_value NUMERIC(15,2) DEFAULT 0,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_by UUID REFERENCES auth.users(id),
-    UNIQUE(month)
-);
+  ${sqlPath}
 
--- Enabling RLS
-ALTER TABLE homepage_stats ENABLE ROW LEVEL SECURITY;
-
--- Policy: Everyone can read
-CREATE POLICY "Allow public read access" ON homepage_stats FOR SELECT USING (true);
-
--- Policy: Only Admins can update (We assume 'members' table has is_admin check logic, 
--- but simpler RLS for now: authenticated users can 'select', only admins 'insert/update')
--- Complex RLS for admin requires a custom claim or join. 
--- For now, let's allow authenticated users to Insert if they are admins (checked in app logic).
--- ideally:
--- CREATE POLICY "Allow admin update" ON homepage_stats FOR ALL USING (
---   auth.uid() IN (SELECT user_id FROM members WHERE is_admin = true)
--- );
-
--- 2. 建立頁面瀏覽紀錄表 (page_views)
-CREATE TABLE IF NOT EXISTS page_views (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    path VARCHAR(255) NOT NULL,
-    user_agent TEXT,
-    ip_address VARCHAR(45),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Enabling RLS
-ALTER TABLE page_views ENABLE ROW LEVEL SECURITY;
-
--- Policy: Everyone can insert (tracking)
-CREATE POLICY "Allow public insert" ON page_views FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow admin select" ON page_views FOR SELECT USING (
-    auth.uid() IN (SELECT user_id FROM members WHERE is_admin = true)
-);
-
--- 3. 確保 referrals 表存在 (如果尚未建立)
--- (這部分假設 referrals 表已經由之前的遷移腳本建立)
-
-console.log('SQL script instructions printed.');
-`);
+--- 檔案開頭預覽 ---`);
+try {
+    const sql = readFileSync(sqlPath, 'utf8');
+    const preview = sql.split('\n').slice(0, 25).join('\n');
+    console.log(preview);
+    console.log('...\n');
+} catch (e) {
+    console.error('無法讀取 insforge-schema.sql:', e.message);
+}
