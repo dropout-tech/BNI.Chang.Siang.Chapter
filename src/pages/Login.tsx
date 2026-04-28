@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { insforge, isBackendConfigured } from '../lib/insforge';
+import { getAuthRedirectUrl } from '../lib/authRedirect';
 import { useAuth } from '../contexts/auth-context';
 import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
@@ -151,17 +152,39 @@ const Login: React.FC = () => {
         }
     };
 
+    const normalizeEmail = (e: string | null | undefined) => (e?.trim().toLowerCase() ?? '');
+
     const loadUnclaimedMembers = async () => {
-        // Fetch all members who don't have a user_id yet
-        const { data } = await insforge.database
+        if (!user) return;
+
+        const { data, error } = await insforge.database
             .from('members')
-            .select('id, name, industry, photo')
+            .select('id, name, industry, photo, email')
             .is('user_id', null)
             .order('id', { ascending: true });
 
-        if (data) {
-            setUnclaimedMembers(data);
+        if (error) {
+            console.error('載入未認領會員失敗:', error);
+            setUnclaimedMembers([]);
+            return;
         }
+
+        const userEmail = normalizeEmail(user.email);
+        const rows = data ?? [];
+        const filtered = rows.filter((m) => {
+            const rowEmail = normalizeEmail(m.email);
+            if (!rowEmail) return true;
+            if (!userEmail) return true;
+            return rowEmail === userEmail;
+        });
+
+        filtered.sort((a, b) => {
+            const aMatch = userEmail && normalizeEmail(a.email) === userEmail ? 1 : 0;
+            const bMatch = userEmail && normalizeEmail(b.email) === userEmail ? 1 : 0;
+            return bMatch - aMatch;
+        });
+
+        setUnclaimedMembers(filtered);
     };
 
     const handleAuth = async (e: React.FormEvent) => {
@@ -189,6 +212,7 @@ const Login: React.FC = () => {
                 const { data: signUpData, error: signUpErr } = await insforge.auth.signUp({
                     email,
                     password,
+                    redirectTo: getAuthRedirectUrl('login'),
                 });
 
                 if (signUpErr) {
@@ -220,7 +244,7 @@ const Login: React.FC = () => {
             } else if (mode === 'forgot') {
                 const { error } = await insforge.auth.sendResetPasswordEmail({
                     email,
-                    redirectTo: `${window.location.origin}/member-edit?reset=true`,
+                    redirectTo: getAuthRedirectUrl('member-edit?reset=true'),
                 });
                 if (error) throw error;
                 setMessage({ text: '密碼重設信已發送，請檢查您的信箱。', type: 'success' });
@@ -238,6 +262,13 @@ const Login: React.FC = () => {
         setLoading(true);
 
         try {
+            const selected = unclaimedMembers.find((m) => m.id === selectedMemberId);
+            const rowEmail = normalizeEmail(selected?.email);
+            const userEmail = normalizeEmail(user.email);
+            if (rowEmail && userEmail && rowEmail !== userEmail) {
+                throw new Error('此會員檔案與您目前登入的 Email 不符，無法認領。');
+            }
+
             // Check division password
             if (claimPassword !== siteConfig.claimPassword) {
                 throw new Error('分會認證密碼錯誤，請洽詢網站管理員 (魔術方塊教學 李孟一)。');
@@ -398,10 +429,9 @@ const Login: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={async () => {
-                                        const redirectTo = `${window.location.origin}${import.meta.env.BASE_URL}login`;
                                         const { error } = await insforge.auth.signInWithOAuth({
                                             provider: 'google',
-                                            redirectTo,
+                                            redirectTo: getAuthRedirectUrl('login'),
                                         });
                                         if (error) setMessage({ text: error.message, type: 'error' });
                                     }}
@@ -469,6 +499,11 @@ const Login: React.FC = () => {
                             <div>
                                 歡迎！請從下方選擇您的會員檔案進行綁定。<br />
                                 <span className="text-xs opacity-70">綁定後，只有您能編輯此檔案。</span>
+                                {user?.email && (
+                                    <p className="text-xs opacity-80 mt-2">
+                                        若會員資料庫已填寫 Email，僅會顯示與您登入帳號（{user.email}）相符的未認領檔案；若列表為空請洽管理員更新會員 Email。
+                                    </p>
+                                )}
                             </div>
                         </div>
 

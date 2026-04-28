@@ -166,7 +166,9 @@ CREATE POLICY "members_admin_delete"
 CREATE POLICY "members_claim_unclaimed"
   ON public.members FOR UPDATE
   USING ( user_id IS NULL AND auth.uid() IS NOT NULL )
-  WITH CHECK ( auth.uid() IS NOT NULL );
+  WITH CHECK (
+    CAST(user_id AS text) = CAST(auth.uid() AS text)
+  );
 
 -- ----- RLS：page_views -----
 ALTER TABLE public.page_views ENABLE ROW LEVEL SECURITY;
