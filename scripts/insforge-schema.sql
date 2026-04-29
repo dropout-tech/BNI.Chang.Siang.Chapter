@@ -61,6 +61,9 @@ CREATE TABLE IF NOT EXISTS public.members (
     frozen_by TEXT
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS members_name_unique_idx
+    ON public.members (name);
+
 CREATE TABLE IF NOT EXISTS public.page_views (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     path VARCHAR(512),

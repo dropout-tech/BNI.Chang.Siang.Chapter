@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { insforge, isBackendConfigured } from '../lib/insforge';
+import { assetUrl } from '../lib/assets';
 
 export interface Member {
     id: number;
@@ -27,9 +28,25 @@ export const useMembers = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        const loadStaticMembers = async () => {
+            const response = await fetch(assetUrl('/data/members.json'));
+            if (!response.ok) throw new Error('Static members file not found');
+            const payload = await response.json();
+            const rows = Array.isArray(payload) ? payload : payload.members;
+            return (rows ?? []).map((member: Member, index: number) => ({
+                ...member,
+                id: Number(member.id) || index + 1,
+            }));
+        };
+
         if (!isBackendConfigured) {
-            setMembers([]);
-            setLoading(false);
+            loadStaticMembers()
+                .then(setMembers)
+                .catch((err) => {
+                    console.error('Error loading static members:', err);
+                    setError('無法載入會員資料');
+                })
+                .finally(() => setLoading(false));
             return;
         }
 
@@ -42,10 +59,19 @@ export const useMembers = () => {
                     .order('id', { ascending: true });
 
                 if (error) throw error;
-                setMembers(data || []);
+                if (data && data.length > 0) {
+                    setMembers(data);
+                    return;
+                }
+                setMembers(await loadStaticMembers());
             } catch (err) {
                 console.error('Error fetching members:', err);
-                setError('無法載入會員資料');
+                try {
+                    setMembers(await loadStaticMembers());
+                } catch (fallbackErr) {
+                    console.error('Error loading static members:', fallbackErr);
+                    setError('無法載入會員資料');
+                }
             } finally {
                 setLoading(false);
             }

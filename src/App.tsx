@@ -48,6 +48,7 @@ const AnimatedRoutes = () => {
           <Route path="/about-bni" element={<AboutBNI />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/members" element={<Members />} />
+          <Route path="/member" element={<Members />} />
           <Route path="/referrals" element={<Referrals />} />
           <Route path="/events" element={<Events />} />
           {/* Legacy route */}

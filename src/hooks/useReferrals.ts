@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { insforge, isBackendConfigured } from '../lib/insforge';
+import { assetUrl } from '../lib/assets';
 
 export interface MemberInfo {
     name: string;
@@ -24,9 +25,21 @@ export const useReferrals = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const loadStaticReferrals = async (): Promise<Referral[]> => {
+            const response = await fetch(assetUrl('/data/referrals.json'));
+            if (!response.ok) throw new Error('Static referrals file not found');
+            const payload = await response.json();
+            return Array.isArray(payload) ? payload : payload.referrals ?? [];
+        };
+
         if (!isBackendConfigured) {
-            setReferrals([]);
-            setLoading(false);
+            loadStaticReferrals()
+                .then(setReferrals)
+                .catch((err) => {
+                    console.error('Error loading static referrals:', err);
+                    setReferrals([]);
+                })
+                .finally(() => setLoading(false));
             return;
         }
 
@@ -44,7 +57,10 @@ export const useReferrals = () => {
                 }
 
                 if (refsError) throw refsError;
-                if (!refsData || refsData.length === 0) { setReferrals([]); return; }
+                if (!refsData || refsData.length === 0) {
+                    setReferrals(await loadStaticReferrals());
+                    return;
+                }
 
                 const { data: membersData } = await insforge.database
                     .from('members')
@@ -68,7 +84,12 @@ export const useReferrals = () => {
                 setReferrals(formatted);
             } catch (err: any) {
                 console.error("Error loading referrals:", err);
-                setReferrals([]);
+                try {
+                    setReferrals(await loadStaticReferrals());
+                } catch (fallbackErr) {
+                    console.error('Error loading static referrals:', fallbackErr);
+                    setReferrals([]);
+                }
             } finally {
                 setLoading(false);
             }
