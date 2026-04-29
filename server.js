@@ -38,9 +38,24 @@ const mimeTypes = {
 
 const indexHtmlCache = fs.readFileSync(path.join(DIST, 'index.html'), 'utf-8');
 
+function getRuntimePublicConfig() {
+    return {
+        INSFORGE_URL: process.env.VITE_INSFORGE_URL || process.env.INSFORGE_URL || process.env.INSFORGE_BASE_URL || '',
+        INSFORGE_ANON_KEY: process.env.VITE_INSFORGE_ANON_KEY || process.env.INSFORGE_ANON_KEY || process.env.ANON_KEY || '',
+    };
+}
+
+function injectRuntimeConfig(html) {
+    const config = getRuntimePublicConfig();
+    const script = `<script>window.__APP_CONFIG__=${JSON.stringify(config).replace(/</g, '\\u003c')};</script>`;
+    return html.includes('window.__APP_CONFIG__')
+        ? html
+        : html.replace('</head>', `  ${script}\n</head>`);
+}
+
 function injectSeoMeta(html, routePath) {
     const seo = seoRoutes[routePath];
-    if (!seo) return html;
+    if (!seo) return injectRuntimeConfig(html);
 
     let result = html;
 
@@ -94,13 +109,13 @@ function injectSeoMeta(html, routePath) {
         `<meta name="twitter:description" content="${seo.description}"`
     );
 
-    return result;
+    return injectRuntimeConfig(result);
 }
 
 const NOINDEX_ROUTES = ['/login', '/admin', '/member-edit'];
 
 function injectNoindex(html) {
-    return html.replace(
+    return injectRuntimeConfig(html).replace(
         '</head>',
         '  <meta name="robots" content="noindex, nofollow" />\n</head>'
     );

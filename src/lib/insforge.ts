@@ -1,7 +1,9 @@
 import { createClient } from '@insforge/sdk';
+import { getRuntimeConfig } from './runtimeConfig';
 
-const baseUrl = import.meta.env.VITE_INSFORGE_URL;
-const anonKey = import.meta.env.VITE_INSFORGE_ANON_KEY;
+const runtimeConfig = getRuntimeConfig();
+const baseUrl = import.meta.env.VITE_INSFORGE_URL || runtimeConfig.INSFORGE_URL;
+const anonKey = import.meta.env.VITE_INSFORGE_ANON_KEY || runtimeConfig.INSFORGE_ANON_KEY;
 
 export const isBackendConfigured = !!(baseUrl && anonKey);
 

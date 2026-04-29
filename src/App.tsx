@@ -19,6 +19,7 @@ const Home = lazy(() => import('./pages/Home'));
 const AboutBNI = lazy(() => import('./pages/AboutBNI'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
 const Members = lazy(() => import('./pages/Members'));
+const MemberProfile = lazy(() => import('./pages/MemberProfile'));
 const Referrals = lazy(() => import('./pages/Referrals'));
 const Events = lazy(() => import('./pages/Events'));
 const Login = lazy(() => import('./pages/Login'));
@@ -49,6 +50,8 @@ const AnimatedRoutes = () => {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/members" element={<Members />} />
           <Route path="/member" element={<Members />} />
+          <Route path="/members/:id" element={<MemberProfile />} />
+          <Route path="/member/:id" element={<MemberProfile />} />
           <Route path="/referrals" element={<Referrals />} />
           <Route path="/events" element={<Events />} />
           {/* Legacy route */}
