@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/auth-context';
 import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
+import { isAdminEmail } from '../lib/adminAccess';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -67,6 +68,11 @@ const Login: React.FC = () => {
 
     const checkProfile = async () => {
         if (!user || !isBackendConfigured) return;
+
+        if (isAdminEmail(user.email)) {
+            navigate('/admin');
+            return;
+        }
 
         try {
             const { data, error } = await insforge.database

@@ -4,6 +4,7 @@ import { LogIn, LogOut, User, Shield, Menu, X } from 'lucide-react';
 import { useAuth } from '../../contexts/auth-context';
 import { insforge, isBackendConfigured } from '../../lib/insforge';
 import { assetUrl } from '../../lib/assets';
+import { isAdminEmail } from '../../lib/adminAccess';
 
 const navLinks = [
     { name: '什麼是 BNI', path: '/about-bni' },
@@ -28,6 +29,7 @@ const Navbar: React.FC = () => {
 
     useEffect(() => {
         if (!user || !isBackendConfigured) { setIsAdmin(false); return; }
+        if (isAdminEmail(user.email)) { setIsAdmin(true); return; }
         insforge.database.from('members').select('is_admin').eq('user_id', user.id).single().then(({ data }) => setIsAdmin(data?.is_admin === true));
     }, [user]);
 

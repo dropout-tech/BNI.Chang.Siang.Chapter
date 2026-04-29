@@ -10,6 +10,7 @@ import type { Member } from '../types';
 import SEO from '../components/common/SEO';
 import { sanitizeText, sanitizeUrl } from '../lib/sanitize';
 import { siteConfig } from '../config/site.config';
+import { isAdminEmail } from '../lib/adminAccess';
 
 const CATEGORIES = [...siteConfig.industries];
 
@@ -77,13 +78,15 @@ const MemberEdit: React.FC = () => {
         setLoading(true);
         try {
             // 1. Check if current user is Admin
-            const { data: currentUserData } = await insforge.database
-                .from('members')
-                .select('is_admin')
-                .eq('user_id', user.id)
-                .single();
-
-            const isAdmin = currentUserData?.is_admin === true;
+            let isAdmin = isAdminEmail(user.email);
+            if (!isAdmin) {
+                const { data: currentUserData } = await insforge.database
+                    .from('members')
+                    .select('is_admin')
+                    .eq('user_id', user.id)
+                    .single();
+                isAdmin = currentUserData?.is_admin === true;
+            }
 
             // 2. Check URL params for target ID
             const searchParams = new URLSearchParams(window.location.search);

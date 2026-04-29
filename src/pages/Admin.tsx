@@ -12,6 +12,7 @@ import MemberList from '../components/admin/MemberList';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
 import { sanitizeText } from '../lib/sanitize';
+import { isAdminEmail } from '../lib/adminAccess';
 
 
 const Admin: React.FC = () => {
@@ -60,6 +61,10 @@ const Admin: React.FC = () => {
     const checkAdmin = async () => {
         if (!user || !isBackendConfigured) {
             navigate('/login');
+            return;
+        }
+
+        if (isAdminEmail(user.email)) {
             return;
         }
 

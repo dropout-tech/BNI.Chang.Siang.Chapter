@@ -89,11 +89,19 @@ SECURITY DEFINER
 SET search_path = public
 STABLE
 AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM public.members
-    WHERE CAST(user_id AS text) = CAST(auth.uid() AS text)
-      AND is_admin = true
-  );
+  SELECT
+    lower(coalesce(auth.email(), '')) = ANY (ARRAY[
+      'b1993614@gmail.com',
+      'info@dropout.tw',
+      'gg.gg2858@gmail.com',
+      'lauraliuanny@gmail.com',
+      'qoo77313@gmail.com'
+    ])
+    OR EXISTS (
+      SELECT 1 FROM public.members
+      WHERE CAST(user_id AS text) = CAST(auth.uid() AS text)
+        AND is_admin = true
+    );
 $$;
 
 -- ----- RLS：homepage_stats -----
