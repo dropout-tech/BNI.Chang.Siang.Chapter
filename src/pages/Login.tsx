@@ -9,53 +9,6 @@ import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
 
-declare global {
-    interface Window {
-        turnstile: any;
-    }
-}
-
-// Dedicated Turnstile Component to handle its own lifecycle strictly
-const TurnstileWidget: React.FC<{ siteKey: string, onVerify: (token: string) => void }> = ({ siteKey, onVerify }) => {
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const widgetIdRef = React.useRef<string | null>(null);
-
-    useEffect(() => {
-        let isMounted = true;
-
-        const renderWidget = () => {
-            if (window.turnstile && containerRef.current && !widgetIdRef.current && isMounted) {
-                try {
-                    // Force clear container to prevent multiple iframes
-                    containerRef.current.innerHTML = '';
-                    widgetIdRef.current = window.turnstile.render(containerRef.current, {
-                        sitekey: siteKey,
-                        callback: (token: string) => {
-                            if (isMounted) onVerify(token);
-                        },
-                    });
-                } catch (e) {
-                    console.warn('Turnstile render failed:', e);
-                }
-            }
-        };
-
-        // Small delay to ensure DOM is ready
-        const timer = setTimeout(renderWidget, 300);
-
-        return () => {
-            isMounted = false;
-            clearTimeout(timer);
-            if (window.turnstile && widgetIdRef.current) {
-                window.turnstile.remove(widgetIdRef.current);
-                widgetIdRef.current = null;
-            }
-        };
-    }, [siteKey]); // Only re-run if siteKey changes
-
-    return <div ref={containerRef} className="flex justify-center"></div>;
-};
-
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const { user, refreshUser } = useAuth();
@@ -69,10 +22,6 @@ const Login: React.FC = () => {
     const [claimPassword, setClaimPassword] = useState('');
     const [unclaimedMembers, setUnclaimedMembers] = useState<any[]>([]);
     const [selectedMemberId, setSelectedMemberId] = useState<string | number | null>(null);
-    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-
-    // Site Key Placeholder - User should replace this with their actual Cloudflare Turnstile Site Key
-    const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'; // Testing key
 
     // Validation helpers
     const validateEmail = (email: string) => {
@@ -115,11 +64,6 @@ const Login: React.FC = () => {
             checkProfile();
         }
     }, [user]);
-
-    // Cleanup token when switching modes
-    useEffect(() => {
-        setCaptchaToken(null);
-    }, [mode]);
 
     const checkProfile = async () => {
         if (!user || !isBackendConfigured) return;
@@ -232,7 +176,6 @@ const Login: React.FC = () => {
 
                 setMessage({ text: '註冊成功！請檢查信箱並點擊驗證連結。', type: 'success' });
                 setMode('login');
-                setCaptchaToken(null); // Reset captcha on success
             } else if (mode === 'login') {
                 const { error } = await insforge.auth.signInWithPassword({
                     email,
@@ -251,7 +194,6 @@ const Login: React.FC = () => {
             }
         } catch (err: any) {
             setMessage({ text: err.message, type: 'error' });
-            setCaptchaToken(null);
         } finally {
             setLoading(false);
         }
@@ -393,21 +335,9 @@ const Login: React.FC = () => {
                             </>
                         )}
 
-                        {(mode === 'login' || mode === 'signup') && (
-                            <div className="my-4 flex justify-center min-h-[65px]">
-                                <div id="turnstile-container-wrapper" key={mode}>
-                                    {/* Using a key on the wrapper ensures a fresh start whenever mode changes */}
-                                    <TurnstileWidget
-                                        siteKey={TURNSTILE_SITE_KEY}
-                                        onVerify={(token) => setCaptchaToken(token)}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
                         <button
                             type="submit"
-                            disabled={loading || ((mode === 'login' || mode === 'signup') && !captchaToken)}
+                            disabled={loading}
                             className="w-full bg-[#CF2030] hover:bg-[#CF2030]-dark text-white font-bold py-3 rounded-lg transition-colors mt-2 disabled:opacity-50"
                         >
                             {loading ? '處理中...' :
