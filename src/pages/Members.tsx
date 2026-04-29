@@ -101,13 +101,13 @@ const Members: React.FC = () => {
         <div className="min-h-screen relative">
             <SEO
                 title="台灣商會會員 | BNI 長翔名人堂白金分會企業家名錄"
-                description="探索 BNI 長翔名人堂白金分會的優秀企業家與專業人士。我們是台灣頂尖商會，涵蓋居住工程、品牌行銷、金融法稅、AI科技等 60+ 個產業類別，為台灣企業主媒合最專業的合作夥伴。"
+                description="探索 BNI 長翔名人堂白金分會的優秀企業家與專業人士。我們涵蓋健康醫療、工程裝修、企業服務、消費生活、資產管理五大產業鏈，為台灣企業主媒合專業合作夥伴。"
                 keywords="台灣商會會員, BNI會員, 長翔會員, 企業家名錄, 台北商會, 商務媒合, 行業專家, 企業合作, 台灣企業家, 商會推薦"
                 breadcrumbs={[{ name: '會員介紹', path: '/members' }]}
                 structuredData={{
                     '@type': 'CollectionPage',
                     name: 'BNI 長翔名人堂白金分會台灣商會會員名錄',
-                    description: '台灣 BNI 長翔名人堂白金分會涵蓋 60+ 個產業的優秀企業家與專業人士。',
+                    description: '台灣 BNI 長翔名人堂白金分會涵蓋五大產業鏈的優秀企業家與專業人士。',
                     url: 'https://changsiang.tw/members',
                     isPartOf: { '@id': 'https://changsiang.tw/#website' },
                     inLanguage: 'zh-TW'
@@ -115,7 +115,7 @@ const Members: React.FC = () => {
             />
             <PageHero
                 title="台灣商會會員"
-                subtitle={<>BNI 長翔名人堂白金分會 — 60+ 個產業的優質台灣企業家<br />我們為夥伴的生意著想，也為夥伴的生意做引薦</>}
+                subtitle={<>BNI 長翔名人堂白金分會 — 五大產業鏈、39 位優質台灣企業家<br />我們為夥伴的生意著想，也為夥伴的生意做引薦</>}
             />
 
             <div className="container mx-auto px-4 py-8 relative z-10 pt-4 md:pt-10">

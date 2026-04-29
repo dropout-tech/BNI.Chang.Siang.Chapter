@@ -54,15 +54,11 @@ export const siteConfig = {
     claimPassword: import.meta.env.VITE_CLAIM_PASSWORD || 'changsiang2025',
 
     industries: [
-        '居住與空間工程',
-        '企業營運與法稅',
-        '金融財富與資產',
-        '品牌整合與行銷',
-        '數位AI與創新科技',
-        '身心健康與醫療',
-        '飲食文化與食品',
-        '教育學習與休閒',
-        '永續發展與製造',
+        '健康醫療',
+        '工程裝修',
+        '企業服務',
+        '消費生活',
+        '資產管理',
     ],
 } as const;
 

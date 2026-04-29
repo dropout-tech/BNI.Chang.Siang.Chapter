@@ -61,6 +61,16 @@ const Referrals: React.FC = () => {
                     </p>
                 </div>
 
+                {referrals.length === 0 && (
+                    <div className="card-elevated max-w-3xl mx-auto p-8 md:p-10 text-center mb-10">
+                        <p className="text-[#CF2030] font-bold text-xl mb-3">長翔正式引薦案例整理中</p>
+                        <p className="text-gray-600 leading-relaxed">
+                            舊站引薦故事已先清除，避免展示非長翔分會資料。長翔分會目前累積 25,072 筆引薦單，
+                            總累積交易金額 $428,843,116，待正式案例內容確認後會再補上完整故事。
+                        </p>
+                    </div>
+                )}
+
                 {/* Referrals Grid - Waterfall/Vertical Stack on Mobile */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 pb-8 md:pb-0 max-w-6xl mx-auto">
                     {referrals.map((referral, index) => {
