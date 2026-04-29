@@ -54,10 +54,10 @@ const Referrals: React.FC = () => {
             <div className="container mx-auto px-4 py-12 relative z-10">
 
                 {/* Weekly Feature Note */}
-                <div className="bg-red-50 border border-[#CF2030]/20 rounded-xl p-4 mb-8 text-center max-w-2xl mx-auto">
+                <div className="card-elevated p-5 mb-8 text-center max-w-2xl mx-auto">
                     <p className="text-[#CF2030] font-bold text-lg mb-1">每週精選案例</p>
-                    <p className="text-gray-400 text-sm">
-                        實際上門引薦單遠大於此，目前已累積 <span className="text-white font-mono font-bold">16,800+</span> 筆引薦商機，這裡僅展示每週精選的成功故事。
+                    <p className="text-gray-600 text-sm">
+                        實際上門引薦單遠大於此，目前已累積 <span className="text-[#CF2030] font-mono font-bold">16,800+</span> 筆引薦商機，這裡僅展示每週精選的成功故事。
                     </p>
                 </div>
 
@@ -72,30 +72,30 @@ const Referrals: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1, duration: 0.5 }}
                                     onClick={() => toggleReferral(referral.id)}
-                                    className={`bg-white/60 backdrop-blur-md border rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] group flex flex-col cursor-pointer h-full ${isSelected ? 'border-[#CF2030] ring-1 ring-primary z-20 scale-[1.02]' : 'border-gray-200 hover:border-[#CF2030]/50'
+                                    className={`card-elevated overflow-hidden group flex flex-col cursor-pointer h-full ${isSelected ? 'border-[#CF2030] ring-2 ring-[#CF2030]/10 z-20 scale-[1.02]' : ''
                                         }`}
                                 >
                                     <div className="h-2 bg-gradient-to-r from-primary-light via-primary to-primary-dark transition-opacity" />
 
                                     <div className="p-6 md:p-8 flex-grow flex flex-col">
-                                        <h3 className={`text-xl md:text-2xl font-bold mb-4 transition-colors leading-snug ${isSelected ? 'text-[#CF2030]' : 'text-white group-hover:text-[#CF2030]'}`}>
+                                        <h3 className={`text-xl md:text-2xl font-bold mb-4 transition-colors leading-snug ${isSelected ? 'text-[#CF2030]' : 'text-gray-900 group-hover:text-[#CF2030]'}`}>
                                             {referral.title}
                                         </h3>
 
                                         <div className="flex items-start gap-4 mb-6">
                                             <Quote className="text-[#CF2030]/40 shrink-0 transform rotate-180" size={32} />
                                             <div className="flex-1">
-                                                <p className={`text-gray-300 text-base leading-relaxed ${isSelected ? '' : 'line-clamp-3'}`}>
+                                                <p className={`text-gray-600 text-base leading-relaxed ${isSelected ? '' : 'line-clamp-3'}`}>
                                                     {referral.description}
                                                 </p>
                                                 {isSelected && (
                                                     <div className="mt-8 space-y-6">
                                                         {referral.referrer?.story && (
-                                                            <div className="bg-gray-50 rounded-2xl p-5 border-l-4 border-[#CF2030]/50 relative">
+                                                            <div className="bg-white rounded-2xl p-5 border-l-4 border-[#CF2030]/50 relative shadow-sm">
                                                                 <div className="absolute -top-3 left-6 px-2 bg-white text-[#CF2030] text-[10px] font-bold uppercase tracking-widest">
                                                                     引薦人真心話
                                                                 </div>
-                                                                <p className="text-gray-300 text-sm leading-relaxed italic">
+                                                                <p className="text-gray-600 text-sm leading-relaxed italic">
                                                                     "{referral.referrer.story}"
                                                                 </p>
                                                                 <div className="mt-2 text-right">
@@ -105,11 +105,11 @@ const Referrals: React.FC = () => {
                                                         )}
 
                                                         {referral.referee?.story && (
-                                                            <div className="bg-[#CF2030]/5 rounded-2xl p-5 border-r-4 border-[#CF2030]-light/50 relative">
+                                                            <div className="bg-[#CF2030]/5 rounded-2xl p-5 border-r-4 border-[#E8394A]/50 relative">
                                                                 <div className="absolute -top-3 right-6 px-2 bg-white text-[#E8394A] text-[10px] font-bold uppercase tracking-widest">
                                                                     被引薦人回饋
                                                                 </div>
-                                                                <p className="text-gray-200 text-sm leading-relaxed">
+                                                                <p className="text-gray-600 text-sm leading-relaxed">
                                                                     {referral.referee.story}
                                                                 </p>
                                                                 <div className="mt-2 flex items-center gap-2">
@@ -124,11 +124,11 @@ const Referrals: React.FC = () => {
                                         </div>
 
                                         {/* Metrics Badge */}
-                                        <div className="bg-red-50 rounded-xl p-6 mb-8 border border-[#CF2030]/20 mt-auto">
+                                        <div className="bg-gradient-to-br from-red-50 to-white rounded-2xl p-6 mb-8 border border-[#CF2030]/15 mt-auto shadow-inner">
                                             <div className="text-xs text-[#E8394A] uppercase tracking-wider mb-2 font-bold">成效數據</div>
                                             <div className="flex justify-between items-end">
-                                                <div className="font-bold text-white text-2xl">{referral.metrics.amount}</div>
-                                                <div className="text-sm text-gray-400 font-medium px-2 py-1 bg-gray-50 rounded">{referral.metrics.type}</div>
+                                                <div className="font-bold text-[#CF2030] text-2xl">{referral.metrics.amount}</div>
+                                                <div className="text-sm text-gray-600 font-medium px-2 py-1 bg-white rounded border border-red-100">{referral.metrics.type}</div>
                                             </div>
                                         </div>
 
@@ -147,8 +147,8 @@ const Referrals: React.FC = () => {
                                                     </div>
                                                     <div className="overflow-hidden">
                                                         <div className="text-xs text-gray-500 mb-0.5">引薦人</div>
-                                                        <div className="font-bold text-base truncate text-white">{referral.referrer.name}</div>
-                                                        <div className="text-xs text-gray-400 truncate">{referral.referrer.industry}</div>
+                                                        <div className="font-bold text-base truncate text-gray-900">{referral.referrer.name}</div>
+                                                        <div className="text-xs text-gray-500 truncate">{referral.referrer.industry}</div>
                                                     </div>
                                                 </div>
 
@@ -162,8 +162,8 @@ const Referrals: React.FC = () => {
                                                 <div className="flex items-center gap-4 w-[45%] justify-end text-right">
                                                     <div className="overflow-hidden">
                                                         <div className="text-xs text-gray-500 mb-0.5">被引薦人</div>
-                                                        <div className="font-bold text-base truncate text-white">{referral.referee.name}</div>
-                                                        <div className="text-xs text-gray-400 truncate">{referral.referee.industry}</div>
+                                                        <div className="font-bold text-base truncate text-gray-900">{referral.referee.name}</div>
+                                                        <div className="text-xs text-gray-500 truncate">{referral.referee.industry}</div>
                                                     </div>
                                                     <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 shrink-0">
                                                         <img

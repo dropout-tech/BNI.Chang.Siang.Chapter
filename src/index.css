@@ -17,7 +17,10 @@
 }
 
 html, body {
-  background-color: #FFFFFF;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(207, 32, 48, 0.08), transparent 30%),
+    radial-gradient(circle at 88% 0%, rgba(232, 57, 74, 0.08), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #fffafa 42%, #ffffff 100%);
   color: #333333;
   min-height: 100vh;
   margin: 0; padding: 0;
@@ -25,6 +28,20 @@ html, body {
   font-family: 'Noto Sans TC', -apple-system, sans-serif;
 }
 #root { min-height: 100vh; display: flex; flex-direction: column; }
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(207, 32, 48, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(207, 32, 48, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 70%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 70%);
+}
 
 /* === BNI Red Gradient Button === */
 .bni-btn {
@@ -43,18 +60,41 @@ html, body {
 /* === Dividers === */
 .red-line { height: 3px; width: 60px; background: linear-gradient(90deg, #CF2030, #E8394A); border-radius: 2px; }
 
+.bni-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(207, 32, 48, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #CF2030;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow: 0 12px 30px rgba(207, 32, 48, 0.08);
+}
+
+.bni-gradient-text {
+  background: linear-gradient(135deg, #1f1f1f 0%, #CF2030 42%, #A51926 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* === Elevated Card === */
 .card-elevated {
-  background: #fff;
-  border: 1px solid #f0f0f0;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+  background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,250,250,0.88));
+  border: 1px solid rgba(207,32,48,0.10);
+  border-radius: 22px;
+  box-shadow: 0 18px 45px rgba(24,24,27,0.06), 0 4px 16px rgba(207,32,48,0.04);
   transition: all 0.3s ease;
 }
 .card-elevated:hover {
-  box-shadow: 0 8px 30px rgba(207,32,48,0.08), 0 2px 8px rgba(0,0,0,0.04);
-  border-color: rgba(207,32,48,0.15);
-  transform: translateY(-2px);
+  box-shadow: 0 22px 60px rgba(207,32,48,0.12), 0 8px 20px rgba(24,24,27,0.05);
+  border-color: rgba(207,32,48,0.24);
+  transform: translateY(-4px);
 }
 
 /* === Red Glow === */

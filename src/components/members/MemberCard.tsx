@@ -61,13 +61,13 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
             className="flex flex-col h-full"
         >
             <div className={clsx(
-                "bg-white/60 backdrop-blur-md border border-gray-200 rounded-2xl p-6 overflow-hidden transition-all duration-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-[#CF2030]/50 relative group flex flex-col h-full",
+                "card-elevated p-6 overflow-hidden relative group flex flex-col h-full",
             )}>
                 {/* Top Border Gradient */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#A51926] via-[#CF2030] to-[#E8394A] opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                 <div className="flex flex-col items-center text-center flex-grow">
-                    <div className="w-28 h-28 rounded-full border-2 border-[#CF2030] p-1 mb-4 relative shrink-0">
+                    <div className="w-28 h-28 rounded-full border-2 border-[#CF2030]/80 p-1 mb-4 relative shrink-0 shadow-[0_12px_30px_rgba(207,32,48,0.14)] bg-white">
                         <img
                             src={imgSrc}
                             alt={member.name}
@@ -79,11 +79,11 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
                     </div>
 
                     <h3 className="text-xl font-bold text-[#CF2030] mb-1">{member.name}</h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
-                        <span className="px-3 py-1 bg-red-50 rounded-full text-[#CF2030] border border-[#CF2030]/20 text-xs font-medium">{member.industry}</span>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                        <span className="px-3 py-1 bg-red-50 rounded-full text-[#CF2030] border border-[#CF2030]/20 text-xs font-bold">{member.industry}</span>
                     </div>
 
-                    <div className={clsx("text-gray-300 text-sm mb-3 line-clamp-3", !expanded && "min-h-[3.6em]")}>
+                    <div className={clsx("text-gray-600 text-sm mb-3 line-clamp-3 leading-relaxed", !expanded && "min-h-[3.6em]")}>
                         {member.shortIntro || member.fullIntro}
                     </div>
 
@@ -94,7 +94,7 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="text-left text-sm text-gray-300 border-t border-gray-200 pt-3 mt-2 overflow-hidden"
+                                    className="text-left text-sm text-gray-600 border-t border-red-100 pt-3 mt-2 overflow-hidden"
                                 >
                                     <div className="space-y-2 mb-4">
                                         {member.company && (
@@ -107,7 +107,7 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
 
                                     <div className="mb-4">
                                         <h4 className="text-[#CF2030] text-xs uppercase tracking-wider mb-2 font-bold">個人介紹</h4>
-                                        <p className="leading-relaxed text-gray-300 text-sm whitespace-pre-line">
+                                        <p className="leading-relaxed text-gray-600 text-sm whitespace-pre-line">
                                             {member.fullIntro ? member.fullIntro.replace(/\\n/g, '\n') : ''}
                                         </p>
                                     </div>
@@ -115,7 +115,7 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
                                     {member.services && member.services.length > 0 && (
                                         <div className="mb-4">
                                             <h4 className="text-[#CF2030] text-xs uppercase tracking-wider mb-2 font-bold">服務項目</h4>
-                                            <ul className="space-y-1 text-gray-300 text-sm">
+                                            <ul className="space-y-1 text-gray-600 text-sm">
                                                 {member.services.map((s, i) => (
                                                     <li key={i} className="flex items-start gap-2">
                                                         <span className="text-[#CF2030] mt-0.5">•</span>
@@ -197,7 +197,7 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
                                                         href={link.url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="p-2 bg-gray-50 rounded-full hover:bg-[#CF2030] hover:text-white transition-colors text-gray-400"
+                                                        className="p-2 bg-red-50 rounded-full hover:bg-[#CF2030] hover:text-white transition-colors text-[#CF2030] border border-red-100"
                                                         title={getLabel()}
                                                     >
                                                         {getIcon()}

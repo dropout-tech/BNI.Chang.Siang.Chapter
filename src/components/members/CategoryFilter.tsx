@@ -24,8 +24,8 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, activeCateg
                     className={clsx(
                         "px-5 py-2 rounded-full border transition-all duration-300 backdrop-blur-sm whitespace-nowrap shrink-0",
                         activeCategory === cat
-                            ? "bg-[#CF2030] text-white border-[#CF2030] font-bold shadow-[0_0_15px_rgba(212,175,55,0.3)]"
-                            : "bg-gray-50 text-gray-300 border-gray-200 hover:border-[#CF2030] hover:text-[#CF2030]"
+                            ? "bg-[#CF2030] text-white border-[#CF2030] font-bold shadow-[0_12px_26px_rgba(207,32,48,0.22)]"
+                            : "bg-white/85 text-gray-600 border-red-100 hover:border-[#CF2030]/45 hover:text-[#CF2030] hover:bg-red-50"
                     )}
                 >
                     {cat}

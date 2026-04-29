@@ -32,17 +32,17 @@ const Navbar: React.FC = () => {
     }, [user]);
 
     return (
-        <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'}`}>
+        <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 shadow-[0_14px_40px_rgba(24,24,27,0.08)] backdrop-blur-xl' : 'bg-white/85 backdrop-blur-xl'}`}>
             {/* BNI Red top line */}
-            <div className="h-1 bg-[#CF2030]" />
+            <div className="h-1 bg-gradient-to-r from-[#A51926] via-[#CF2030] to-[#E8394A]" />
 
             <div className="container mx-auto px-4 flex justify-between items-center h-16 md:h-20">
                 {/* Logo */}
                 <NavLink to="/" className="flex items-center gap-3 shrink-0">
                     <img src={assetUrl('/images/assets/logo/bni-logo-new.png')} alt="BNI" className="h-10 md:h-12 w-auto" />
-                    <div className="hidden sm:block border-l border-gray-200 pl-3">
+                    <div className="hidden sm:block border-l border-[#CF2030]/15 pl-3">
                         <div className="text-[#333] font-bold text-sm leading-tight">長翔名人堂</div>
-                        <div className="text-[#CF2030] text-xs font-medium">白金分會</div>
+                        <div className="text-[#CF2030] text-xs font-bold tracking-[0.16em] uppercase">白金分會</div>
                     </div>
                 </NavLink>
 
@@ -50,12 +50,12 @@ const Navbar: React.FC = () => {
                 <div className="hidden lg:flex items-center gap-1">
                     {navLinks.map(link => (
                         <NavLink key={link.path} to={link.path}
-                            className={({ isActive }) => `px-4 py-2 text-sm font-medium rounded-md transition-colors ${isActive ? 'text-[#CF2030] bg-red-50' : 'text-gray-600 hover:text-[#CF2030] hover:bg-red-50/50'}`}>
+                            className={({ isActive }) => `px-4 py-2 text-sm font-semibold rounded-full transition-all ${isActive ? 'text-[#CF2030] bg-red-50 shadow-inner' : 'text-gray-600 hover:text-[#CF2030] hover:bg-red-50/70'}`}>
                             {link.name}
                         </NavLink>
                     ))}
                     <a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
-                        className="ml-3 px-5 py-2 text-sm font-bold text-white bg-[#CF2030] rounded-full hover:bg-[#A51926] transition-colors">
+                        className="ml-3 px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-[#CF2030] to-[#E8394A] rounded-full shadow-[0_12px_28px_rgba(207,32,48,0.24)] hover:shadow-[0_16px_34px_rgba(207,32,48,0.32)] hover:-translate-y-0.5 transition-all">
                         預約參訪
                     </a>
                     {user ? (
@@ -75,7 +75,7 @@ const Navbar: React.FC = () => {
             </div>
 
             {mobileOpen && (
-                <div className="lg:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-1 shadow-lg">
+                <div className="lg:hidden bg-white/95 backdrop-blur-xl border-t border-red-100 px-4 py-4 space-y-1 shadow-lg">
                     {navLinks.map(link => (
                         <NavLink key={link.path} to={link.path} onClick={() => setMobileOpen(false)}
                             className={({ isActive }) => `block px-4 py-3 rounded-lg text-sm font-medium ${isActive ? 'text-[#CF2030] bg-red-50' : 'text-gray-600 hover:bg-gray-50'}`}>

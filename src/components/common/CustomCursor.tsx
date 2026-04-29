@@ -52,7 +52,7 @@ const CustomCursor: React.FC = () => {
 
     return (
         <motion.div
-            className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[9999] mix-blend-exclusion flex items-center justify-center"
+            className="fixed top-0 left-0 w-7 h-7 rounded-full pointer-events-none z-[9999] flex items-center justify-center border border-[#CF2030]/60 shadow-[0_0_18px_rgba(207,32,48,0.18)]"
             style={{
                 x: cursorX,
                 y: cursorY,
@@ -60,15 +60,16 @@ const CustomCursor: React.FC = () => {
                 translateY: '-50%',
             }}
             animate={{
-                scale: isHovering ? 2.5 : 1,
+                scale: isHovering ? 1.7 : 1,
                 opacity: hidden ? 0 : 1,
-                backgroundColor: isHovering ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.4)',
+                backgroundColor: isHovering ? 'rgba(207, 32, 48, 0.08)' : 'rgba(255, 255, 255, 0.65)',
+                borderColor: isHovering ? 'rgba(207, 32, 48, 0.9)' : 'rgba(207, 32, 48, 0.6)',
             }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
             <motion.div 
-                className="w-1 h-1 bg-white rounded-full"
-                animate={{ opacity: isHovering ? 0 : 1 }}
+                className="w-1.5 h-1.5 bg-[#CF2030] rounded-full"
+                animate={{ opacity: isHovering ? 0.65 : 1, scale: isHovering ? 0.75 : 1 }}
             />
         </motion.div>
     );

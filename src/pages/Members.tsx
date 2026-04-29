@@ -122,7 +122,7 @@ const Members: React.FC = () => {
                 <div className="text-center mb-8 relative z-10">
 
                     {/* Search Bar - Sticky on Mobile */}
-                    <div className="sticky top-[60px] md:top-[80px] z-30 bg-bg-[#CF2030]/95 backdrop-blur-xl py-4 -mx-4 px-4 mb-2 transition-all shadow-sm md:shadow-none md:static md:bg-transparent md:p-0">
+                    <div className="sticky top-[60px] md:top-[80px] z-30 bg-white/90 backdrop-blur-xl py-4 -mx-4 px-4 mb-2 transition-all shadow-sm md:shadow-none md:static md:bg-transparent md:p-0">
                         <motion.div
                             initial={{ opacity: 0, width: "80%" }}
                             animate={{ opacity: 1, width: "100%" }}
@@ -136,7 +136,7 @@ const Members: React.FC = () => {
                                 placeholder="搜尋會員名字、行業、公司..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-white/80 backdrop-blur-sm border border-gray-600 rounded-full py-3.5 pl-12 pr-6 text-white placeholder-gray-500 focus:outline-none focus:border-[#CF2030] focus:ring-1 focus:ring-primary transition-all shadow-lg"
+                                className="w-full bg-white/90 backdrop-blur-sm border border-red-100 rounded-full py-3.5 pl-12 pr-6 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#CF2030] focus:ring-2 focus:ring-[#CF2030]/15 transition-all shadow-[0_14px_34px_rgba(207,32,48,0.08)]"
                             />
                         </motion.div>
                     </div>
@@ -187,13 +187,13 @@ const Members: React.FC = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.3, duration: 0.6 }}
-                    className="bg-gray-50 backdrop-blur-md rounded-2xl p-6 md:p-8 max-w-3xl mx-auto mb-20 border border-gray-200 text-left"
+                    className="card-elevated p-6 md:p-8 max-w-3xl mx-auto mb-20 text-left"
                 >
                     <div className="text-center mb-6">
                         <h3 className="text-xl md:text-2xl font-bold text-[#CF2030] mb-2">BNI 會員宣示</h3>
                         <div className="w-12 h-1 bg-[#CF2030]/50 mx-auto rounded-full"></div>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-x-8 gap-y-4 text-gray-300 text-sm md:text-base">
+                    <div className="grid md:grid-cols-2 gap-x-8 gap-y-4 text-gray-600 text-sm md:text-base">
                         {[
                             "我願意提供我所承諾的服務品質與價格",
                             "我願意對會員及其引薦對象誠實",
