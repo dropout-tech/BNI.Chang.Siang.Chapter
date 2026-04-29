@@ -21,6 +21,7 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
     };
 
     const [imgSrc, setImgSrc] = useState(getPhotoUrl(member.photo));
+    const isDefaultPhoto = imgSrc === siteConfig.defaultPhoto || !member.photo;
 
     // Update image when member prop changes
     React.useEffect(() => {
@@ -50,7 +51,7 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
                             src={imgSrc}
                             alt={member.name}
                             loading="lazy"
-                                className="h-full w-full rounded-full bg-white object-cover"
+                            className={`h-full w-full rounded-full bg-white ${isDefaultPhoto ? 'object-contain p-5' : 'object-cover'}`}
                             style={{ objectPosition: member.photoPosition || 'center 20%' }}
                             onError={() => setImgSrc(siteConfig.defaultPhoto)}
                         />

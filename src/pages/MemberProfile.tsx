@@ -25,6 +25,7 @@ const MemberProfile: React.FC = () => {
     );
 
     const photo = member?.photo ? assetUrl(member.photo) : siteConfig.defaultPhoto;
+    const isDefaultPhoto = photo === siteConfig.defaultPhoto || !member?.photo;
     const idealTargets = member ? getIntroSection(member.fullIntro || '', '理想引薦對象') : '';
     const intro = member?.fullIntro?.split('【理想引薦對象】')[0]?.trim() || member?.shortIntro || '';
 
@@ -79,7 +80,7 @@ const MemberProfile: React.FC = () => {
                                 <img
                                     src={photo}
                                     alt={member.name}
-                                    className="h-full w-full rounded-full object-cover"
+                                    className={`h-full w-full rounded-full ${isDefaultPhoto ? 'object-contain p-7' : 'object-cover'}`}
                                     style={{ objectPosition: member.photoPosition || 'center 20%' }}
                                     onError={(event) => { event.currentTarget.src = siteConfig.defaultPhoto; }}
                                 />

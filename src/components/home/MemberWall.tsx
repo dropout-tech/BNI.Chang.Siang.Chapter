@@ -2,18 +2,20 @@ import React, { useState } from 'react';
 import { useMembers } from '../../hooks/useMembers';
 import { motion } from 'framer-motion';
 import { assetUrl } from '../../lib/assets';
+import { siteConfig } from '../../config/site.config';
 
 const MemberThumbnail: React.FC<{ photo: string, name: string, industry: string, photoPosition?: string }> = ({ photo, name, industry, photoPosition }) => {
     const [imgSrc, setImgSrc] = useState(assetUrl(photo));
     React.useEffect(() => { setImgSrc(assetUrl(photo)); }, [photo]);
+    const isDefaultPhoto = imgSrc === siteConfig.defaultPhoto || !photo;
 
     return (
-        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex-shrink-0 mx-4 relative group cursor-pointer border-2 border-gray-200 hover:border-[#CF2030] transition-all duration-300 shadow-sm hover:shadow-md">
+        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex-shrink-0 mx-4 relative group cursor-pointer border-2 border-gray-200 hover:border-[#CF2030] transition-all duration-300 shadow-sm hover:shadow-md bg-white">
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 z-10" />
             <img src={imgSrc} alt={name} loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                className={`w-full h-full transition-transform duration-500 group-hover:scale-110 ${isDefaultPhoto ? 'object-contain p-5' : 'object-cover'}`}
                 style={{ objectPosition: photoPosition || 'center 20%' }}
-                onError={() => setImgSrc(assetUrl('/images/assets/logo/白色正方形logo.png'))} />
+                onError={() => setImgSrc(siteConfig.defaultPhoto)} />
             <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 p-2">
                 <span className="text-white text-sm font-bold drop-shadow-md text-center mb-1">{name}</span>
                 <span className="text-white/80 text-[10px] bg-[#CF2030]/80 px-2 py-0.5 rounded-full">{industry}</span>

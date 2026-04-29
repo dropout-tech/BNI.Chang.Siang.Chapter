@@ -49,7 +49,7 @@ export const siteConfig = {
         bni: `${import.meta.env.BASE_URL}images/assets/logo/bni-logo-new.png`,
     },
 
-    defaultPhoto: `${import.meta.env.BASE_URL}images/assets/logo/白色正方形logo.png`,
+    defaultPhoto: `${import.meta.env.BASE_URL}images/assets/logo/bni-logo-new.png`,
 
     claimPassword: import.meta.env.VITE_CLAIM_PASSWORD || 'changsiang2025',
 
