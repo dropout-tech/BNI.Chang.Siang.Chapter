@@ -44,7 +44,7 @@ const Contact: React.FC = () => {
                             <GlowingChevron direction="right" className="hidden sm:block opacity-70" />
                         </div>
                         <h2 className="m-0 text-4xl font-black tracking-tight text-[#222] md:text-5xl">
-                            預約參訪，<span className="bni-gradient-text">聯繫長翔三長</span>
+                            預約參訪，<span className="bni-gradient-text">請聯繫長翔三長</span>
                         </h2>
                     </motion.div>
                     <motion.p

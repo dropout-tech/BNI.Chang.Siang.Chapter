@@ -29,11 +29,10 @@ const Home: React.FC = () => (
             showScrollIndicator
         >
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10 px-4">
-                <motion.a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
-                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                     className="bni-btn px-10 py-4 text-lg rounded-full w-full sm:w-auto text-center">
-                    預約參訪
-                </motion.a>
+                    <Link to="/#contact" className="block">預約參訪</Link>
+                </motion.div>
                 <Link to="/about-bni"
                     className="px-10 py-4 border-2 border-[#CF2030] text-[#CF2030] font-semibold text-lg rounded-full hover:bg-[#CF2030] hover:text-white transition-all w-full sm:w-auto text-center">
                     了解 BNI
@@ -117,10 +116,10 @@ const Home: React.FC = () => (
                     <p className="text-white/80 text-lg mb-10 max-w-2xl mx-auto">
                         企業老闆都在使用最精準、有效率的業務引薦平台「BNI」。誠摯邀請您一同加入長翔！
                     </p>
-                    <a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
+                    <Link to="/#contact"
                         className="inline-flex items-center gap-2 px-10 py-4 bg-white text-[#CF2030] font-bold text-lg rounded-full hover:bg-gray-50 transition-all shadow-xl shadow-black/10">
                         立即預約參訪 <ArrowRight size={20} />
-                    </a>
+                    </Link>
                 </motion.div>
             </div>
         </section>

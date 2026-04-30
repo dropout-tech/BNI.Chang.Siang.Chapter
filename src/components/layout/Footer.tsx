@@ -1,7 +1,6 @@
 import React from 'react';
 import { ExternalLink, Mail, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { siteConfig } from '../../config/site.config';
 import { assetUrl } from '../../lib/assets';
 
 const Footer: React.FC = () => (
@@ -37,10 +36,10 @@ const Footer: React.FC = () => (
                 <div>
                     <h4 className="mb-5 text-sm font-black uppercase tracking-[0.18em] text-[#CF2030]">聯繫我們</h4>
                     <div className="space-y-3">
-                        <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer"
+                        <Link to="/#contact"
                             className="flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 transition-colors hover:text-[#CF2030] md:justify-start">
-                            <ExternalLink size={14} /> Facebook 粉絲專頁
-                        </a>
+                            <ExternalLink size={14} /> 預約參訪
+                        </Link>
                         <a href="mailto:info@dropout.tw"
                             className="flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 transition-colors hover:text-[#CF2030] md:justify-start">
                             <Mail size={14} /> 網站與系統洽詢

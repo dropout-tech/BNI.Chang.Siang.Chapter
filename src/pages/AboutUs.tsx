@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Star, Shield, Zap, Users, TrendingUp, Award } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SectionWrapper from '../components/common/SectionWrapper';
@@ -70,10 +71,10 @@ const AboutUs: React.FC = () => (
             <motion.div {...f}>
                 <h2 className="text-3xl font-black text-[#333] mb-6">成為長翔的一員</h2>
                 <p className="text-gray-500 text-lg mb-8">如果您渴望找到一群真心互助的事業夥伴，歡迎親自來體驗</p>
-                <a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
+                <Link to="/#contact"
                     className="inline-flex items-center gap-2 px-10 py-4 bg-[#CF2030] text-white font-bold rounded-full hover:bg-[#A51926] transition-opacity">
                     預約參訪 <span className="tracking-wider">›››</span>
-                </a>
+                </Link>
             </motion.div>
         </SectionWrapper>
     </div>

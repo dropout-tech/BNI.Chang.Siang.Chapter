@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { LogIn, LogOut, User, Shield, Menu, X } from 'lucide-react';
 import { useAuth } from '../../contexts/auth-context';
 import { insforge, isBackendConfigured } from '../../lib/insforge';
@@ -56,10 +56,10 @@ const Navbar: React.FC = () => {
                             {link.name}
                         </NavLink>
                     ))}
-                    <a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
+                    <Link to="/#contact"
                         className="ml-3 px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-[#CF2030] to-[#E8394A] rounded-full shadow-[0_12px_28px_rgba(207,32,48,0.24)] hover:shadow-[0_16px_34px_rgba(207,32,48,0.32)] hover:-translate-y-0.5 transition-all">
                         預約參訪
-                    </a>
+                    </Link>
                     {user ? (
                         <div className="flex items-center gap-2 ml-2">
                             {isAdmin && <NavLink to="/admin" className="text-[#CF2030]" title="管理後台"><Shield size={18} /></NavLink>}
@@ -84,10 +84,10 @@ const Navbar: React.FC = () => {
                             {link.name}
                         </NavLink>
                     ))}
-                    <a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
+                    <Link to="/#contact"
                         className="block px-4 py-3 mt-2 text-center font-bold text-white bg-[#CF2030] rounded-full" onClick={() => setMobileOpen(false)}>
                         預約參訪
-                    </a>
+                    </Link>
                 </div>
             )}
         </nav>
