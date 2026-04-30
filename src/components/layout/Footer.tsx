@@ -53,7 +53,11 @@ const Footer: React.FC = () => (
                 <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-right">
                     <Link to="/privacy" className="transition-colors hover:text-[#CF2030]">隱私權政策與服務條款</Link>
                     <p>
-                        本網站由 琢奧科技有限公司 DropOut Tech Consulting Co., Ltd. 開發與維護，網站與系統開發歡迎洽詢{' '}
+                        本網站由{' '}
+                        <a href="https://dropout.tw" target="_blank" rel="noopener noreferrer" className="font-bold text-[#CF2030] transition-colors hover:text-[#A51926]">
+                            琢奧科技有限公司 DropOut Tech Consulting Co., Ltd.
+                        </a>
+                        {' '}開發與維護，網站與系統開發歡迎洽詢{' '}
                         <a href="mailto:info@dropout.tw" className="font-bold text-[#CF2030] transition-colors hover:text-[#A51926]">info@dropout.tw</a>
                     </p>
                 </div>
