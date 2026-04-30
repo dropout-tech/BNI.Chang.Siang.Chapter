@@ -52,6 +52,10 @@ const MemberEdit: React.FC = () => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [isGoldBadge, setIsGoldBadge] = useState(false);
+    const [trafficMonth, setTrafficMonth] = useState(new Date().toISOString().slice(0, 7));
+    const [trafficScore, setTrafficScore] = useState(0);
 
     // Track if there are unsaved changes
     const [hasChanges, setHasChanges] = useState(false);
@@ -78,15 +82,16 @@ const MemberEdit: React.FC = () => {
         setLoading(true);
         try {
             // 1. Check if current user is Admin
-            let isAdmin = isAdminEmail(user.email);
-            if (!isAdmin) {
+            let adminAccess = isAdminEmail(user.email);
+            if (!adminAccess) {
                 const { data: currentUserData } = await insforge.database
                     .from('members')
                     .select('is_admin')
                     .eq('user_id', user.id)
                     .single();
-                isAdmin = currentUserData?.is_admin === true;
+                adminAccess = currentUserData?.is_admin === true;
             }
+            setIsAdmin(adminAccess);
 
             // 2. Check URL params for target ID
             const searchParams = new URLSearchParams(window.location.search);
@@ -94,7 +99,7 @@ const MemberEdit: React.FC = () => {
 
             let query = insforge.database.from('members').select('*');
 
-            if (targetId && isAdmin) {
+            if (targetId && adminAccess) {
                 // Admin editing another member by ID
                 query = query.eq('id', targetId);
             } else {
@@ -118,6 +123,21 @@ const MemberEdit: React.FC = () => {
                 setPhotoPosition(m.photoPosition || 'center');
                 setPhone(m.phone || '');
                 setEmail(m.email || '');
+                setIsGoldBadge(m.is_gold_badge === true);
+
+                if (adminAccess) {
+                    const { data: scoreData } = await insforge.database
+                        .from('member_traffic_scores')
+                        .select('*')
+                        .eq('member_id', Number(m.id))
+                        .order('month', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+                    if (scoreData) {
+                        setTrafficMonth(scoreData.month);
+                        setTrafficScore(scoreData.score || 0);
+                    }
+                }
 
                 // Handle Arrays
                 if (m.category) {
@@ -260,12 +280,31 @@ const MemberEdit: React.FC = () => {
                 updatedAt: new Date().toISOString(),
             };
 
+            if (isAdmin) {
+                (updates as any).is_gold_badge = isGoldBadge;
+            }
+
             const { error } = await insforge.database
                 .from('members')
                 .update(updates)
                 .eq('id', memberId);
 
             if (error) throw error;
+
+            if (isAdmin) {
+                const score = Math.max(0, Number(trafficScore) || 0);
+                const level = score >= 70 ? 'green' : score >= 40 ? 'yellow' : 'red';
+                const { error: scoreError } = await insforge.database
+                    .from('member_traffic_scores')
+                    .upsert({
+                        member_id: Number(memberId),
+                        month: trafficMonth,
+                        score,
+                        level,
+                        updated_at: new Date().toISOString(),
+                    }, { onConflict: 'member_id,month' });
+                if (scoreError) throw scoreError;
+            }
 
             setMessage({ text: '資料儲存成功！', type: 'success' });
             setPhoto(currentPhotoUrl);
@@ -396,6 +435,41 @@ const MemberEdit: React.FC = () => {
                                 </div>
                             </div>
                         </div>
+                        {isAdmin && (
+                            <div className="bg-white/80 backdrop-blur border border-yellow-200 rounded-2xl p-6">
+                                <h3 className="text-lg font-bold text-[#CF2030] mb-4">管理員設定</h3>
+                                <label className="mb-4 flex items-center gap-2 text-sm font-bold text-gray-700">
+                                    <input
+                                        type="checkbox"
+                                        checked={isGoldBadge}
+                                        onChange={(e) => { setIsGoldBadge(e.target.checked); setHasChanges(true); }}
+                                        className="h-4 w-4 accent-[#CF2030]"
+                                    />
+                                    金質獎章會員
+                                </label>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-gray-500 text-xs mb-1">紅綠燈月份</label>
+                                        <input
+                                            type="month"
+                                            value={trafficMonth}
+                                            onChange={(e) => { setTrafficMonth(e.target.value); setHasChanges(true); }}
+                                            className="w-full rounded-lg border border-gray-200 p-2 text-sm text-gray-800"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-500 text-xs mb-1">紅綠燈分數</label>
+                                        <input
+                                            type="number"
+                                            min={0}
+                                            value={trafficScore}
+                                            onChange={(e) => { setTrafficScore(Number(e.target.value)); setHasChanges(true); }}
+                                            className="w-full rounded-lg border border-gray-200 p-2 text-sm text-gray-800"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Right Column: Detailed Info */}

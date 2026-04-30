@@ -10,6 +10,7 @@ import { Search, Edit } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
+import { isAdminEmail } from '../lib/adminAccess';
 
 const CATEGORIES = [...siteConfig.industries];
 
@@ -31,6 +32,7 @@ const Members: React.FC = () => {
     const { members, loading, error } = useMembers();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('全部');
+    const [sortByTraffic, setSortByTraffic] = useState(false);
 
     // ... existing hooks
 
@@ -39,6 +41,10 @@ const Members: React.FC = () => {
         const checkAdmin = async () => {
             if (!user || !isBackendConfigured) {
                 setIsAdmin(false);
+                return;
+            }
+            if (isAdminEmail(user.email)) {
+                setIsAdmin(true);
                 return;
             }
             const { data } = await insforge.database
@@ -86,8 +92,11 @@ const Members: React.FC = () => {
                 (member.hashtags && member.hashtags.some(h => h.toLowerCase().includes(normalizedSearch)));
 
             return matchesCategory && matchesSearch;
-        });
-    }, [members, activeCategory, searchQuery]);
+        }).sort((a, b) => sortByTraffic
+            ? (Number(b.traffic_score) || 0) - (Number(a.traffic_score) || 0)
+            : a.name.localeCompare(b.name, 'zh-Hant')
+        );
+    }, [members, activeCategory, searchQuery, sortByTraffic]);
 
     if (loading) return (
         <div className="flex justify-center items-center min-h-[60vh]">
@@ -146,6 +155,15 @@ const Members: React.FC = () => {
                         activeCategory={activeCategory}
                         onSelect={setActiveCategory}
                     />
+                    <label className="mt-4 inline-flex items-center gap-2 rounded-full border border-red-100 bg-white px-4 py-2 text-sm font-bold text-gray-600 shadow-sm">
+                        <input
+                            type="checkbox"
+                            checked={sortByTraffic}
+                            onChange={(event) => setSortByTraffic(event.target.checked)}
+                            className="accent-[#CF2030]"
+                        />
+                        依紅綠燈分數排序
+                    </label>
                 </div>
 
                 <motion.div

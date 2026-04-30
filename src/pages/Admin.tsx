@@ -5,7 +5,7 @@ import { insforge, isBackendConfigured } from '../lib/insforge';
 import { useAuth } from '../contexts/auth-context';
 import {
     Users, Activity, DollarSign, Calendar,
-    Trash2, Plus, Save, Search, Shield, RefreshCw
+    Trash2, Plus, Save, Search, Shield, RefreshCw, HelpCircle, FileText
 } from 'lucide-react';
 import StatsCard from '../components/common/StatsCard';
 import MemberList from '../components/admin/MemberList';
@@ -13,6 +13,8 @@ import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
 import { sanitizeText } from '../lib/sanitize';
 import { isAdminEmail } from '../lib/adminAccess';
+import { DEFAULT_FAQS } from '../hooks/useFaqs';
+import type { AuditLog, FAQEntry } from '../types';
 
 
 const Admin: React.FC = () => {
@@ -29,11 +31,14 @@ const Admin: React.FC = () => {
     });
 
     // Tab State
-    const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'referrals' | 'settings'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'referrals' | 'faq' | 'audit' | 'settings'>('overview');
 
     // Members Data
     const [members, setMembers] = useState<any[]>([]);
     const [memberSearch, setMemberSearch] = useState('');
+    const [showFrozenMembers, setShowFrozenMembers] = useState(false);
+    const [sortMembersByTraffic, setSortMembersByTraffic] = useState(false);
+    const [trafficMonth, setTrafficMonth] = useState(new Date().toISOString().slice(0, 7));
 
     // Homepage Stats Form
     const [homeStats, setHomeStats] = useState({
@@ -47,6 +52,8 @@ const Admin: React.FC = () => {
 
     // Referrals Data
     const [referrals, setReferrals] = useState<any[]>([]);
+    const [faqs, setFaqs] = useState<FAQEntry[]>([]);
+    const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
 
     // Marketing Stats
     const [marketingStats, setMarketingStats] = useState({
@@ -94,7 +101,10 @@ const Admin: React.FC = () => {
                 homeStatsRes,
                 pageViewsRes,
                 referralsRes,
-                socialClicksRes
+                socialClicksRes,
+                trafficScoresRes,
+                faqsRes,
+                auditLogsRes
             ] = await Promise.all([
                 // 1. Members - Resilient Fetching
                 (async () => {
@@ -134,13 +144,46 @@ const Admin: React.FC = () => {
                 (async () => {
                     try { return await insforge.database.from('analytics_events').select('*', { count: 'exact', head: true }).eq('event_name', 'click_social'); }
                     catch { return { count: 0, data: null, error: null }; }
+                })(),
+                (async () => {
+                    try { return await insforge.database.from('member_traffic_scores').select('*').order('month', { ascending: false }); }
+                    catch { return { data: [], error: null }; }
+                })(),
+                (async () => {
+                    try { return await insforge.database.from('faqs').select('*').order('sort_order', { ascending: true }); }
+                    catch { return { data: [], error: null }; }
+                })(),
+                (async () => {
+                    try { return await insforge.database.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(100); }
+                    catch { return { data: [], error: null }; }
                 })()
             ]);
 
             // Process Members
             if (membersRes.error) console.error('Members fetch error:', membersRes.error);
-            const membersData = membersRes.data || [];
+            const trafficScores = trafficScoresRes.data || [];
+            const latestScoreByMember = new Map<number, any>();
+            [...trafficScores]
+                .sort((a: any, b: any) => String(b.month).localeCompare(String(a.month)))
+                .forEach((score: any) => {
+                    if (!latestScoreByMember.has(Number(score.member_id))) {
+                        latestScoreByMember.set(Number(score.member_id), score);
+                    }
+                });
+            const membersData = (membersRes.data || []).map((member: any) => {
+                const score = latestScoreByMember.get(Number(member.id));
+                return score
+                    ? {
+                        ...member,
+                        traffic_score: score.score,
+                        traffic_level: score.level,
+                        latest_traffic_month: score.month,
+                    }
+                    : member;
+            });
             setMembers(membersData);
+            setFaqs(faqsRes.data?.length ? faqsRes.data : DEFAULT_FAQS);
+            setAuditLogs(auditLogsRes.data || []);
 
             // Process Referrals
             if (referralsRes.error) console.error('Referrals fetch error:', referralsRes.error);
@@ -182,10 +225,11 @@ const Admin: React.FC = () => {
             });
 
             const topIndustry = Object.entries(industryCounts).sort((a, b) => b[1] - a[1])[0];
-            const completionRate = membersData.length ? Math.round((hasPhotoCount / membersData.length) * 100) : 0;
+            const activeMembers = membersData.filter((m: any) => !m.frozen_at);
+            const completionRate = activeMembers.length ? Math.round((hasPhotoCount / activeMembers.length) * 100) : 0;
 
             setStats({
-                totalMembers: membersData.length,
+                totalMembers: activeMembers.length,
                 totalReferrals: homeStatsData?.referral_count || 0,
                 totalValue: homeStatsData?.referral_value || 0,
                 monthlyVisits: visitsCount,
@@ -252,11 +296,119 @@ const Admin: React.FC = () => {
         }
     };
 
-    const filteredMembers = members.filter(m =>
-        m.name?.toLowerCase().includes(memberSearch.toLowerCase()) ||
-        m.company?.toLowerCase().includes(memberSearch.toLowerCase()) ||
-        m.industry?.toLowerCase().includes(memberSearch.toLowerCase())
-    );
+    const handleToggleFrozen = async (member: any) => {
+        const isFrozen = !!member.frozen_at;
+        const reason = isFrozen ? null : sanitizeText(prompt('請輸入冷凍原因（例如：離開分會、開信用狀）') || '', 120);
+        if (!isFrozen && !reason) return;
+
+        try {
+            const { error } = await insforge.database
+                .from('members')
+                .update({
+                    frozen_at: isFrozen ? null : new Date().toISOString(),
+                    frozen_by: isFrozen ? null : user?.email || user?.id,
+                    frozen_reason: isFrozen ? null : reason,
+                    updatedAt: new Date().toISOString(),
+                })
+                .eq('id', member.id);
+            if (error) throw error;
+            alert(isFrozen ? '已解凍會員' : '已冷凍會員');
+            fetchDashboardData();
+        } catch (err: any) {
+            alert('操作失敗: ' + err.message);
+        }
+    };
+
+    const handleToggleGold = async (member: any, checked: boolean) => {
+        try {
+            const { error } = await insforge.database
+                .from('members')
+                .update({ is_gold_badge: checked, updatedAt: new Date().toISOString() })
+                .eq('id', member.id);
+            if (error) throw error;
+            setMembers(prev => prev.map(item => item.id === member.id ? { ...item, is_gold_badge: checked } : item));
+        } catch (err: any) {
+            alert('金質獎章更新失敗: ' + err.message);
+        }
+    };
+
+    const getTrafficLevel = (score: number) => {
+        if (score >= 70) return 'green';
+        if (score >= 40) return 'yellow';
+        return 'red';
+    };
+
+    const handleSaveTrafficScore = async (member: any, score: number) => {
+        try {
+            const { error } = await insforge.database
+                .from('member_traffic_scores')
+                .upsert({
+                    member_id: Number(member.id),
+                    month: trafficMonth,
+                    score: Math.max(0, Number(score) || 0),
+                    level: getTrafficLevel(Number(score) || 0),
+                    updated_at: new Date().toISOString(),
+                }, { onConflict: 'member_id,month' });
+            if (error) throw error;
+            alert('紅綠燈分數已儲存');
+            fetchDashboardData();
+        } catch (err: any) {
+            alert('儲存紅綠燈失敗: ' + err.message);
+        }
+    };
+
+    const handleSaveFaq = async (faq: FAQEntry, index: number) => {
+        const payload = {
+            question: sanitizeText(faq.question, 200),
+            answer: sanitizeText(faq.answer, 2000),
+            sort_order: Number(faq.sort_order ?? index + 1),
+            is_active: faq.is_active !== false,
+            updated_at: new Date().toISOString(),
+        };
+        if (!payload.question || !payload.answer) {
+            alert('Q&A 問題與答案都必填');
+            return;
+        }
+
+        try {
+            const query = faq.id
+                ? insforge.database.from('faqs').update(payload).eq('id', faq.id)
+                : insforge.database.from('faqs').insert([payload]);
+            const { error } = await query;
+            if (error) throw error;
+            alert('Q&A 已儲存');
+            fetchDashboardData();
+        } catch (err: any) {
+            alert('Q&A 儲存失敗: ' + err.message);
+        }
+    };
+
+    const handleDeleteFaq = async (faq: FAQEntry, index: number) => {
+        if (!faq.id) {
+            setFaqs(prev => prev.filter((_, i) => i !== index));
+            return;
+        }
+        if (!confirm('確定刪除這個 Q&A？')) return;
+        try {
+            const { error } = await insforge.database.from('faqs').delete().eq('id', faq.id);
+            if (error) throw error;
+            fetchDashboardData();
+        } catch (err: any) {
+            alert('Q&A 刪除失敗: ' + err.message);
+        }
+    };
+
+    const filteredMembers = members
+        .filter(m => showFrozenMembers ? !!m.frozen_at : !m.frozen_at)
+        .filter(m =>
+            m.name?.toLowerCase().includes(memberSearch.toLowerCase()) ||
+            m.company?.toLowerCase().includes(memberSearch.toLowerCase()) ||
+            m.industry?.toLowerCase().includes(memberSearch.toLowerCase())
+        )
+        .sort((a, b) => sortMembersByTraffic
+            ? (Number(b.traffic_score) || 0) - (Number(a.traffic_score) || 0)
+            : String(a.name || '').localeCompare(String(b.name || ''), 'zh-Hant')
+        );
 
     if (loading) return <div className="min-h-screen pt-32 text-center text-white">載入後台數據中...</div>;
 
@@ -280,6 +432,8 @@ const Admin: React.FC = () => {
                             { id: 'overview', label: '總覽' },
                             { id: 'members', label: '會員' },
                             { id: 'referrals', label: '引薦' },
+                            { id: 'faq', label: 'Q&A' },
+                            { id: 'audit', label: '紀錄' },
                             { id: 'settings', label: '設定' }
                         ].map(tab => (
                             <button
@@ -422,6 +576,35 @@ const Admin: React.FC = () => {
                                     className="w-full bg-black/20 border border-gray-200 rounded-full py-2.5 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-[#CF2030]"
                                 />
                             </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <button
+                                    onClick={() => setShowFrozenMembers(false)}
+                                    className={`rounded-full px-4 py-2 text-sm font-bold ${!showFrozenMembers ? 'bg-[#CF2030] text-white' : 'bg-white text-gray-600'}`}
+                                >
+                                    目前會員
+                                </button>
+                                <button
+                                    onClick={() => setShowFrozenMembers(true)}
+                                    className={`rounded-full px-4 py-2 text-sm font-bold ${showFrozenMembers ? 'bg-[#CF2030] text-white' : 'bg-white text-gray-600'}`}
+                                >
+                                    冷凍列表
+                                </button>
+                                <label className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-gray-600">
+                                    <input
+                                        type="checkbox"
+                                        checked={sortMembersByTraffic}
+                                        onChange={(event) => setSortMembersByTraffic(event.target.checked)}
+                                    />
+                                    依紅綠燈排序
+                                </label>
+                                <input
+                                    type="month"
+                                    value={trafficMonth}
+                                    onChange={(event) => setTrafficMonth(event.target.value)}
+                                    className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700"
+                                    title="紅綠燈分數月份"
+                                />
+                            </div>
                             <button
                                 onClick={handleAddMember}
                                 className="flex items-center justify-center gap-2 bg-[#CF2030] text-white px-4 py-2.5 rounded-lg font-bold hover:bg-[#CF2030]/90 transition-colors shrink-0"
@@ -434,6 +617,9 @@ const Admin: React.FC = () => {
                             members={filteredMembers}
                             loading={loading}
                             onRefresh={fetchDashboardData}
+                            onToggleFrozen={handleToggleFrozen}
+                            onToggleGold={handleToggleGold}
+                            onSaveTrafficScore={handleSaveTrafficScore}
                         />
                     </div>
                 )}
@@ -472,6 +658,10 @@ const Admin: React.FC = () => {
                                         id="ref_referrer"
                                         className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                     />
+                                    <label className="mt-2 flex items-center gap-2 text-sm text-gray-300">
+                                        <input type="checkbox" id="ref_referrer_external" />
+                                        外分會引薦人（前台只顯示外分會與 BNI Logo）
+                                    </label>
                                 </div>
                                 <div>
                                     <label className="block text-gray-400 text-sm mb-1">被引薦人姓名</label>
@@ -480,6 +670,10 @@ const Admin: React.FC = () => {
                                         id="ref_referee"
                                         className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
                                     />
+                                    <label className="mt-2 flex items-center gap-2 text-sm text-gray-300">
+                                        <input type="checkbox" id="ref_referee_external" />
+                                        外分會被引薦人（前台只顯示外分會與 BNI Logo）
+                                    </label>
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="block text-gray-400 text-sm mb-1">引薦人自述 (Referrer Story)</label>
@@ -505,6 +699,8 @@ const Admin: React.FC = () => {
                                         const description = (document.getElementById('ref_desc') as HTMLInputElement).value;
                                         const referrer_name = (document.getElementById('ref_referrer') as HTMLInputElement).value;
                                         const referee_name = (document.getElementById('ref_referee') as HTMLInputElement).value;
+                                        const referrer_is_external = (document.getElementById('ref_referrer_external') as HTMLInputElement).checked;
+                                        const referee_is_external = (document.getElementById('ref_referee_external') as HTMLInputElement).checked;
                                         const referrer_story = (document.getElementById('ref_referrer_story') as HTMLTextAreaElement).value;
                                         const referee_story = (document.getElementById('ref_referee_story') as HTMLTextAreaElement).value;
 
@@ -518,6 +714,8 @@ const Admin: React.FC = () => {
                                             description,
                                             referrer_name,
                                             referee_name,
+                                            referrer_is_external,
+                                            referee_is_external,
                                             referrer_story,
                                             referee_story,
                                             metrics: { amount: '洽談中', type: '專案合作' }
@@ -533,6 +731,8 @@ const Admin: React.FC = () => {
                                             (document.getElementById('ref_desc') as HTMLInputElement).value = '';
                                             (document.getElementById('ref_referrer') as HTMLInputElement).value = '';
                                             (document.getElementById('ref_referee') as HTMLInputElement).value = '';
+                                            (document.getElementById('ref_referrer_external') as HTMLInputElement).checked = false;
+                                            (document.getElementById('ref_referee_external') as HTMLInputElement).checked = false;
                                             (document.getElementById('ref_referrer_story') as HTMLTextAreaElement).value = '';
                                             (document.getElementById('ref_referee_story') as HTMLTextAreaElement).value = '';
                                         }
@@ -611,6 +811,108 @@ const Admin: React.FC = () => {
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* FAQ TAB */}
+                {activeTab === 'faq' && (
+                    <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6">
+                        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <h3 className="flex items-center gap-2 text-xl font-bold text-white">
+                                <HelpCircle size={20} className="text-[#CF2030]" /> 首頁 Q&A 管理
+                            </h3>
+                            <button
+                                onClick={() => setFaqs(prev => [...prev, { question: '', answer: '', sort_order: prev.length + 1, is_active: true }])}
+                                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#CF2030] px-4 py-2 text-sm font-bold text-white"
+                            >
+                                <Plus size={16} /> 新增 Q&A
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            {faqs.map((faq, index) => (
+                                <div key={faq.id || index} className="rounded-2xl border border-gray-200 bg-white p-4">
+                                    <div className="mb-3 grid gap-3 md:grid-cols-[90px_1fr_120px]">
+                                        <input
+                                            type="number"
+                                            value={faq.sort_order}
+                                            onChange={(event) => setFaqs(prev => prev.map((item, i) => i === index ? { ...item, sort_order: Number(event.target.value) } : item))}
+                                            className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800"
+                                            aria-label="排序"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={faq.question}
+                                            onChange={(event) => setFaqs(prev => prev.map((item, i) => i === index ? { ...item, question: event.target.value } : item))}
+                                            placeholder="問題"
+                                            className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800"
+                                        />
+                                        <label className="flex items-center gap-2 text-sm font-bold text-gray-600">
+                                            <input
+                                                type="checkbox"
+                                                checked={faq.is_active}
+                                                onChange={(event) => setFaqs(prev => prev.map((item, i) => i === index ? { ...item, is_active: event.target.checked } : item))}
+                                            />
+                                            啟用
+                                        </label>
+                                    </div>
+                                    <textarea
+                                        value={faq.answer}
+                                        onChange={(event) => setFaqs(prev => prev.map((item, i) => i === index ? { ...item, answer: event.target.value } : item))}
+                                        placeholder="答案"
+                                        rows={4}
+                                        className="mb-3 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800"
+                                    />
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            onClick={() => handleDeleteFaq(faq, index)}
+                                            className="rounded-lg bg-red-50 px-4 py-2 text-sm font-bold text-red-500"
+                                        >
+                                            刪除
+                                        </button>
+                                        <button
+                                            onClick={() => handleSaveFaq(faq, index)}
+                                            className="rounded-lg bg-[#CF2030] px-4 py-2 text-sm font-bold text-white"
+                                        >
+                                            儲存
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* AUDIT TAB */}
+                {activeTab === 'audit' && (
+                    <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6">
+                        <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-white">
+                            <FileText size={20} className="text-[#CF2030]" /> 詳細改動紀錄
+                        </h3>
+                        <div className="space-y-3">
+                            {auditLogs.length === 0 ? (
+                                <div className="rounded-xl bg-white p-8 text-center text-gray-500">尚無改動紀錄</div>
+                            ) : auditLogs.map((log) => (
+                                <details key={log.id} className="rounded-xl border border-gray-200 bg-white p-4">
+                                    <summary className="cursor-pointer text-sm font-bold text-gray-800">
+                                        <span className="mr-2 rounded-full bg-red-50 px-2 py-1 text-[#CF2030]">{log.action}</span>
+                                        {log.table_name} #{log.record_id || '-'}
+                                        <span className="ml-3 text-xs font-normal text-gray-500">
+                                            {log.actor_email || 'system'} · {new Date(log.created_at).toLocaleString()}
+                                        </span>
+                                    </summary>
+                                    <div className="mt-4 grid gap-3 md:grid-cols-2">
+                                        <div>
+                                            <div className="mb-1 text-xs font-bold text-gray-500">修改前</div>
+                                            <pre className="max-h-72 overflow-auto rounded-lg bg-gray-950 p-3 text-xs text-gray-100">{JSON.stringify(log.old_row, null, 2)}</pre>
+                                        </div>
+                                        <div>
+                                            <div className="mb-1 text-xs font-bold text-gray-500">修改後</div>
+                                            <pre className="max-h-72 overflow-auto rounded-lg bg-gray-950 p-3 text-xs text-gray-100">{JSON.stringify(log.new_row, null, 2)}</pre>
+                                        </div>
+                                    </div>
+                                </details>
+                            ))}
                         </div>
                     </div>
                 )}

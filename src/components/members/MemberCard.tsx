@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Member } from '../../types';
 import { motion } from 'framer-motion';
-import { ArrowRight, Building, Briefcase } from 'lucide-react';
+import { ArrowRight, Building, Briefcase, Crown } from 'lucide-react';
 import { siteConfig } from '../../config/site.config';
+import { getMemberPath } from '../../lib/memberSlug';
 
 const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
     // Handle both local paths and InsForge URLs
@@ -42,6 +43,15 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
                 <div className="absolute left-5 top-5 rounded-full border border-red-100 bg-red-50 px-3 py-1 text-[11px] font-bold tracking-[0.18em] text-[#CF2030]">
                     {member.category || 'BNI'}
                 </div>
+                {member.is_gold_badge && (
+                    <div
+                        className="absolute right-5 top-5 z-10 rounded-full border border-yellow-200 bg-yellow-50 p-2 text-yellow-600 shadow-sm"
+                        title="金質獎章"
+                        aria-label="金質獎章"
+                    >
+                        <Crown size={18} />
+                    </div>
+                )}
 
                 <div className="flex flex-grow flex-col items-center px-6 pb-6 pt-12 text-center">
                     <div className="relative mb-5">
@@ -83,7 +93,7 @@ const MemberCard: React.FC<{ member: Member }> = ({ member }) => {
                                     </div>
 
                     <Link
-                        to={`/member/${member.id}`}
+                        to={getMemberPath(member)}
                         className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#CF2030] to-[#E8394A] px-5 py-3 text-sm font-bold text-white shadow-[0_16px_34px_rgba(207,32,48,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(207,32,48,0.32)]"
                     >
                         查看完整介紹

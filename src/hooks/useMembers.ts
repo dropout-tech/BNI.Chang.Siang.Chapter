@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { insforge, isBackendConfigured } from '../lib/insforge';
 import { assetUrl } from '../lib/assets';
+import { makeMemberSlug } from '../lib/memberSlug';
 
 export interface Member {
     id: number;
@@ -20,6 +21,54 @@ export interface Member {
     updatedAt?: string;
     phone?: string;
     email?: string;
+    slug?: string;
+    is_gold_badge?: boolean;
+    frozen_at?: string | null;
+    frozen_by?: string | null;
+    frozen_reason?: string | null;
+    traffic_score?: number | null;
+    traffic_level?: 'green' | 'yellow' | 'red' | null;
+    latest_traffic_month?: string | null;
+}
+
+type TrafficScoreRow = {
+    member_id: number;
+    month: string;
+    score: number;
+    level: 'green' | 'yellow' | 'red';
+};
+
+function normalizeMembers(rows: Member[]): Member[] {
+    return rows
+        .filter((member) => !member.frozen_at)
+        .map((member, index) => ({
+            ...member,
+            id: Number(member.id) || index + 1,
+            slug: member.slug || makeMemberSlug(member.name, member.id || index + 1),
+        }));
+}
+
+function attachTrafficScores(rows: Member[], scores: TrafficScoreRow[]): Member[] {
+    const latestByMember = new Map<number, TrafficScoreRow>();
+    [...scores]
+        .sort((a, b) => b.month.localeCompare(a.month))
+        .forEach((score) => {
+            if (!latestByMember.has(score.member_id)) {
+                latestByMember.set(score.member_id, score);
+            }
+        });
+
+    return rows.map((member) => {
+        const latest = latestByMember.get(Number(member.id));
+        return latest
+            ? {
+                ...member,
+                traffic_score: latest.score,
+                traffic_level: latest.level,
+                latest_traffic_month: latest.month,
+            }
+            : member;
+    });
 }
 
 export const useMembers = () => {
@@ -33,10 +82,7 @@ export const useMembers = () => {
             if (!response.ok) throw new Error('Static members file not found');
             const payload = await response.json();
             const rows = Array.isArray(payload) ? payload : payload.members;
-            return (rows ?? []).map((member: Member, index: number) => ({
-                ...member,
-                id: Number(member.id) || index + 1,
-            }));
+            return normalizeMembers(rows ?? []);
         };
 
         if (!isBackendConfigured) {
@@ -60,7 +106,10 @@ export const useMembers = () => {
 
                 if (error) throw error;
                 if (data && data.length > 0) {
-                    setMembers(data);
+                    const { data: scoreData } = await insforge.database
+                        .from('member_traffic_scores')
+                        .select('member_id, month, score, level');
+                    setMembers(attachTrafficScores(normalizeMembers(data), scoreData || []));
                     return;
                 }
                 setMembers(await loadStaticMembers());

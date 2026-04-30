@@ -6,6 +6,7 @@ export interface MemberInfo {
     name: string;
     industry: string;
     photo: string;
+    isExternal?: boolean;
     story?: string;
     testimonial?: string;
     value?: string;
@@ -64,7 +65,8 @@ export const useReferrals = () => {
 
                 const { data: membersData } = await insforge.database
                     .from('members')
-                    .select('name, industry, photo');
+                    .select('name, industry, photo')
+                    .is('frozen_at', null);
 
                 const membersMap = new Map(membersData?.map((m: any) => [m.name, m]));
 
@@ -76,8 +78,21 @@ export const useReferrals = () => {
                         title: ref.title,
                         description: ref.description,
                         metrics: ref.metrics || { amount: '0', type: 'TWD' },
-                        referrer: { name: ref.referrer_name, industry: referrer?.industry || '', photo: referrer?.photo || '', story: ref.referrer_story },
-                        referee: { name: ref.referee_name, industry: referee?.industry || '', photo: referee?.photo || '', story: ref.referee_story, value: ref.referee_value || '' }
+                        referrer: {
+                            name: ref.referrer_is_external ? '外分會' : ref.referrer_name,
+                            industry: ref.referrer_is_external ? 'BNI' : referrer?.industry || '',
+                            photo: ref.referrer_is_external ? '/images/assets/logo/bni-logo-new.png' : referrer?.photo || '',
+                            isExternal: ref.referrer_is_external === true,
+                            story: ref.referrer_story,
+                        },
+                        referee: {
+                            name: ref.referee_is_external ? '外分會' : ref.referee_name,
+                            industry: ref.referee_is_external ? 'BNI' : referee?.industry || '',
+                            photo: ref.referee_is_external ? '/images/assets/logo/bni-logo-new.png' : referee?.photo || '',
+                            isExternal: ref.referee_is_external === true,
+                            story: ref.referee_story,
+                            value: ref.referee_value || '',
+                        }
                     };
                 });
 

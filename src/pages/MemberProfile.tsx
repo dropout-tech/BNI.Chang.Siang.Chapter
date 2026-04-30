@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Briefcase, Building, Mail, Phone, Sparkles, Target } from 'lucide-react';
+import { ArrowLeft, Briefcase, Building, Crown, Mail, Phone, Sparkles, Target } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { useMembers } from '../hooks/useMembers';
 import { assetUrl } from '../lib/assets';
 import { siteConfig } from '../config/site.config';
+import { decodeMemberParam, getMemberPath } from '../lib/memberSlug';
 
 function getIntroSection(text: string, heading: string): string {
     const marker = `【${heading}】`;
@@ -19,9 +20,14 @@ function getIntroSection(text: string, heading: string): string {
 const MemberProfile: React.FC = () => {
     const { id } = useParams();
     const { members, loading, error } = useMembers();
+    const decodedId = decodeMemberParam(id);
     const member = React.useMemo(
-        () => members.find((item) => String(item.id) === String(id)),
-        [members, id],
+        () => members.find((item) =>
+            String(item.id) === String(id) ||
+            item.slug === decodedId ||
+            item.name === decodedId
+        ),
+        [members, id, decodedId],
     );
 
     const photo = member?.photo ? assetUrl(member.photo) : siteConfig.defaultPhoto;
@@ -56,7 +62,7 @@ const MemberProfile: React.FC = () => {
                 description={`${member.name}是 BNI 長翔名人堂白金分會的${member.industry}專業代表。${member.shortIntro || ''}`}
                 breadcrumbs={[
                     { name: '會員介紹', path: '/member' },
-                    { name: member.name, path: `/member/${member.id}` },
+                    { name: member.name, path: getMemberPath(member) },
                 ]}
             />
 
@@ -89,6 +95,12 @@ const MemberProfile: React.FC = () => {
                                 {member.category}
                             </div>
                             <h1 className="mb-3 text-4xl font-black tracking-tight text-gray-950">{member.name}</h1>
+                            {member.is_gold_badge && (
+                                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-yellow-200 bg-yellow-50 px-4 py-2 text-sm font-black text-yellow-700" title="金質獎章">
+                                    <Crown size={18} />
+                                    金質獎章
+                                </div>
+                            )}
                             <p className="mb-6 text-lg font-bold text-[#CF2030]">{member.industry}</p>
                             <p className="rounded-2xl bg-gradient-to-br from-red-50 to-white p-5 text-base font-semibold leading-relaxed text-gray-700">
                                 {member.shortIntro}
