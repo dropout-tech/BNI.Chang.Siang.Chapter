@@ -205,6 +205,26 @@ const Login: React.FC = () => {
         }
     };
 
+    const handleGoogleSignIn = async () => {
+        setLoading(true);
+        setMessage(null);
+
+        try {
+            if (!isBackendConfigured) {
+                throw new Error('InsForge 環境變數未設定，暫時無法使用 Google 登入。');
+            }
+
+            const { error } = await insforge.auth.signInWithOAuth({
+                provider: 'google',
+                redirectTo: getAuthRedirectUrl('login'),
+            });
+            if (error) throw error;
+        } catch (err: any) {
+            setMessage({ text: err.message, type: 'error' });
+            setLoading(false);
+        }
+    };
+
     const handleClaim = async () => {
         if (!selectedMemberId || !user) return;
         setLoading(true);
@@ -241,19 +261,31 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-[calc(100dvh-80px)] flex items-center justify-center py-12 pb-24 md:pb-12 px-4 container mx-auto">
+        <div className="min-h-[calc(100dvh-80px)] flex items-center justify-center py-16 pb-24 md:pb-16 px-4 container mx-auto">
             <SEO title="會員登入" noindex />
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-md bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8 shadow-xl"
+                className="w-full max-w-md overflow-hidden rounded-[32px] border border-red-100 bg-white shadow-[0_28px_90px_rgba(207,32,48,0.14)]"
             >
-                <h1 className="text-2xl font-bold text-center text-white mb-6">
-                    {mode === 'login' && '會員登入'}
-                    {mode === 'signup' && '註冊新帳號'}
-                    {mode === 'forgot' && '重設密碼'}
-                    {mode === 'claim' && '認領您的會員檔案'}
-                </h1>
+                <div className="bg-gradient-to-br from-red-50 via-white to-white px-6 py-8 text-center md:px-8">
+                    <div className="mb-3 inline-flex rounded-full border border-red-100 bg-white px-4 py-1 text-xs font-black tracking-[0.18em] text-[#CF2030]">
+                        MEMBER LOGIN
+                    </div>
+                    <h1 className="text-3xl font-black tracking-tight text-gray-950">
+                        {mode === 'login' && '會員登入'}
+                        {mode === 'signup' && '註冊新帳號'}
+                        {mode === 'forgot' && '重設密碼'}
+                        {mode === 'claim' && '認領您的會員檔案'}
+                    </h1>
+                    {(mode === 'login' || mode === 'signup') && (
+                        <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
+                            建議使用 Google 登入，登入後即可認領或管理您的會員資料。
+                        </p>
+                    )}
+                </div>
+
+                <div className="px-6 pb-6 md:px-8 md:pb-8">
 
                 {/* Show warning for In-App Browsers */}
                 {(() => {
@@ -264,8 +296,8 @@ const Login: React.FC = () => {
 
                     if ((isLine || isFb || isIg) && (mode === 'login' || mode === 'signup')) {
                         return (
-                            <div className="mb-6 p-4 bg-amber-500/20 border border-amber-500/50 rounded-lg text-amber-200 text-sm flex items-start gap-3">
-                                <AlertCircle size={20} className="shrink-0 mt-0.5 text-amber-400" />
+                            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-sm flex items-start gap-3">
+                                <AlertCircle size={20} className="shrink-0 mt-0.5 text-amber-500" />
                                 <div>
                                     <p className="font-bold mb-1">偵測到 {isLine ? 'LINE' : isFb ? 'Facebook' : 'Instagram'} 內建瀏覽器</p>
                                     <p>Google 登入不支援此環境。請點擊右上角<strong>「...」</strong>並選擇 <strong>「使用預設瀏覽器開啟」</strong> (Safari/Chrome) 重新操作。</p>
@@ -277,8 +309,30 @@ const Login: React.FC = () => {
                 })()}
 
                 {message && (
-                    <div className={`mb-6 p-3 rounded-lg text-sm text-center ${message.type === 'error' ? 'bg-red-500/20 text-red-200' : 'bg-green-500/20 text-green-200'}`}>
+                    <div className={`mb-6 p-3 rounded-2xl text-sm text-center ${message.type === 'error' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
                         {message.text}
+                    </div>
+                )}
+
+                {(mode === 'login' || mode === 'signup') && (
+                    <div className="mb-6">
+                        <button
+                            type="button"
+                            onClick={handleGoogleSignIn}
+                            disabled={loading}
+                            className="group flex w-full items-center justify-center gap-3 rounded-2xl border border-red-100 bg-white px-5 py-4 font-black text-gray-900 shadow-[0_14px_34px_rgba(207,32,48,0.08)] transition-all hover:-translate-y-0.5 hover:border-[#CF2030]/30 hover:shadow-[0_20px_46px_rgba(207,32,48,0.14)] disabled:cursor-wait disabled:opacity-60"
+                        >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z" fill="#FBBC05" />
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                            </svg>
+                            {loading ? '前往 Google...' : '使用 Google 登入（建議）'}
+                        </button>
+                        <p className="mt-3 text-center text-xs leading-5 text-gray-500">
+                            使用 Google 登入最穩定，也最適合會員認領與後續資料管理。
+                        </p>
                     </div>
                 )}
 
@@ -286,14 +340,14 @@ const Login: React.FC = () => {
                 {['login', 'signup', 'forgot'].includes(mode) && (
                     <form onSubmit={handleAuth} className="space-y-4">
                         <div>
-                            <label className="block text-gray-400 text-sm mb-1">Email</label>
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    className="w-full bg-black/30 border border-gray-200 rounded-lg py-3 pl-10 pr-4 text-white focus:border-[#CF2030] focus:outline-none"
+                                    className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
                                     placeholder="name@example.com"
                                     required
                                 />
@@ -303,17 +357,17 @@ const Login: React.FC = () => {
                         {mode !== 'forgot' && (
                             <>
                                 <div>
-                                    <label className="block text-gray-400 text-sm mb-1">密碼</label>
+                                    <label className="block text-gray-700 text-sm font-bold mb-2">密碼</label>
                                     <div className="relative">
-                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
                                         <input
                                             type="password"
                                             value={password}
                                             onChange={e => setPassword(e.target.value)}
-                                            className="w-full bg-black/30 border border-gray-200 rounded-lg py-3 pl-10 pr-4 text-white focus:border-[#CF2030] focus:outline-none"
+                                            className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
                                             placeholder="••••••••"
                                             required
-                                            minLength={8}
+                                            minLength={6}
                                         />
                                     </div>
                                     {mode === 'signup' && (
@@ -323,14 +377,14 @@ const Login: React.FC = () => {
 
                                 {mode === 'signup' && (
                                     <div>
-                                        <label className="block text-gray-400 text-sm mb-1">確認密碼</label>
+                                        <label className="block text-gray-700 text-sm font-bold mb-2">確認密碼</label>
                                         <div className="relative">
-                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
                                             <input
                                                 type="password"
                                                 value={confirmPassword}
                                                 onChange={e => setConfirmPassword(e.target.value)}
-                                                className="w-full bg-black/30 border border-gray-200 rounded-lg py-3 pl-10 pr-4 text-white focus:border-[#CF2030] focus:outline-none"
+                                                className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
                                                 placeholder="••••••••"
                                                 required
                                                 minLength={8}
@@ -344,7 +398,7 @@ const Login: React.FC = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-[#CF2030] hover:bg-[#CF2030]-dark text-white font-bold py-3 rounded-lg transition-colors mt-2 disabled:opacity-50"
+                            className="w-full rounded-2xl bg-gradient-to-r from-[#CF2030] to-[#E8394A] py-3 font-black text-white shadow-[0_16px_34px_rgba(207,32,48,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(207,32,48,0.32)] disabled:cursor-wait disabled:opacity-60"
                         >
                             {loading ? '處理中...' :
                                 mode === 'login' ? '登入' :
@@ -358,29 +412,9 @@ const Login: React.FC = () => {
                                         <div className="w-full border-t border-gray-200"></div>
                                     </div>
                                     <div className="relative flex justify-center text-sm">
-                                        <span className="px-2 bg-white text-gray-400">或</span>
+                                        <span className="px-3 bg-white text-gray-400">帳密登入是備用方式</span>
                                     </div>
                                 </div>
-
-                                <button
-                                    type="button"
-                                    onClick={async () => {
-                                        const { error } = await insforge.auth.signInWithOAuth({
-                                            provider: 'google',
-                                            redirectTo: getAuthRedirectUrl('login'),
-                                        });
-                                        if (error) setMessage({ text: error.message, type: 'error' });
-                                    }}
-                                    className="w-full bg-white text-gray-900 border border-gray-300 font-bold py-3 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3"
-                                >
-                                    <svg className="w-5 h-5" viewBox="0 0 24 24">
-                                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z" fill="#FBBC05" />
-                                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                                    </svg>
-                                    使用 Google 登入
-                                </button>
 
                                 <p className="text-xs text-center text-gray-500 mt-3">
                                     登入即代表您同意本站的
@@ -391,7 +425,7 @@ const Login: React.FC = () => {
                             </>
                         )}
 
-                        <div className="text-center text-sm text-gray-400 mt-4 space-y-2">
+                        <div className="text-center text-sm text-gray-500 mt-4 space-y-2">
                             {mode === 'login' && (
                                 <>
                                     <p>
@@ -401,7 +435,7 @@ const Login: React.FC = () => {
                                         </button>
                                     </p>
                                     <p>
-                                        <button type="button" onClick={() => setMode('forgot')} className="text-gray-500 hover:text-gray-300 text-xs">
+                                        <button type="button" onClick={() => setMode('forgot')} className="text-gray-500 hover:text-[#CF2030] text-xs">
                                             忘記密碼？
                                         </button>
                                     </p>
@@ -470,14 +504,14 @@ const Login: React.FC = () => {
                         </div>
 
                         <div className="mt-6 border-t border-gray-200 pt-6">
-                            <label className="block text-gray-400 text-sm mb-2">請輸入分會認證密碼</label>
+                            <label className="block text-gray-700 font-bold text-sm mb-2">請輸入分會認證密碼</label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
                                 <input
                                     type="password"
                                     value={claimPassword}
                                     onChange={e => setClaimPassword(e.target.value)}
-                                    className="w-full bg-black/30 border border-gray-200 rounded-lg py-3 pl-10 pr-4 text-white focus:border-[#CF2030] focus:outline-none"
+                                    className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
                                     placeholder="分會密碼"
                                     required
                                 />
@@ -505,12 +539,13 @@ const Login: React.FC = () => {
                                 await insforge.auth.signOut();
                                 setMode('login');
                             }}
-                            className="w-full text-gray-500 text-sm py-2 hover:text-gray-300 mt-2"
+                            className="w-full text-gray-500 text-sm py-2 hover:text-[#CF2030] mt-2"
                         >
                             登出並切換帳號
                         </button>
                     </div>
                 )}
+                </div>
             </motion.div>
         </div>
     );
