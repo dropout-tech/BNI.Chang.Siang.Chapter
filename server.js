@@ -47,9 +47,13 @@ function getRuntimePublicConfig() {
 
 function injectRuntimeConfig(html) {
     const config = getRuntimePublicConfig();
+    if (!config.INSFORGE_URL || !config.INSFORGE_ANON_KEY) {
+        return html;
+    }
+
     const script = `<script>window.__APP_CONFIG__=${JSON.stringify(config).replace(/</g, '\\u003c')};</script>`;
     return html.includes('window.__APP_CONFIG__')
-        ? html
+        ? html.replace(/<script>\s*window\.__APP_CONFIG__\s*=\s*\{[\s\S]*?\};\s*<\/script>/, script)
         : html.replace('</head>', `  ${script}\n</head>`);
 }
 
