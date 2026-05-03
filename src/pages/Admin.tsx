@@ -12,10 +12,16 @@ import MemberList from '../components/admin/MemberList';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
 import { sanitizeText } from '../lib/sanitize';
-import { isAdminEmail } from '../lib/adminAccess';
 import { DEFAULT_FAQS } from '../hooks/useFaqs';
+import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 import type { AuditLog, FAQEntry } from '../types';
 
+function isRealMemberPhoto(photo: string | null | undefined): boolean {
+    const value = photo?.trim().toLowerCase() || '';
+    if (!value) return false;
+    if (value.includes('/images/assets/logo/') || value.includes('bni-logo-new.png')) return false;
+    return true;
+}
 
 const Admin: React.FC = () => {
     const { user } = useAuth();
@@ -27,6 +33,7 @@ const Admin: React.FC = () => {
         totalValue: 0,
         monthlyVisits: 0,
         topIndustry: '',
+        industrySummary: '',
         completionRate: ''
     });
 
@@ -71,18 +78,13 @@ const Admin: React.FC = () => {
             return;
         }
 
-        if (isAdminEmail(user.email)) {
-            return;
-        }
-
         try {
-            const { data, error } = await insforge.database
-                .from('members')
-                .select('is_admin')
-                .eq('user_id', user.id)
-                .single();
-
-            if (error || !data?.is_admin) {
+            const linkedMember = await getLinkedMemberAccount(user);
+            if (!hasAdminAccess(user, linkedMember)) {
+                if (!linkedMember) {
+                    navigate('/login');
+                    return;
+                }
                 navigate('/');
             }
         } catch {
@@ -95,6 +97,9 @@ const Admin: React.FC = () => {
         setLoading(true);
 
         try {
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
             // Parallel Fetching for O(1) perceived latency (limited by slowest request)
             const [
                 membersRes,
@@ -128,7 +133,12 @@ const Admin: React.FC = () => {
                 })(),
                 // 3. Page Views - Fail-safe
                 (async () => {
-                    try { return await insforge.database.from('page_views').select('*', { count: 'exact', head: true }); }
+                    try {
+                        return await insforge.database
+                            .from('page_views')
+                            .select('*', { count: 'exact', head: true })
+                            .gte('created_at', monthStart);
+                    }
                     catch { return { count: 0, data: null, error: null }; }
                 })(),
                 // 4. Referrals - Resilient Fetching
@@ -142,7 +152,13 @@ const Admin: React.FC = () => {
                 })(),
                 // 5. Social Clicks - Fail-safe
                 (async () => {
-                    try { return await insforge.database.from('analytics_events').select('*', { count: 'exact', head: true }).eq('event_name', 'click_social'); }
+                    try {
+                        return await insforge.database
+                            .from('analytics_events')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('event_name', 'click_social')
+                            .gte('created_at', monthStart);
+                    }
                     catch { return { count: 0, data: null, error: null }; }
                 })(),
                 (async () => {
@@ -216,16 +232,32 @@ const Admin: React.FC = () => {
             const visitsCount = pageViewsRes.count || 0;
             const socialClicksCount = socialClicksRes.count || 0;
 
+            const activeMembers = membersData.filter((m: any) => !m.frozen_at);
             const industryCounts: { [key: string]: number } = {};
             let hasPhotoCount = 0;
-            membersData.forEach((m: any) => {
+            activeMembers.forEach((m: any) => {
                 const ind = m.industry || '未分類';
                 industryCounts[ind] = (industryCounts[ind] || 0) + 1;
-                if (m.photo && m.photo.length > 10) hasPhotoCount++;
+                if (isRealMemberPhoto(m.photo)) hasPhotoCount++;
             });
 
-            const topIndustry = Object.entries(industryCounts).sort((a, b) => b[1] - a[1])[0];
-            const activeMembers = membersData.filter((m: any) => !m.frozen_at);
+            const sortedIndustries = Object.entries(industryCounts).sort((a, b) => b[1] - a[1]);
+            const topIndustry = sortedIndustries[0];
+            const tiedTopCount = topIndustry ? sortedIndustries.filter(([, count]) => count === topIndustry[1]).length : 0;
+            const industryDisplay = !topIndustry
+                ? '無資料'
+                : topIndustry[1] <= 1
+                    ? '產業分散'
+                    : tiedTopCount > 1
+                        ? `${tiedTopCount} 個產業並列`
+                        : `${topIndustry[0]} (${topIndustry[1]})`;
+            const industrySummary = !topIndustry
+                ? '尚無會員產業資料'
+                : topIndustry[1] <= 1
+                    ? `共 ${sortedIndustries.length} 類，每類 1 位`
+                    : tiedTopCount > 1
+                        ? `最高皆為 ${topIndustry[1]} 位`
+                        : '最高會員數產業';
             const completionRate = activeMembers.length ? Math.round((hasPhotoCount / activeMembers.length) * 100) : 0;
 
             setStats({
@@ -233,7 +265,8 @@ const Admin: React.FC = () => {
                 totalReferrals: homeStatsData?.referral_count || 0,
                 totalValue: homeStatsData?.referral_value || 0,
                 monthlyVisits: visitsCount,
-                topIndustry: topIndustry ? `${topIndustry[0]} (${topIndustry[1]})` : '無資料',
+                topIndustry: industryDisplay,
+                industrySummary,
                 completionRate: `${completionRate}%`
             });
 
@@ -410,24 +443,24 @@ const Admin: React.FC = () => {
             : String(a.name || '').localeCompare(String(b.name || ''), 'zh-Hant')
         );
 
-    if (loading) return <div className="min-h-screen pt-32 text-center text-white">載入後台數據中...</div>;
+    if (loading) return <div className="min-h-screen pt-32 text-center font-bold text-gray-700">載入後台數據中...</div>;
 
     return (
         <div className="min-h-dvh pt-24 md:pt-32 pb-24 md:pb-12 px-4 container mx-auto">
             <SEO title="管理後台" noindex />
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-950 flex items-center gap-3">
                     <Activity className="text-[#CF2030]" size={24} /> 管理後台
                     <button
                         onClick={fetchDashboardData}
-                        className={`p-2 rounded-full hover:bg-gray-100 transition-all ${loading ? 'animate-spin text-[#CF2030]' : 'text-gray-400'}`}
+                        className={`p-2 rounded-full hover:bg-red-50 transition-all ${loading ? 'animate-spin text-[#CF2030]' : 'text-gray-500'}`}
                         title="重新整理數據"
                     >
                         <RefreshCw size={18} />
                     </button>
                 </h1>
                 <div className="w-full md:w-auto overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
-                    <div className="flex bg-gray-50 p-1 rounded-lg backdrop-blur-sm border border-gray-200 min-w-max">
+                    <div className="flex bg-white p-1 rounded-xl backdrop-blur-sm border border-red-100 shadow-sm min-w-max">
                         {[
                             { id: 'overview', label: '總覽' },
                             { id: 'members', label: '會員' },
@@ -440,8 +473,8 @@ const Admin: React.FC = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={`px-4 py-2 rounded-md text-sm font-bold transition-colors whitespace-nowrap ${activeTab === tab.id
-                                    ? 'bg-[#CF2030] text-white'
-                                    : 'text-gray-400 hover:text-white'
+                                    ? 'bg-red-50 text-[#CF2030] shadow-sm ring-1 ring-red-100'
+                                    : 'text-gray-600 hover:bg-red-50 hover:text-[#CF2030]'
                                     }`}
                             >
                                 {tab.label}
@@ -470,10 +503,10 @@ const Admin: React.FC = () => {
                             diff="會員有照片比例"
                         />
                         <StatsCard
-                            title="最大產業佔比"
+                            title="產業分布"
                             value={(stats as any).topIndustry}
                             icon={<Users className="text-purple-400" />}
-                            diff="最熱門產業"
+                            diff={(stats as any).industrySummary}
                         />
                         <StatsCard
                             title="總引薦單數"
@@ -502,23 +535,23 @@ const Admin: React.FC = () => {
 
 
                         {/* Recent Activity Section */}
-                        <div className="col-span-2 lg:col-span-3 bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6 min-h-[280px]">
-                            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <div className="col-span-2 lg:col-span-3 rounded-2xl border border-red-100 bg-white p-4 shadow-sm md:p-6 min-h-[280px]">
+                            <h3 className="text-xl font-bold text-gray-950 mb-4 flex items-center gap-2">
                                 <Activity size={20} className="text-[#CF2030]" /> 最近更新紀錄
                             </h3>
                             <div className="grid gap-4">
                                 {recentUpdates.length === 0 ? (
-                                    <div className="text-gray-400 text-center py-8">尚無更新紀錄</div>
+                                    <div className="text-gray-500 text-center py-8">尚無更新紀錄</div>
                                 ) : (
                                     recentUpdates.map((item) => (
-                                        <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#CF2030]/50 transition-colors">
+                                        <div key={item.id} className="flex items-center justify-between p-4 bg-red-50/40 rounded-xl border border-red-100 hover:border-[#CF2030]/50 transition-colors">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-800">
+                                                <div className="w-10 h-10 rounded-full overflow-hidden bg-white">
                                                     <img src={item.photo || siteConfig.defaultPhoto} alt={item.name} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div>
-                                                    <div className="font-bold text-white">{item.name}</div>
-                                                    <div className="text-xs text-gray-400">{item.company || '未填寫公司'}</div>
+                                                    <div className="font-bold text-gray-950">{item.name}</div>
+                                                    <div className="text-xs text-gray-500">{item.company || '未填寫公司'}</div>
                                                 </div>
                                             </div>
                                             <div className="text-right">
@@ -536,18 +569,18 @@ const Admin: React.FC = () => {
                         </div>
 
                         {/* System Support Team */}
-                        <div className="col-span-2 lg:col-span-1 bg-[#CF2030]/5 border border-[#CF2030]/20 rounded-2xl p-4 md:p-6 min-h-[280px] flex flex-col">
-                            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <div className="col-span-2 lg:col-span-1 bg-white border border-red-100 rounded-2xl p-4 shadow-sm md:p-6 min-h-[280px] flex flex-col">
+                            <h3 className="text-xl font-bold text-gray-950 mb-6 flex items-center gap-2">
                                 <Shield size={20} className="text-[#CF2030]" /> 系統維運團隊
                             </h3>
                             <div className="space-y-4 flex-grow">
                                 {['呂學承', '彭顯智', '潘芷盈'].map(name => (
-                                    <div key={name} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#CF2030]/30 transition-colors">
+                                    <div key={name} className="flex items-center gap-3 p-3 bg-red-50/50 rounded-xl border border-red-100 hover:border-[#CF2030]/30 transition-colors">
                                         <div className="w-10 h-10 rounded-full bg-[#CF2030]/20 flex items-center justify-center text-[#CF2030] text-sm font-bold border border-[#CF2030]/30">
                                             {name[0]}
                                         </div>
                                         <div>
-                                            <div className="text-sm font-bold text-white">{name}</div>
+                                            <div className="text-sm font-bold text-gray-950">{name}</div>
                                             <div className="text-[10px] text-[#CF2030]/70 uppercase tracking-widest font-medium">系統管理員</div>
                                         </div>
                                     </div>
@@ -564,7 +597,7 @@ const Admin: React.FC = () => {
 
                 {/* MEMBERS TAB */}
                 {activeTab === 'members' && (
-                    <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6 overflow-hidden">
+                    <div className="rounded-2xl border border-red-100 bg-white p-4 shadow-sm md:p-6 overflow-hidden">
                         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mb-6">
                             <div className="relative flex-1 sm:max-w-xs">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
@@ -573,19 +606,19 @@ const Admin: React.FC = () => {
                                     placeholder="搜尋會員..."
                                     value={memberSearch}
                                     onChange={e => setMemberSearch(e.target.value)}
-                                    className="w-full bg-black/20 border border-gray-200 rounded-full py-2.5 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-[#CF2030]"
+                                    className="w-full rounded-full border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#CF2030] focus:ring-2 focus:ring-red-100"
                                 />
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
                                 <button
                                     onClick={() => setShowFrozenMembers(false)}
-                                    className={`rounded-full px-4 py-2 text-sm font-bold ${!showFrozenMembers ? 'bg-[#CF2030] text-white' : 'bg-white text-gray-600'}`}
+                                    className={`rounded-full px-4 py-2 text-sm font-bold ring-1 ring-inset ${!showFrozenMembers ? 'bg-red-50 text-[#CF2030] ring-red-100' : 'bg-white text-gray-600 ring-gray-200'}`}
                                 >
                                     目前會員
                                 </button>
                                 <button
                                     onClick={() => setShowFrozenMembers(true)}
-                                    className={`rounded-full px-4 py-2 text-sm font-bold ${showFrozenMembers ? 'bg-[#CF2030] text-white' : 'bg-white text-gray-600'}`}
+                                    className={`rounded-full px-4 py-2 text-sm font-bold ring-1 ring-inset ${showFrozenMembers ? 'bg-red-50 text-[#CF2030] ring-red-100' : 'bg-white text-gray-600 ring-gray-200'}`}
                                 >
                                     冷凍列表
                                 </button>
@@ -628,67 +661,67 @@ const Admin: React.FC = () => {
                 {activeTab === 'referrals' && (
                     <div className="space-y-6">
                         {/* Add New Case Form */}
-                        <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6">
-                            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <div className="rounded-2xl border border-red-100 bg-white p-4 shadow-sm md:p-6">
+                            <h3 className="text-xl font-bold text-gray-950 mb-6 flex items-center gap-2">
                                 <Plus size={20} className="text-[#CF2030]" /> 新增引薦案例
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-gray-400 text-sm mb-1">引薦案例標題</label>
+                                    <label className="block text-gray-600 text-sm font-semibold mb-1">引薦案例標題</label>
                                     <input
                                         type="text"
                                         id="ref_title"
                                         placeholder="例如：【💼 合作共創新價值】"
-                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
+                                        className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-gray-400 text-sm mb-1">簡短描述</label>
+                                    <label className="block text-gray-600 text-sm font-semibold mb-1">簡短描述</label>
                                     <input
                                         type="text"
                                         id="ref_desc"
                                         placeholder="例如：生醫公司新產品線包裝設計引薦"
-                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
+                                        className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-gray-400 text-sm mb-1">引薦人姓名</label>
+                                    <label className="block text-gray-600 text-sm font-semibold mb-1">引薦人姓名</label>
                                     <input
                                         type="text"
                                         id="ref_referrer"
-                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
+                                        className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                     />
-                                    <label className="mt-2 flex items-center gap-2 text-sm text-gray-300">
+                                    <label className="mt-2 flex items-center gap-2 text-sm text-gray-600">
                                         <input type="checkbox" id="ref_referrer_external" />
                                         外分會引薦人（前台只顯示外分會與 BNI Logo）
                                     </label>
                                 </div>
                                 <div>
-                                    <label className="block text-gray-400 text-sm mb-1">被引薦人姓名</label>
+                                    <label className="block text-gray-600 text-sm font-semibold mb-1">被引薦人姓名</label>
                                     <input
                                         type="text"
                                         id="ref_referee"
-                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
+                                        className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                     />
-                                    <label className="mt-2 flex items-center gap-2 text-sm text-gray-300">
+                                    <label className="mt-2 flex items-center gap-2 text-sm text-gray-600">
                                         <input type="checkbox" id="ref_referee_external" />
                                         外分會被引薦人（前台只顯示外分會與 BNI Logo）
                                     </label>
                                 </div>
                                 <div className="md:col-span-2">
-                                    <label className="block text-gray-400 text-sm mb-1">引薦人自述 (Referrer Story)</label>
+                                    <label className="block text-gray-600 text-sm font-semibold mb-1">引薦人自述 (Referrer Story)</label>
                                     <textarea
                                         id="ref_referrer_story"
                                         rows={3}
-                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
+                                        className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                     ></textarea>
                                 </div>
                                 <div className="md:col-span-2">
-                                    <label className="block text-gray-400 text-sm mb-1">被引薦人自述 (Referee Story)</label>
+                                    <label className="block text-gray-600 text-sm font-semibold mb-1">被引薦人自述 (Referee Story)</label>
                                     <textarea
                                         id="ref_referee_story"
                                         rows={3}
-                                        className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
+                                        className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                     ></textarea>
                                 </div>
                             </div>
@@ -745,17 +778,17 @@ const Admin: React.FC = () => {
                         </div>
 
                         {/* Existing Referrals List */}
-                        <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6 overflow-hidden">
-                            <h3 className="text-lg md:text-xl font-bold text-white mb-4 md:mb-6">引薦案例列表</h3>
+                        <div className="rounded-2xl border border-red-100 bg-white p-4 shadow-sm md:p-6 overflow-hidden">
+                            <h3 className="text-lg md:text-xl font-bold text-gray-950 mb-4 md:mb-6">引薦案例列表</h3>
 
                             {/* Mobile: Card Layout */}
                             <div className="md:hidden space-y-3">
                                 {referrals.length === 0 ? (
-                                    <div className="text-center text-gray-400 py-8">尚無引薦單資料</div>
+                                    <div className="text-center text-gray-500 py-8">尚無引薦單資料</div>
                                 ) : referrals.map(ref => (
-                                    <div key={ref.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                                    <div key={ref.id} className="bg-red-50/40 border border-red-100 rounded-xl p-4">
                                         <div className="flex justify-between items-start mb-2">
-                                            <div className="text-sm font-bold text-white line-clamp-1 flex-1 mr-2">{ref.title}</div>
+                                            <div className="text-sm font-bold text-gray-950 line-clamp-1 flex-1 mr-2">{ref.title}</div>
                                             <button
                                                 onClick={() => handleDeleteReferral(ref.id)}
                                                 className="p-1.5 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors shrink-0"
@@ -763,7 +796,7 @@ const Admin: React.FC = () => {
                                                 <Trash2 size={14} />
                                             </button>
                                         </div>
-                                        <div className="text-xs text-gray-400 mb-2 line-clamp-1">{ref.description}</div>
+                                        <div className="text-xs text-gray-500 mb-2 line-clamp-1">{ref.description}</div>
                                         <div className="flex items-center justify-between text-xs">
                                             <span className="text-[#CF2030]">{ref.referrer_name} → {ref.referee_name}</span>
                                             <span className="text-gray-500">{new Date(ref.createdAt || ref.created_at).toLocaleDateString()}</span>
@@ -776,7 +809,7 @@ const Admin: React.FC = () => {
                             <div className="hidden md:block overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="text-gray-400 text-sm border-b border-gray-200">
+                                        <tr className="text-gray-500 text-sm border-b border-red-100">
                                             <th className="p-4">日期</th>
                                             <th className="p-4">引薦人</th>
                                             <th className="p-4">被引薦人</th>
@@ -786,17 +819,17 @@ const Admin: React.FC = () => {
                                     </thead>
                                     <tbody>
                                         {referrals.length === 0 ? (
-                                            <tr><td colSpan={5} className="p-8 text-center text-gray-400">尚無引薦單資料</td></tr>
+                                            <tr><td colSpan={5} className="p-8 text-center text-gray-500">尚無引薦單資料</td></tr>
                                         ) : referrals.map(ref => (
-                                            <tr key={ref.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                                <td className="p-4 text-gray-300 text-sm">
+                                            <tr key={ref.id} className="border-b border-red-50 hover:bg-red-50/50 transition-colors">
+                                                <td className="p-4 text-gray-600 text-sm">
                                                     {new Date(ref.createdAt || ref.created_at).toLocaleDateString()}
                                                 </td>
-                                                <td className="p-4 text-white font-medium">{ref.referrer_name}</td>
-                                                <td className="p-4 text-white text-sm">{ref.referee_name}</td>
+                                                <td className="p-4 text-gray-950 font-medium">{ref.referrer_name}</td>
+                                                <td className="p-4 text-gray-950 text-sm">{ref.referee_name}</td>
                                                 <td className="p-4">
-                                                    <div className="text-white text-sm">{ref.title}</div>
-                                                    <div className="text-xs text-gray-400 line-clamp-1">{ref.description}</div>
+                                                    <div className="text-gray-950 text-sm">{ref.title}</div>
+                                                    <div className="text-xs text-gray-500 line-clamp-1">{ref.description}</div>
                                                 </td>
                                                 <td className="p-4 text-right">
                                                     <button
@@ -817,9 +850,9 @@ const Admin: React.FC = () => {
 
                 {/* FAQ TAB */}
                 {activeTab === 'faq' && (
-                    <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6">
+                    <div className="rounded-2xl border border-red-100 bg-white p-4 shadow-sm md:p-6">
                         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <h3 className="flex items-center gap-2 text-xl font-bold text-white">
+                            <h3 className="flex items-center gap-2 text-xl font-bold text-gray-950">
                                 <HelpCircle size={20} className="text-[#CF2030]" /> 首頁 Q&A 管理
                             </h3>
                             <button
@@ -885,8 +918,8 @@ const Admin: React.FC = () => {
 
                 {/* AUDIT TAB */}
                 {activeTab === 'audit' && (
-                    <div className="bg-gray-500 border border-gray-200 rounded-2xl p-4 md:p-6">
-                        <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-white">
+                    <div className="rounded-2xl border border-red-100 bg-white p-4 shadow-sm md:p-6">
+                        <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-gray-950">
                             <FileText size={20} className="text-[#CF2030]" /> 詳細改動紀錄
                         </h3>
                         <div className="space-y-3">
@@ -922,36 +955,36 @@ const Admin: React.FC = () => {
                     activeTab === 'settings' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {/* Homepage Stats Editor */}
-                            <div className="bg-gray-500 border border-gray-200 rounded-2xl p-6">
-                                <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <div className="rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
+                                <h3 className="text-xl font-bold text-gray-950 mb-6 flex items-center gap-2">
                                     <Activity size={20} className="text-[#CF2030]" /> 首頁數據更新
                                 </h3>
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-gray-400 text-sm mb-1">統計月份</label>
+                                        <label className="block text-gray-600 text-sm font-semibold mb-1">統計月份</label>
                                         <input
                                             type="month"
                                             value={homeStats.month}
                                             onChange={e => setHomeStats({ ...homeStats, month: e.target.value })}
-                                            className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
+                                            className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-gray-400 text-sm mb-1">總引薦單數</label>
+                                        <label className="block text-gray-600 text-sm font-semibold mb-1">總引薦單數</label>
                                         <input
                                             type="number"
                                             value={homeStats.referral_count}
                                             onChange={e => setHomeStats({ ...homeStats, referral_count: Number(e.target.value) })}
-                                            className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
+                                            className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-gray-400 text-sm mb-1">總交易價值 (元)</label>
+                                        <label className="block text-gray-600 text-sm font-semibold mb-1">總交易價值 (元)</label>
                                         <input
                                             type="number"
                                             value={homeStats.referral_value}
                                             onChange={e => setHomeStats({ ...homeStats, referral_value: Number(e.target.value) })}
-                                            className="w-full bg-black/20 border border-gray-200 rounded-lg p-3 text-white focus:border-[#CF2030] focus:outline-none"
+                                            className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                         />
                                         <div className="text-right text-xs text-gray-500 mt-1">
                                             預覽: ${(homeStats.referral_value / 100000000).toFixed(2)} 億
@@ -966,9 +999,9 @@ const Admin: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-500 border border-gray-200 rounded-2xl p-6">
-                                <h3 className="text-xl font-bold text-white mb-6">系統公告</h3>
-                                <p className="text-gray-400 text-sm mb-4">
+                            <div className="rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
+                                <h3 className="text-xl font-bold text-gray-950 mb-6">系統公告</h3>
+                                <p className="text-gray-600 text-sm mb-4">
                                     若需發布系統公告或暫停網站服務，請在此設定。目前功能開發中。
                                 </p>
                             </div>

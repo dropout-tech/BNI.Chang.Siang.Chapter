@@ -80,15 +80,15 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh, onToggleFroz
             {/* Mobile: Card Layout */}
             <div className="md:hidden space-y-3">
                 {displayed.map(member => (
-                    <div key={member.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                    <div key={member.id} className="rounded-xl border border-red-100 bg-white p-4 shadow-sm">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 shrink-0">
+                            <div className="w-12 h-12 rounded-full overflow-hidden bg-red-50 shrink-0">
                                 {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
                             </div>
                             <div className="min-w-0 flex-1">
-                                <div className="font-bold text-white truncate">{member.name}</div>
+                                <div className="font-bold text-gray-950 truncate">{member.name}</div>
                                 <div className="text-sm text-[#CF2030] truncate">{member.industry}</div>
-                                <div className="text-xs text-gray-400 truncate">{member.company} {member.position || member.title ? `· ${member.position || member.title}` : ''}</div>
+                                <div className="text-xs text-gray-500 truncate">{member.company} {member.position || member.title ? `· ${member.position || member.title}` : ''}</div>
                             </div>
                             {member.is_gold_badge && <Crown size={18} className="text-yellow-500" />}
                         </div>
@@ -133,7 +133,7 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh, onToggleFroz
             <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="text-gray-400 text-sm border-b border-gray-200">
+                        <tr className="text-sm text-gray-500 border-b border-red-100">
                             <th className="p-4">會員</th>
                             <th className="p-4">產業/公司</th>
                             <th className="p-4">職稱</th>
@@ -144,22 +144,22 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh, onToggleFroz
                     </thead>
                     <tbody>
                         {displayed.map(member => (
-                            <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                            <tr key={member.id} className="border-b border-red-50 hover:bg-red-50/50 transition-colors">
                                 <td className="p-4 flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-700 shrink-0">
+                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-red-50 shrink-0">
                                         {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
                                     </div>
-                                    <span className="font-medium text-white">{member.name}</span>
+                                    <span className="font-medium text-gray-950">{member.name}</span>
                                 </td>
-                                <td className="p-4 text-gray-300">
-                                    <div className="text-white text-sm">{member.industry}</div>
+                                <td className="p-4 text-gray-600">
+                                    <div className="text-gray-950 text-sm">{member.industry}</div>
                                     <div className="text-xs opacity-70">{member.company}</div>
                                 </td>
-                                <td className="p-4 text-gray-300 text-sm">
+                                <td className="p-4 text-gray-600 text-sm">
                                     {member.position || member.title}
                                 </td>
                                 <td className="p-4">
-                                    <label className="inline-flex items-center gap-2 text-sm text-gray-300">
+                                    <label className="inline-flex items-center gap-2 text-sm text-gray-600">
                                         <input
                                             type="checkbox"
                                             checked={member.is_gold_badge === true}
@@ -223,20 +223,20 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh, onToggleFroz
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-100 text-sm text-gray-400">
+            <div className="flex justify-between items-center mt-4 pt-4 border-t border-red-100 text-sm text-gray-500">
                 <span>第 {page} / {totalPages} 頁 · 共 {members.length} 筆</span>
                 <div className="flex gap-2">
                     <button
                         onClick={() => setPage(p => Math.max(p - 1, 1))}
                         disabled={page === 1}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-black/30 rounded-lg disabled:opacity-30 hover:bg-gray-100 transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-gray-700 border border-gray-200 disabled:opacity-30 hover:bg-red-50 transition-colors"
                     >
                         <ChevronLeft size={14} /> 上一頁
                     </button>
                     <button
                         onClick={() => setPage(p => Math.min(p + 1, totalPages))}
                         disabled={page === totalPages}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-black/30 rounded-lg disabled:opacity-30 hover:bg-gray-100 transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-gray-700 border border-gray-200 disabled:opacity-30 hover:bg-red-50 transition-colors"
                     >
                         下一頁 <ChevronRight size={14} />
                     </button>
