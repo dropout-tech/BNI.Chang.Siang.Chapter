@@ -10,7 +10,7 @@ import type { Member } from '../types';
 import SEO from '../components/common/SEO';
 import { sanitizeText, sanitizeUrl } from '../lib/sanitize';
 import { siteConfig } from '../config/site.config';
-import { isAdminEmail } from '../lib/adminAccess';
+import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 
 const CATEGORIES = [...siteConfig.industries];
 
@@ -81,19 +81,16 @@ const MemberEdit: React.FC = () => {
         if (!user || !isBackendConfigured) return;
         setLoading(true);
         try {
-            // 1. Check if current user is Admin
-            let adminAccess = isAdminEmail(user.email);
-            if (!adminAccess) {
-                const { data: currentUserData } = await insforge.database
-                    .from('members')
-                    .select('is_admin')
-                    .eq('user_id', user.id)
-                    .single();
-                adminAccess = currentUserData?.is_admin === true;
+            const linkedMember = await getLinkedMemberAccount(user);
+            if (!linkedMember) {
+                navigate('/login');
+                return;
             }
+
+            // Admin privileges only activate after the account is claimed.
+            const adminAccess = hasAdminAccess(user, linkedMember);
             setIsAdmin(adminAccess);
 
-            // 2. Check URL params for target ID
             const searchParams = new URLSearchParams(window.location.search);
             const targetId = searchParams.get('id');
 
@@ -319,7 +316,7 @@ const MemberEdit: React.FC = () => {
         }
     };
 
-    if (authLoading) return <div className="min-h-screen text-white flex items-center justify-center">載入中...</div>;
+    if (authLoading) return <div className="min-h-screen text-gray-700 flex items-center justify-center">載入中...</div>;
 
     return (
         <div className="min-h-dvh pt-24 md:pt-32 pb-32 md:pb-12 px-4 container mx-auto max-w-4xl">
@@ -332,10 +329,10 @@ const MemberEdit: React.FC = () => {
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 sticky top-20 z-[40] bg-white/80 backdrop-blur-lg p-4 -mx-4 rounded-b-2xl border-b border-gray-100 md:bg-transparent md:backdrop-blur-none md:border-none md:static md:p-0 md:mx-0">
                     <div className="flex items-center justify-between w-full sm:w-auto gap-4">
-                        <button onClick={() => navigate('/members')} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0">
+                        <button onClick={() => navigate('/members')} className="flex items-center gap-2 text-gray-500 hover:text-[#CF2030] transition-colors cursor-pointer shrink-0">
                             <ArrowLeft size={20} /> <span className="hidden sm:inline">返回列表</span><span className="sm:hidden text-sm">返回</span>
                         </button>
-                        <h1 className="text-xl md:text-2xl font-bold text-white truncate">編輯檔案</h1>
+                        <h1 className="text-xl md:text-2xl font-bold text-gray-950 truncate">編輯檔案</h1>
                     </div>
 
                     <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -390,7 +387,7 @@ const MemberEdit: React.FC = () => {
 
                     {/* Left Column: Photo & Basic Info */}
                     <div className="space-y-6 md:col-span-1">
-                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6">
+                        <div className="bg-white backdrop-blur border border-red-100 shadow-sm rounded-2xl p-6">
                             <h3 className="text-lg font-bold text-[#CF2030] mb-4">大頭貼</h3>
 
                             <div className="aspect-square rounded-full border-4 border-[#CF2030]/30 overflow-hidden relative group mb-4 bg-black">
@@ -408,18 +405,18 @@ const MemberEdit: React.FC = () => {
                                     </div>
                                 </label>
                             </div>
-                            <label className="md:hidden flex items-center justify-center gap-2 w-full py-2.5 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-300 active:bg-[#CF2030]/20 active:text-[#CF2030] transition-colors cursor-pointer mb-4">
+                            <label className="md:hidden flex items-center justify-center gap-2 w-full py-2.5 bg-red-50 border border-red-100 rounded-lg text-sm font-semibold text-[#CF2030] active:bg-[#CF2030]/20 active:text-[#CF2030] transition-colors cursor-pointer mb-4">
                                 <input type="file" onChange={handleFileUpload} accept="image/*" className="hidden" />
                                 <Camera size={16} />
                                 <span>更換大頭貼</span>
                             </label>
 
                             <div className="mb-4">
-                                <label className="block text-gray-400 text-xs mb-1">照片位置</label>
+                                <label className="block text-gray-600 text-xs font-semibold mb-1">照片位置</label>
                                 <select
                                     value={photoPosition}
                                     onChange={(e) => updateField(setPhotoPosition, e.target.value)}
-                                    className="w-full bg-black/30 border border-gray-200 rounded-lg p-2 text-sm text-white focus:border-[#CF2030] focus:outline-none"
+                                    className="w-full bg-white border border-gray-200 rounded-lg p-2 text-sm text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                 >
                                     <option value="top">上方 (Top)</option>
                                     <option value="center">居中 (Center)</option>
@@ -428,15 +425,15 @@ const MemberEdit: React.FC = () => {
                             </div>
 
                             <div className="text-center">
-                                <p className="text-xl font-bold text-white mb-1">{name || '您的名字'}</p>
+                                <p className="text-xl font-bold text-gray-950 mb-1">{name || '您的名字'}</p>
                                 <p className="text-sm text-[#CF2030]">{industry || '行業別'}</p>
-                                <div className="mt-2 inline-block px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-400">
+                                <div className="mt-2 inline-block px-3 py-1 bg-red-50 rounded-full text-xs font-semibold text-gray-600">
                                     會員編號: {memberId || '-'}
                                 </div>
                             </div>
                         </div>
                         {isAdmin && (
-                            <div className="bg-white/80 backdrop-blur border border-yellow-200 rounded-2xl p-6">
+                            <div className="bg-white backdrop-blur border border-yellow-200 shadow-sm rounded-2xl p-6">
                                 <h3 className="text-lg font-bold text-[#CF2030] mb-4">管理員設定</h3>
                                 <label className="mb-4 flex items-center gap-2 text-sm font-bold text-gray-700">
                                     <input
@@ -476,77 +473,77 @@ const MemberEdit: React.FC = () => {
                     <div className="space-y-6 md:col-span-2">
 
                         {/* Basic Info Section */}
-                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8">
+                        <div className="bg-white backdrop-blur border border-red-100 shadow-sm rounded-2xl p-6 md:p-8">
                             <h2 className="text-xl font-bold text-[#CF2030] mb-6 border-b border-gray-200 pb-4">📝 基本資料</h2>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-gray-300 mb-2 font-medium">真實姓名</label>
+                                    <label className="block text-gray-700 mb-2 font-medium">真實姓名</label>
                                     <input
                                         type="text"
                                         value={name}
                                         onChange={(e) => updateField(setName, e.target.value)}
-                                        className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                        className="w-full bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-gray-300 mb-2 font-medium">公司名稱</label>
+                                        <label className="block text-gray-700 mb-2 font-medium">公司名稱</label>
                                         <input
                                             type="text"
                                             value={company}
                                             onChange={(e) => updateField(setCompany, e.target.value)}
-                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                            className="w-full bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-gray-300 mb-2 font-medium">職稱</label>
+                                        <label className="block text-gray-700 mb-2 font-medium">職稱</label>
                                         <input
                                             type="text"
                                             value={position}
                                             onChange={(e) => updateField(setPosition, e.target.value)}
-                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                            className="w-full bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-gray-300 mb-2 font-medium">聯絡電話</label>
+                                        <label className="block text-gray-700 mb-2 font-medium">聯絡電話</label>
                                         <input
                                             type="tel"
                                             value={phone}
                                             onChange={(e) => updateField(setPhone, e.target.value)}
                                             placeholder="例：0912-345-678"
-                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                            className="w-full bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-gray-300 mb-2 font-medium">公開信箱</label>
+                                        <label className="block text-gray-700 mb-2 font-medium">公開信箱</label>
                                         <input
                                             type="email"
                                             value={email}
                                             onChange={(e) => updateField(setEmail, e.target.value)}
                                             placeholder="例：name@example.com"
-                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                            className="w-full bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-gray-300 mb-2 font-medium">
+                                    <label className="block text-gray-700 mb-2 font-medium">
                                         產業類別 (已選 {selectedCategories.length}/2)
                                     </label>
 
                                     {/* Selected Tags Display */}
                                     <div className="flex flex-wrap gap-2 mb-3">
                                         {selectedCategories.map(cat => (
-                                            <span key={cat} className="px-3 py-1 bg-[#CF2030] text-white font-bold rounded-full text-sm flex items-center gap-2">
+                                            <span key={cat} className="px-3 py-1 bg-red-50 text-[#CF2030] border border-red-100 font-bold rounded-full text-sm flex items-center gap-2">
                                                 {cat}
                                                 <button
                                                     type="button"
                                                     onClick={() => toggleCategory(cat)}
-                                                    className="hover:text-white focus:outline-none cursor-pointer"
+                                                    className="hover:text-red-700 focus:outline-none cursor-pointer"
                                                 >
                                                     <X size={14} />
                                                 </button>
@@ -560,8 +557,8 @@ const MemberEdit: React.FC = () => {
                                                 type="button"
                                                 onClick={() => toggleCategory(cat)}
                                                 className={`px-3 py-1.5 rounded-full text-sm border transition-all cursor-pointer ${selectedCategories.includes(cat)
-                                                    ? 'bg-[#CF2030] text-white border-[#CF2030] font-bold shadow-[0_0_15px_rgba(212,175,55,0.3)]'
-                                                    : 'bg-transparent text-gray-400 border-gray-200 hover:border-gray-1000 hover:text-white'
+                                                    ? 'bg-red-50 text-[#CF2030] border-red-100 font-bold'
+                                                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#CF2030] hover:text-[#CF2030]'
                                                     }`}
                                             >
                                                 {cat}
@@ -573,26 +570,26 @@ const MemberEdit: React.FC = () => {
                         </div>
 
                         {/* Intro Section */}
-                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8">
+                        <div className="bg-white backdrop-blur border border-red-100 shadow-sm rounded-2xl p-6 md:p-8">
                             <h2 className="text-xl font-bold text-[#CF2030] mb-6 border-b border-gray-200 pb-4">📣 自我介紹</h2>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-gray-300 mb-2 font-medium">簡短介紹 (列表頁顯示)</label>
+                                    <label className="block text-gray-700 mb-2 font-medium">簡短介紹 (列表頁顯示)</label>
                                     <textarea
                                         value={shortIntro}
                                         onChange={(e) => updateField(setShortIntro, e.target.value)}
                                         maxLength={100}
-                                        className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none h-24 resize-none"
+                                        className="w-full bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100 h-24 resize-none"
                                         placeholder="一句話介紹您的專業..."
                                     />
                                     <div className="text-right text-xs text-gray-500">{shortIntro.length}/100</div>
                                 </div>
                                 <div>
-                                    <label className="block text-gray-300 mb-2 font-medium">完整介紹 (詳細頁顯示)</label>
+                                    <label className="block text-gray-700 mb-2 font-medium">完整介紹 (詳細頁顯示)</label>
                                     <textarea
                                         value={fullIntro}
                                         onChange={(e) => updateField(setFullIntro, e.target.value)}
-                                        className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none h-48"
+                                        className="w-full bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100 h-48"
                                         placeholder="詳細說明您的服務內容、經歷與優勢..."
                                     />
                                     <p className="mt-2 text-xs text-[#CF2030]/70 leading-relaxed italic">
@@ -603,11 +600,11 @@ const MemberEdit: React.FC = () => {
                         </div>
 
                         {/* Services & Hashtags */}
-                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8">
+                        <div className="bg-white backdrop-blur border border-red-100 shadow-sm rounded-2xl p-6 md:p-8">
                             <h2 className="text-xl font-bold text-[#CF2030] mb-6 border-b border-gray-200 pb-4">✨ 服務與標籤</h2>
 
                             <div className="mb-6">
-                                <label className="block text-gray-300 mb-2 font-medium">主要服務 (最多3項)</label>
+                                <label className="block text-gray-700 mb-2 font-medium">主要服務 (最多3項)</label>
                                 <div className="space-y-2">
                                     {services.map((service, idx) => (
                                         <input
@@ -619,7 +616,7 @@ const MemberEdit: React.FC = () => {
                                                 newServices[idx] = e.target.value;
                                                 updateField(setServices, newServices);
                                             }}
-                                            className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none"
+                                            className="w-full bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                             placeholder={`服務項目 ${idx + 1}`}
                                         />
                                     ))}
@@ -627,7 +624,7 @@ const MemberEdit: React.FC = () => {
                             </div>
 
                             <div>
-                                <label className="block text-gray-300 mb-2 font-medium">Hashtags (標籤)</label>
+                                <label className="block text-gray-700 mb-2 font-medium">Hashtags (標籤)</label>
                                 <div className="flex gap-2">
                                     {hashtags.map((tag, idx) => (
                                         <div key={idx} className="relative flex-1">
@@ -640,7 +637,7 @@ const MemberEdit: React.FC = () => {
                                                     newTags[idx] = e.target.value;
                                                     updateField(setHashtags, newTags);
                                                 }}
-                                                className="w-full bg-black/30 border border-gray-200 rounded-lg p-3 pl-7 text-base text-white focus:border-[#CF2030] focus:outline-none"
+                                                className="w-full bg-white border border-gray-200 rounded-lg p-3 pl-7 text-base text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                             />
                                         </div>
                                     ))}
@@ -649,12 +646,12 @@ const MemberEdit: React.FC = () => {
                         </div>
 
                         {/* Social Links */}
-                        <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 md:p-8">
+                        <div className="bg-white backdrop-blur border border-red-100 shadow-sm rounded-2xl p-6 md:p-8">
                             <h2 className="text-xl font-bold text-[#CF2030] mb-6 border-b border-gray-200 pb-4">🔗 社群連結</h2>
                             <div className="space-y-3">
                                 {links.map((link, idx) => (
                                     <div key={link.type} className="flex gap-2 items-center">
-                                        <div className="w-24 text-gray-400 capitalize text-sm font-medium">{link.type}</div>
+                                        <div className="w-24 text-gray-600 capitalize text-sm font-medium">{link.type}</div>
                                         <input
                                             type="text"
                                             value={link.url}
@@ -663,7 +660,7 @@ const MemberEdit: React.FC = () => {
                                                 newLinks[idx].url = e.target.value;
                                                 updateField(setLinks, newLinks);
                                             }}
-                                            className="flex-1 bg-black/30 border border-gray-200 rounded-lg p-3 text-base text-white focus:border-[#CF2030] focus:outline-none"
+                                            className="flex-1 bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                             placeholder="https://..."
                                         />
                                     </div>
@@ -694,7 +691,7 @@ const MemberEdit: React.FC = () => {
                             {hasChanges && (
                                 <button
                                     onClick={() => { fetchMemberData(); setHasChanges(false); }}
-                                    className="w-full py-3 text-gray-400 hover:text-white transition-colors text-sm"
+                                    className="w-full py-3 text-gray-500 hover:text-[#CF2030] transition-colors text-sm"
                                 >
                                     放棄目前修改
                                 </button>

@@ -8,13 +8,13 @@ interface StatsCardProps {
 }
 
 const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, diff }) => (
-    <div className="bg-gray-500 border border-gray-200 rounded-xl md:rounded-2xl p-4 md:p-6 backdrop-blur-sm">
+    <div className="rounded-xl border border-red-100 bg-white p-4 shadow-sm shadow-red-100/50 md:rounded-2xl md:p-6">
         <div className="flex justify-between items-start mb-2 md:mb-4">
-            <div className="text-gray-400 text-xs md:text-sm font-medium leading-tight">{title}</div>
-            <div className="p-1.5 md:p-2 bg-gray-50 rounded-lg shrink-0 ml-2">{icon}</div>
+            <div className="text-xs font-semibold leading-tight text-gray-500 md:text-sm">{title}</div>
+            <div className="ml-2 shrink-0 rounded-lg bg-red-50 p-1.5 md:p-2">{icon}</div>
         </div>
-        <div className="text-lg md:text-3xl font-bold text-white mb-1 truncate">{value}</div>
-        <div className="text-[10px] md:text-xs text-[#CF2030] truncate">{diff}</div>
+        <div className="mb-1 truncate text-lg font-bold text-gray-950 md:text-3xl">{value}</div>
+        <div className="truncate text-[10px] font-semibold text-[#CF2030] md:text-xs">{diff}</div>
     </div>
 );
 

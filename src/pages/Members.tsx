@@ -5,12 +5,12 @@ import MemberCard from '../components/members/MemberCard';
 import CategoryFilter from '../components/members/CategoryFilter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/auth-context';
-import { insforge, isBackendConfigured } from '../lib/insforge';
+import { isBackendConfigured } from '../lib/insforge';
 import { Search, Edit } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
-import { isAdminEmail } from '../lib/adminAccess';
+import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 
 const CATEGORIES = [...siteConfig.industries];
 
@@ -43,16 +43,8 @@ const Members: React.FC = () => {
                 setIsAdmin(false);
                 return;
             }
-            if (isAdminEmail(user.email)) {
-                setIsAdmin(true);
-                return;
-            }
-            const { data } = await insforge.database
-                .from('members')
-                .select('is_admin')
-                .eq('user_id', user.id)
-                .single();
-            setIsAdmin(data?.is_admin === true);
+            const linkedMember = await getLinkedMemberAccount(user);
+            setIsAdmin(hasAdminAccess(user, linkedMember));
         };
         checkAdmin();
     }, [user]);

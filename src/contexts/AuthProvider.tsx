@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { insforge, isBackendConfigured } from '../lib/insforge';
 import { AuthContext, type AuthUser } from './auth-context';
 
+const AUTH_TIMEOUT_MS = 8000;
+
 /** InsForge SDK user（必要欄位） */
 function mapSdkUser(u: {
     id: string;
@@ -25,7 +27,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             return;
         }
         try {
-            const { data, error } = await insforge.auth.getCurrentUser();
+            const { data, error } = await Promise.race([
+                insforge.auth.getCurrentUser(),
+                new Promise<{ data: null; error: Error }>((resolve) => {
+                    window.setTimeout(() => resolve({ data: null, error: new Error('Auth request timed out') }), AUTH_TIMEOUT_MS);
+                }),
+            ]);
             if (!error && data?.user) {
                 setUser(mapSdkUser(data.user));
             } else {

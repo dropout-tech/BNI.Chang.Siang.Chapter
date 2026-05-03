@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/auth-context';
 import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
-import { isAdminEmail } from '../lib/adminAccess';
+import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -69,31 +69,15 @@ const Login: React.FC = () => {
     const checkProfile = async () => {
         if (!user || !isBackendConfigured) return;
 
-        if (isAdminEmail(user.email)) {
-            navigate('/admin');
-            return;
-        }
-
         try {
-            const { data, error } = await insforge.database
-                .from('members')
-                .select('id, name')
-                .eq('user_id', user.id)
-                .single();
-
-            if (error) {
-                // If checking profile fails, we assume no profile linked yet (PGRST116)
-                // Proceed to claim mode
-                console.log('No profile linked, switching to claim mode:', error.message);
-                loadUnclaimedMembers();
-                setMode('claim');
+            const linkedMember = await getLinkedMemberAccount(user);
+            if (linkedMember) {
+                navigate(hasAdminAccess(user, linkedMember) ? '/admin' : '/member-edit');
                 return;
             }
 
-            if (data) {
-                // Already matched, go to edit
-                navigate('/member-edit');
-            }
+            loadUnclaimedMembers();
+            setMode('claim');
         } catch (err) {
             console.error('Unexpected error checking profile:', err);
             // Safety fallback

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { LogIn, LogOut, User, Shield, Menu, X } from 'lucide-react';
 import { useAuth } from '../../contexts/auth-context';
-import { insforge, isBackendConfigured } from '../../lib/insforge';
+import { isBackendConfigured } from '../../lib/insforge';
 import { assetUrl } from '../../lib/assets';
-import { isAdminEmail } from '../../lib/adminAccess';
+import { getLinkedMemberAccount, hasAdminAccess } from '../../lib/memberAccount';
 
 const navLinks = [
     { name: '什麼是 BNI', path: '/about-bni' },
@@ -29,8 +29,9 @@ const Navbar: React.FC = () => {
 
     useEffect(() => {
         if (!user || !isBackendConfigured) { setIsAdmin(false); return; }
-        if (isAdminEmail(user.email)) { setIsAdmin(true); return; }
-        insforge.database.from('members').select('is_admin').eq('user_id', user.id).single().then(({ data }) => setIsAdmin(data?.is_admin === true));
+        getLinkedMemberAccount(user)
+            .then((linkedMember) => setIsAdmin(hasAdminAccess(user, linkedMember)))
+            .catch(() => setIsAdmin(false));
     }, [user]);
 
     return (
