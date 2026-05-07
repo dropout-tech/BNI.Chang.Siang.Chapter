@@ -7,7 +7,6 @@ import { getAuthRedirectUrl } from '../lib/authRedirect';
 import { useAuth } from '../contexts/auth-context';
 import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
-import { siteConfig } from '../config/site.config';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 
 const Login: React.FC = () => {
@@ -221,9 +220,21 @@ const Login: React.FC = () => {
                 throw new Error('此會員檔案與您目前登入的 Email 不符，無法認領。');
             }
 
-            // Check division password
-            if (claimPassword !== siteConfig.claimPassword) {
-                throw new Error('分會認證密碼錯誤，請洽詢網站管理員 (魔術方塊教學 李孟一)。');
+            const { data: verified, error: verifyErr } = await insforge.database.rpc('verify_member_claim', {
+                p_member_id: Number(selectedMemberId),
+                p_password: claimPassword,
+            });
+
+            if (verifyErr) {
+                const msg = verifyErr.message || '';
+                if (msg.includes('does not exist') || msg.includes('PGRST202') || msg.includes('42883')) {
+                    throw new Error('認領功能尚未完成資料庫設定，請管理員執行 scripts/member-claim-password.sql 後再試。');
+                }
+                throw verifyErr;
+            }
+
+            if (verified !== true) {
+                throw new Error('會員認領密碼不正確，或此檔案尚未由管理員設定認領密碼。');
             }
 
             // Update the selected member with current user's UUID
@@ -524,7 +535,7 @@ const Login: React.FC = () => {
                         </div>
 
                         <div className="mt-6 border-t border-gray-200 pt-6">
-                            <label className="block text-gray-700 font-bold text-sm mb-2">請輸入分會認證密碼</label>
+                            <label className="block text-gray-700 font-bold text-sm mb-2">請輸入此會員的認領密碼</label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
                                 <input
@@ -532,12 +543,13 @@ const Login: React.FC = () => {
                                     value={claimPassword}
                                     onChange={e => setClaimPassword(e.target.value)}
                                     className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
-                                    placeholder="分會密碼"
+                                    placeholder="由管理員為您設定的認領密碼"
                                     required
+                                    autoComplete="off"
                                 />
                             </div>
                             <p className="text-[10px] text-gray-500 mt-2">
-                                * 為確保資料安全，認領帳號需輸入分會專屬密碼。
+                                * 每位會員密碼不同；若尚無法認領，請洽分會管理員於後台為您設定。
                             </p>
                         </div>
 

@@ -449,3 +449,31 @@ CREATE POLICY "analytics_events_anyone_insert"
 CREATE POLICY "analytics_events_admin_read"
   ON public.analytics_events FOR SELECT
   USING ( public.is_admin() );
+
+-- ----- 會員個別認領密碼 -----
+-- 完整 DDL 與說明見 scripts/member-claim-password.sql（亦可複製該檔執行）
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+ALTER TABLE public.members ADD COLUMN IF NOT EXISTS claim_password_hash TEXT;
+
+CREATE OR REPLACE FUNCTION public.verify_member_claim(p_member_id integer, p_password text)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.members m
+    WHERE m.id = p_member_id
+      AND m.user_id IS NULL
+      AND m.claim_password_hash IS NOT NULL
+      AND length(btrim(p_password)) >= 4
+      AND m.claim_password_hash = crypt(p_password, m.claim_password_hash)
+  );
+$$;
+
+REVOKE ALL ON FUNCTION public.verify_member_claim(integer, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.verify_member_claim(integer, text) TO anon;
+GRANT EXECUTE ON FUNCTION public.verify_member_claim(integer, text) TO authenticated;
