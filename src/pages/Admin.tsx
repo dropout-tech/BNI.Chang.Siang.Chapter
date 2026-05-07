@@ -443,10 +443,10 @@ const Admin: React.FC = () => {
             : String(a.name || '').localeCompare(String(b.name || ''), 'zh-Hant')
         );
 
-    if (loading) return <div className="min-h-screen pt-32 text-center font-bold text-gray-700">載入後台數據中...</div>;
+    if (loading) return <div className="min-h-screen pt-12 text-center font-bold text-gray-700">載入後台數據中...</div>;
 
     return (
-        <div className="min-h-dvh pt-24 md:pt-32 pb-24 md:pb-12 px-4 container mx-auto">
+        <div className="min-h-dvh pt-4 md:pt-6 pb-24 md:pb-12 px-4 container mx-auto">
             <SEO title="管理後台" noindex />
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-950 flex items-center gap-3">

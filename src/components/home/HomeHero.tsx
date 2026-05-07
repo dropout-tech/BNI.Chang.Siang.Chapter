@@ -21,7 +21,7 @@ const GlowingChevron: React.FC<{ direction: 'left' | 'right', className?: string
 
 const HomeHero: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return (
-        <section className="relative w-full min-h-screen overflow-hidden flex items-center justify-center pt-24 bg-transparent">
+        <section className="relative w-full min-h-screen overflow-hidden flex items-center justify-center pt-0 bg-transparent">
             {/* === Deep Background Layer: The Wing Cascades === */}
             <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
                 {/* Massive curved wing panels with deep drop shadows to simulate texture depth */}

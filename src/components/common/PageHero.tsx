@@ -9,7 +9,7 @@ interface PageHeroProps {
 }
 
 const PageHero: React.FC<PageHeroProps> = ({ title, subtitle, showScrollIndicator = false, children }) => (
-    <section className="min-h-[85vh] md:min-h-screen flex flex-col justify-center items-center text-center relative pt-24 pb-16 overflow-hidden">
+    <section className="min-h-[85vh] md:min-h-screen flex flex-col justify-center items-center text-center relative pt-10 pb-16 overflow-hidden">
         {/* Background: BNI white/red with subtle executive texture */}
         <div className="absolute inset-0 bg-[linear-gradient(135deg,#ffffff_0%,#fff8f8_48%,#ffffff_100%)]" />
         <div className="absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(207,32,48,0.08),transparent)]" />

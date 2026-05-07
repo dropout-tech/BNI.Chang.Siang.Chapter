@@ -319,7 +319,7 @@ const MemberEdit: React.FC = () => {
     if (authLoading) return <div className="min-h-screen text-gray-700 flex items-center justify-center">載入中...</div>;
 
     return (
-        <div className="min-h-dvh pt-24 md:pt-32 pb-32 md:pb-12 px-4 container mx-auto max-w-4xl">
+        <div className="min-h-dvh pt-4 md:pt-6 pb-32 md:pb-12 px-4 container mx-auto max-w-4xl">
             <SEO title="編輯會員資料" noindex />
             <motion.div
                 initial={{ opacity: 0, y: 20 }}

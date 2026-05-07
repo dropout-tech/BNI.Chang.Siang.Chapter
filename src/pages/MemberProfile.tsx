@@ -56,7 +56,7 @@ const MemberProfile: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[linear-gradient(135deg,#fff_0%,#fff5f5_46%,#fff_100%)] pt-24">
+        <div className="min-h-screen bg-[linear-gradient(135deg,#fff_0%,#fff5f5_46%,#fff_100%)] pt-4">
             <SEO
                 title={`${member.name}｜${member.industry}｜BNI 長翔名人堂白金分會`}
                 description={`${member.name}是 BNI 長翔名人堂白金分會的${member.industry}專業代表。${member.shortIntro || ''}`}

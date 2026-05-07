@@ -9,7 +9,7 @@ const Privacy: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-white via-red-50/50 to-white px-4 pt-28 pb-16">
+        <div className="min-h-screen bg-gradient-to-br from-white via-red-50/50 to-white px-4 pt-8 pb-16">
             <SEO
                 title="隱私權政策與服務條款"
                 description="BNI 長翔名人堂白金分會隱私權政策與服務條款。了解我們如何保護您的個人資訊和使用條件。"

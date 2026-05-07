@@ -35,7 +35,7 @@ const Navbar: React.FC = () => {
     }, [user]);
 
     return (
-        <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 shadow-[0_14px_40px_rgba(24,24,27,0.08)] backdrop-blur-xl' : 'bg-white/85 backdrop-blur-xl'}`}>
+        <nav className={`fixed w-full z-50 border-b border-gray-200/80 transition-all duration-300 ${scrolled ? 'bg-white/95 shadow-[0_14px_40px_rgba(24,24,27,0.08)] backdrop-blur-xl' : 'bg-white/90 backdrop-blur-xl shadow-[0_1px_0_rgba(0,0,0,0.04)]'}`}>
             {/* BNI Red top line */}
             <div className="h-1 bg-gradient-to-r from-[#A51926] via-[#CF2030] to-[#E8394A]" />
 

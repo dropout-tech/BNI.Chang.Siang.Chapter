@@ -253,7 +253,7 @@ const Login: React.FC = () => {
 
     return (
         <div
-            className={`container mx-auto flex min-h-[calc(100dvh-80px)] justify-center px-4 ${
+            className={`container mx-auto flex min-h-[calc(100dvh-10rem)] justify-center px-4 ${
                 mode === 'claim'
                     ? 'items-start py-6 pb-28 md:py-10 md:pb-24'
                     : 'items-center py-16 pb-24 md:py-16 md:pb-16'

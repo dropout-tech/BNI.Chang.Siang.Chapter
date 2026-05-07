@@ -103,7 +103,7 @@ function App() {
         <CustomCursor />
         <div className="flex flex-col min-h-screen relative z-10">
           <Navbar />
-          <main className="flex-grow pb-[70px] md:pb-0">
+          <main className="flex-grow pb-[70px] md:pb-0 pt-[calc(0.25rem+4rem+1.75rem)] md:pt-[calc(0.25rem+5rem+1.75rem)]">
             <AnimatedRoutes />
           </main>
           <Footer />
