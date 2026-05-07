@@ -448,40 +448,54 @@ const Login: React.FC = () => {
                 {/* CLAIM PROFILE LIST */}
                 {mode === 'claim' && (
                     <div className="space-y-4">
-                        <div className="bg-red-50 border border-[#CF2030]/30 p-4 rounded-lg mb-4 flex gap-3 text-sm text-[#E8394A]">
-                            <AlertCircle className="shrink-0 text-[#CF2030]" size={20} />
+                        <div className="mb-1 flex gap-3 rounded-2xl border border-red-100 bg-gradient-to-br from-red-50 to-white p-4 text-left text-sm leading-relaxed text-gray-800">
+                            <AlertCircle className="mt-0.5 shrink-0 text-[#CF2030]" size={20} />
                             <div>
-                                歡迎！請從下方選擇您的會員檔案進行綁定。<br />
-                                <span className="text-xs opacity-70">綁定後，只有您能編輯此檔案。</span>
+                                <p className="font-bold text-gray-900">歡迎！請從下方選擇您的會員檔案進行綁定。</p>
+                                <p className="mt-1 text-xs text-gray-600">綁定後，只有您能編輯此檔案。</p>
                                 {user?.email && (
-                                    <p className="text-xs opacity-80 mt-2">
-                                        若會員資料庫已填寫 Email，僅會顯示與您登入帳號（{user.email}）相符的未認領檔案；若列表為空請洽管理員更新會員 Email。
+                                    <p className="mt-2 text-xs text-gray-600">
+                                        若會員資料庫已填寫 Email，僅會顯示與您登入帳號（<span className="font-semibold text-gray-900">{user.email}</span>）相符的未認領檔案；若列表為空請洽管理員更新會員 Email。
                                     </p>
                                 )}
                             </div>
                         </div>
 
-                        <div className="max-h-48 md:max-h-60 overflow-y-auto space-y-2 pr-2 custom-scrollbar -mx-1 px-1">
+                        <div className="max-h-52 md:max-h-64 overflow-y-auto space-y-2 rounded-2xl border border-red-100/80 bg-white/90 p-2 pr-2 shadow-inner custom-scrollbar">
                             {unclaimedMembers.length === 0 ? (
-                                <div className="text-center text-gray-500 py-8">
+                                <div className="py-10 text-center text-sm text-gray-600">
                                     沒有可供認領的會員資料
                                 </div>
                             ) : (
                                 unclaimedMembers.map(m => (
                                     <div
                                         key={m.id}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                setSelectedMemberId(m.id);
+                                            }
+                                        }}
                                         onClick={() => setSelectedMemberId(m.id)}
-                                        className={`p-3 rounded-lg cursor-pointer border transition-all flex items-center justify-between ${selectedMemberId === m.id
-                                            ? 'bg-[#CF2030]/20 border-[#CF2030] text-[#CF2030]'
-                                            : 'bg-gray-50 border-gray-200 text-gray-300 hover:bg-gray-100'
+                                        className={`flex cursor-pointer items-center justify-between rounded-xl border px-3 py-3 transition-all ${selectedMemberId === m.id
+                                            ? 'border-[#CF2030] bg-[#CF2030]/10 shadow-[0_8px_22px_rgba(207,32,48,0.12)] ring-2 ring-[#CF2030]/15'
+                                            : 'border-gray-200 bg-white hover:border-[#CF2030]/35 hover:bg-red-50/60 hover:shadow-sm'
                                             }`}
                                     >
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-xs font-mono opacity-50">#{m.id}</span>
-                                            <span className="font-medium">{m.name}</span>
-                                            <span className="text-xs text-gray-500 bg-black/30 px-2 py-0.5 rounded">{m.industry}</span>
+                                        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1.5">
+                                            <span className={`shrink-0 font-mono text-xs ${selectedMemberId === m.id ? 'text-[#CF2030]' : 'text-gray-400'}`}>
+                                                #{m.id}
+                                            </span>
+                                            <span className="min-w-0 max-w-full truncate font-semibold text-gray-900">{m.name}</span>
+                                            {m.industry && (
+                                                <span className="max-w-full truncate rounded-full bg-[#CF2030]/10 px-2.5 py-0.5 text-xs font-semibold text-[#A01828]">
+                                                    {m.industry}
+                                                </span>
+                                            )}
                                         </div>
-                                        {selectedMemberId === m.id && <CheckCircle size={18} />}
+                                        {selectedMemberId === m.id && <CheckCircle className="shrink-0 text-[#CF2030]" size={20} strokeWidth={2.5} />}
                                     </div>
                                 ))
                             )}
@@ -509,9 +523,9 @@ const Login: React.FC = () => {
                             type="button"
                             onClick={handleClaim}
                             disabled={!selectedMemberId || !claimPassword || loading}
-                            className={`w-full font-bold py-3 rounded-lg transition-colors mt-4 ${(!selectedMemberId || !claimPassword)
-                                ? 'bg-gray-600 cursor-not-allowed text-gray-400'
-                                : 'bg-green-600 hover:bg-green-500 text-white'
+                            className={`mt-4 w-full rounded-2xl py-3.5 text-sm font-black transition-all ${(!selectedMemberId || !claimPassword)
+                                ? 'cursor-not-allowed bg-gray-200 text-gray-500'
+                                : 'bg-gradient-to-r from-[#CF2030] to-[#E8394A] text-white shadow-[0_16px_34px_rgba(207,32,48,0.24)] hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(207,32,48,0.32)]'
                                 }`}
                         >
                             {loading ? '綁定中...' : '確認綁定'}
