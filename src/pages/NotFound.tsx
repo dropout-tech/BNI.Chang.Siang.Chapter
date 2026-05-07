@@ -91,7 +91,7 @@ const NotFound: React.FC = () => {
 
                     <Link
                         to="/members"
-                        className="px-8 py-4 bg-white border border-gray-100 shadow-sm   text-white font-bold rounded-full hover:text-[#D4AF37] transition-all duration-300 flex items-center gap-2 text-lg tracking-widest hover:-translate-y-1"
+                        className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-8 py-4 text-lg font-bold tracking-widest text-gray-800 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#D4AF37]/60 hover:text-[#B8922E]"
                     >
                         <Users size={22} />
                         <span>認識會員</span>

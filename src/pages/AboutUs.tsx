@@ -5,6 +5,7 @@ import { Star, Shield, Zap, Users, TrendingUp, Award } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SectionWrapper from '../components/common/SectionWrapper';
 import SEO from '../components/common/SEO';
+import { siteConfig } from '../config/site.config';
 
 const f = { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-80px" }, transition: { duration: 0.6 } };
 
@@ -17,11 +18,6 @@ const advantages = [
     { icon: Award, title: '97% 綠燈紀錄', desc: '2022年9月創下97%綠燈紀錄，正邁向全綠燈分會。' },
 ];
 
-const industries = [
-    '居住與空間工程', '企業營運與法稅', '金融財富與資產', '品牌整合與行銷',
-    '數位AI與創新科技', '身心健康與醫療', '飲食文化與食品', '教育學習與休閒', '永續發展與製造',
-];
-
 const AboutUs: React.FC = () => (
     <div className="overflow-hidden">
         <SEO description="BNI 長翔名人堂白金分會 — 以熱情積極、付出者著稱的金質商務交流平台。了解長翔的故事、優勢與產業鏈。" />
@@ -31,7 +27,7 @@ const AboutUs: React.FC = () => (
             <motion.div {...f} className="max-w-4xl mx-auto">
                 <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-8 md:p-12">
                     <h3 className="text-xl font-bold text-[#333] mb-4">長翔的故事</h3>
-                    <p className="text-white/90 leading-relaxed mb-4">
+                    <p className="leading-relaxed mb-4 text-gray-700">
                         BNI 長翔名人堂白金分會，座落於台北市中山區晶宴會館（民生館），是 BNI 體系中最具代表性的分會之一。「長翔」，取自「長空翱翔」之意，象徵著每一位夥伴都能在這個平台上展翅高飛。
                     </p>
                     <p className="text-gray-500 leading-relaxed mb-4">
@@ -61,8 +57,14 @@ const AboutUs: React.FC = () => (
 
         <SectionWrapper title="產業鏈介紹" subtitle="涵蓋多元領域的專業團隊">
             <motion.div {...f} className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
-                {industries.map(ind => (
-                    <span key={ind} className="px-5 py-2.5 bg-white border border-gray-100 shadow-sm rounded-full text-sm text-white/80 hover:border-[#CF2030]/40 hover:text-[#CF2030] transition-all cursor-default">{ind}</span>
+                {siteConfig.industries.map((ind) => (
+                    <span
+                        key={ind}
+                        className="cursor-default rounded-full border border-gray-200 bg-gradient-to-b from-white to-gray-50 px-5 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition-all hover:border-[#CF2030]/50 hover:bg-red-50/80 hover:text-[#CF2030] hover:shadow-md"
+                        role="presentation"
+                    >
+                        {ind}
+                    </span>
                 ))}
             </motion.div>
         </SectionWrapper>
