@@ -244,13 +244,32 @@ const Login: React.FC = () => {
         }
     };
 
+    const claimScrollProps =
+        mode === 'claim'
+            ? ({
+                  'data-lenis-prevent': '',
+              } as React.HTMLAttributes<HTMLDivElement>)
+            : {};
+
     return (
-        <div className="min-h-[calc(100dvh-80px)] flex items-center justify-center py-16 pb-24 md:pb-16 px-4 container mx-auto">
+        <div
+            className={`container mx-auto flex min-h-[calc(100dvh-80px)] justify-center px-4 ${
+                mode === 'claim'
+                    ? 'items-start py-6 pb-28 md:py-10 md:pb-24'
+                    : 'items-center py-16 pb-24 md:py-16 md:pb-16'
+            }`}
+            {...claimScrollProps}
+        >
             <SEO title="會員登入" noindex />
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-md overflow-hidden rounded-[32px] border border-red-100 bg-white shadow-[0_28px_90px_rgba(207,32,48,0.14)]"
+                className={`w-full max-w-md rounded-[32px] border border-red-100 bg-white shadow-[0_28px_90px_rgba(207,32,48,0.14)] ${
+                    mode === 'claim'
+                        ? 'max-h-[calc(100dvh-5.5rem)] overflow-y-auto overscroll-y-contain [scrollbar-gutter:stable]'
+                        : 'overflow-hidden'
+                }`}
+                {...(mode === 'claim' ? claimScrollProps : {})}
             >
                 <div className="bg-gradient-to-br from-red-50 via-white to-white px-6 py-8 text-center md:px-8">
                     <div className="mb-3 inline-flex rounded-full border border-red-100 bg-white px-4 py-1 text-xs font-black tracking-[0.18em] text-[#CF2030]">
@@ -461,7 +480,10 @@ const Login: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="max-h-52 md:max-h-64 overflow-y-auto space-y-2 rounded-2xl border border-red-100/80 bg-white/90 p-2 pr-2 shadow-inner custom-scrollbar">
+                        <div
+                            className="space-y-2 overflow-y-auto rounded-2xl border border-red-100/80 bg-white/90 p-2 pr-2 shadow-inner custom-scrollbar max-h-[min(50vh,420px)] md:max-h-[min(55vh,480px)]"
+                            {...claimScrollProps}
+                        >
                             {unclaimedMembers.length === 0 ? (
                                 <div className="py-10 text-center text-sm text-gray-600">
                                     沒有可供認領的會員資料

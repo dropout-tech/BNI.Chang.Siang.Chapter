@@ -51,7 +51,7 @@ export const siteConfig = {
 
     defaultPhoto: `${import.meta.env.BASE_URL}images/assets/logo/bni-logo-new.png`,
 
-    claimPassword: import.meta.env.VITE_CLAIM_PASSWORD || 'changsiang2025',
+    claimPassword: import.meta.env.VITE_CLAIM_PASSWORD || '2026',
 
     industries: [
         '健康醫療',
