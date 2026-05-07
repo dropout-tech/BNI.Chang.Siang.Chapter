@@ -9,7 +9,7 @@ const Footer: React.FC = () => (
         <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-[#CF2030]/8 blur-3xl" />
         <div className="absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-[#E8394A]/8 blur-3xl" />
         <div className="container mx-auto px-4">
-            <div className="relative grid grid-cols-1 gap-8 rounded-[32px] border border-red-100 bg-gradient-to-br from-white via-red-50/50 to-white p-6 text-center shadow-[0_24px_80px_rgba(207,32,48,0.08)] md:grid-cols-4 md:p-10 md:text-left">
+            <div className="relative grid grid-cols-1 gap-8 py-8 text-center md:grid-cols-4 md:gap-10 md:py-12 md:text-left">
                 <div className="md:col-span-2 space-y-4 flex flex-col items-center md:items-start">
                     <Link to="/" className="inline-block">
                         <img src={assetUrl('/images/assets/logo/bni-logo-new.png')} alt="BNI" className="h-12 w-auto" />
