@@ -19,6 +19,7 @@ interface Member {
     latest_traffic_month?: string | null;
     claim_count?: number | null;
     claim_last_at?: string | null;
+    claim_last_user_id?: string | null;
 }
 
 interface Props {
@@ -114,6 +115,11 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                 認領 {member.claim_count ?? 0} 次
                             </span>
                             {member.claim_last_at && <span className="text-gray-500">最近：{new Date(member.claim_last_at).toLocaleDateString('zh-TW')}</span>}
+                            {member.claim_last_user_id && (
+                                <span className="font-mono text-[10px] text-gray-400" title={member.claim_last_user_id}>
+                                    by {member.claim_last_user_id.slice(0, 8)}…
+                                </span>
+                            )}
                         </div>
                         <div className="flex gap-2">
                             <button
@@ -214,6 +220,14 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                         {member.claim_last_at && (
                                             <span className="text-xs text-gray-500">
                                                 最近 {new Date(member.claim_last_at).toLocaleDateString('zh-TW')}
+                                            </span>
+                                        )}
+                                        {member.claim_last_user_id && (
+                                            <span
+                                                className="font-mono text-[10px] text-gray-400"
+                                                title={member.claim_last_user_id}
+                                            >
+                                                by {member.claim_last_user_id.slice(0, 8)}…
                                             </span>
                                         )}
                                     </div>

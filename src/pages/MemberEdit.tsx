@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Save, AlertCircle, X, Camera, ArrowLeft, LogOut } from 'lucide-react';
+import { Save, AlertCircle, X, Camera, ArrowLeft, LogOut, KeyRound } from 'lucide-react';
 import { insforge, isBackendConfigured } from '../lib/insforge';
 import imageCompression from 'browser-image-compression';
 import { useAuth } from '../contexts/auth-context';
@@ -352,6 +352,14 @@ const MemberEdit: React.FC = () => {
                                     <span>{hasChanges ? '儲存修改' : '已儲存'}</span>
                                 </>
                             )}
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/login?claim=true')}
+                            className="flex items-center gap-1 text-[#CF2030] border border-[#CF2030]/30 px-4 py-2.5 rounded-full text-sm hover:bg-[#CF2030]/10 transition-colors shrink-0"
+                            title="重新認領其他會員檔案"
+                        >
+                            <KeyRound size={16} /> <span className="hidden sm:inline">重新認領</span>
                         </button>
 
                         <button

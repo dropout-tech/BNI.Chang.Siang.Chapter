@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS public.members (
     slug TEXT,
     is_gold_badge BOOLEAN DEFAULT false,
     claim_count INTEGER NOT NULL DEFAULT 0,
-    claim_last_at TIMESTAMPTZ
+    claim_last_at TIMESTAMPTZ,
+    claim_last_user_id TEXT
 );
 
 ALTER TABLE public.referrals ADD COLUMN IF NOT EXISTS referrer_is_external BOOLEAN DEFAULT false;
@@ -77,6 +78,7 @@ ALTER TABLE public.members ADD COLUMN IF NOT EXISTS slug TEXT;
 ALTER TABLE public.members ADD COLUMN IF NOT EXISTS is_gold_badge BOOLEAN DEFAULT false;
 ALTER TABLE public.members ADD COLUMN IF NOT EXISTS claim_count INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE public.members ADD COLUMN IF NOT EXISTS claim_last_at TIMESTAMPTZ;
+ALTER TABLE public.members ADD COLUMN IF NOT EXISTS claim_last_user_id TEXT;
 
 CREATE UNIQUE INDEX IF NOT EXISTS members_name_unique_idx
     ON public.members (name);
@@ -530,6 +532,7 @@ BEGIN
     user_id = CAST(auth.uid() AS text),
     claim_count = coalesce(claim_count, 0) + 1,
     claim_last_at = now(),
+    claim_last_user_id = CAST(auth.uid() AS text),
     "updatedAt" = now()
   WHERE idx = v_member.idx
   RETURNING *

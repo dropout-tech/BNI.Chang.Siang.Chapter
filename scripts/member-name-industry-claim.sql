@@ -1,19 +1,25 @@
 -- ============================================================
--- 會員姓名 + 行業別重複認領（含認領次數統計）
+-- 會員姓名 + 行業別重複認領（含認領次數統計與最後認領者）
 -- ============================================================
 -- 在既有 InsForge / Postgres 執行一次即可（可安全重複執行）。
 -- 認領規則：
 -- 1. 會員登入後輸入中文全名與行業別。
 -- 2. 系統忽略文字中的空白後比對 members.name / members.industry。
--- 3. 成功時把該會員 user_id 更新為目前登入帳號，並累加 claim_count。
+-- 3. 成功時把該會員 user_id 更新為目前登入帳號，並累加 claim_count、
+--    記錄 claim_last_at 與 claim_last_user_id 供管理員追查。
 -- 4. 允許重複認領；後一次成功認領會改綁到目前登入帳號。
+--
+-- 注意：目前 schema 仍有 members_name_unique_idx（name 唯一），
+--       因此 RPC 內 v_match_count > 1 屬於防呆，正常情況不會觸發。
 -- ============================================================
 
 ALTER TABLE public.members ADD COLUMN IF NOT EXISTS claim_count INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE public.members ADD COLUMN IF NOT EXISTS claim_last_at TIMESTAMPTZ;
+ALTER TABLE public.members ADD COLUMN IF NOT EXISTS claim_last_user_id TEXT;
 
 COMMENT ON COLUMN public.members.claim_count IS '會員姓名 + 行業別認領成功次數';
 COMMENT ON COLUMN public.members.claim_last_at IS '最近一次認領成功時間';
+COMMENT ON COLUMN public.members.claim_last_user_id IS '最近一次認領成功的登入帳號 (auth.uid)';
 
 CREATE OR REPLACE FUNCTION public.claim_member_by_profile(p_name text, p_industry text)
 RETURNS jsonb
@@ -61,6 +67,7 @@ BEGIN
     user_id = CAST(auth.uid() AS text),
     claim_count = coalesce(claim_count, 0) + 1,
     claim_last_at = now(),
+    claim_last_user_id = CAST(auth.uid() AS text),
     "updatedAt" = now()
   WHERE idx = v_member.idx
   RETURNING *

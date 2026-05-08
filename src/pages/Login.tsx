@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { insforge, isBackendConfigured } from '../lib/insforge';
 import { getAuthRedirectUrl } from '../lib/authRedirect';
@@ -11,6 +11,8 @@ import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const forceClaim = searchParams.get('claim') === 'true';
     const { user, refreshUser } = useAuth();
     const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'claim'>('login');
     const [email, setEmail] = useState('');
@@ -66,6 +68,11 @@ const Login: React.FC = () => {
 
     const checkProfile = async () => {
         if (!user || !isBackendConfigured) return;
+
+        if (forceClaim) {
+            setMode('claim');
+            return;
+        }
 
         try {
             const linkedMember = await getLinkedMemberAccount(user);
@@ -434,8 +441,14 @@ const Login: React.FC = () => {
                         <div className="mb-1 flex gap-3 rounded-2xl border border-red-100 bg-gradient-to-br from-red-50 to-white p-4 text-left text-sm leading-relaxed text-gray-800">
                             <AlertCircle className="mt-0.5 shrink-0 text-[#CF2030]" size={20} />
                             <div>
-                                <p className="font-bold text-gray-900">歡迎！請輸入您的中文全名與行業別完成綁定。</p>
-                                <p className="mt-1 text-xs text-gray-600">認領可重複操作；每次成功認領都會累加統計次數，並將會員資料綁定到目前登入帳號。</p>
+                                <p className="font-bold text-gray-900">
+                                    {forceClaim ? '重新認領會員檔案' : '歡迎！請輸入您的中文全名與行業別完成綁定。'}
+                                </p>
+                                <p className="mt-1 text-xs text-gray-600">
+                                    {forceClaim
+                                        ? '輸入正確中文全名與行業別，即可把該會員資料改綁到目前登入帳號；累計次數會留存供管理員查核。'
+                                        : '認領可重複操作；每次成功認領都會累加統計次數，並將會員資料綁定到目前登入帳號。'}
+                                </p>
                                 {user?.email && (
                                     <p className="mt-2 text-xs text-gray-600">
                                         目前登入帳號：<span className="font-semibold text-gray-900">{user.email}</span>
