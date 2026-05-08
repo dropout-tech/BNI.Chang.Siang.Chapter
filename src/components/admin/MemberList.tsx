@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Crown, Edit, RotateCcw, Save, Snowflake, Trash2, ChevronLeft, ChevronRight, KeyRound } from 'lucide-react';
+import { Crown, Edit, RotateCcw, Save, Snowflake, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import bcrypt from 'bcryptjs';
 import { insforge, isBackendConfigured } from '../../lib/insforge';
 
 interface Member {
@@ -18,7 +17,8 @@ interface Member {
     traffic_score?: number | null;
     traffic_level?: 'green' | 'yellow' | 'red' | null;
     latest_traffic_month?: string | null;
-    claim_password_hash?: string | null;
+    claim_count?: number | null;
+    claim_last_at?: string | null;
 }
 
 interface Props {
@@ -44,7 +44,7 @@ const levelClassName: Record<'green' | 'yellow' | 'red', string> = {
     red: 'bg-red-100 text-red-700 border-red-200',
 };
 
-const MemberList: React.FC<Props> = ({ members, loading, onRefresh, onToggleFrozen, onToggleGold, onSaveTrafficScore }) => {
+const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onToggleGold, onSaveTrafficScore }) => {
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [scoreDrafts, setScoreDrafts] = useState<Record<string, number>>({});
@@ -70,33 +70,6 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh, onToggleFroz
         } else {
             alert('已刪除');
             onRefresh();
-        }
-    };
-
-    const handleSetClaimPassword = async (member: Member) => {
-        const m1 = window.prompt(
-            `設定「${member.name}」的會員認領密碼\n（會員以 Google／Email 登入後，綁定檔案時輸入此密碼）\n至少 4 個字元：`,
-        );
-        if (m1 === null) return;
-        if (m1.length < 4) {
-            alert('密碼至少 4 個字元');
-            return;
-        }
-        const m2 = window.prompt('再次輸入以確認：');
-        if (m2 !== m1) {
-            alert('兩次輸入不一致');
-            return;
-        }
-        if (!isBackendConfigured) return;
-        try {
-            const hash = await bcrypt.hash(m1, 10);
-            const { error } = await insforge.database.from('members').update({ claim_password_hash: hash }).eq('id', member.id);
-            if (error) throw error;
-            alert('已儲存認領密碼');
-            onRefresh();
-        } catch (e: unknown) {
-            const msg = e instanceof Error ? e.message : String(e);
-            alert('儲存失敗：' + msg);
         }
     };
 
@@ -136,17 +109,11 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh, onToggleFroz
                         </div>
                         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
                             <span
-                                className={`rounded-full px-2 py-0.5 font-semibold ${member.claim_password_hash ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`}
+                                className="rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700"
                             >
-                                認領密碼 {member.claim_password_hash ? '已設定' : '未設定'}
+                                認領 {member.claim_count ?? 0} 次
                             </span>
-                            <button
-                                type="button"
-                                onClick={() => handleSetClaimPassword(member)}
-                                className="inline-flex items-center gap-1 rounded-lg border border-red-100 bg-white px-2 py-1 font-medium text-[#CF2030]"
-                            >
-                                <KeyRound size={14} /> 設定
-                            </button>
+                            {member.claim_last_at && <span className="text-gray-500">最近：{new Date(member.claim_last_at).toLocaleDateString('zh-TW')}</span>}
                         </div>
                         <div className="flex gap-2">
                             <button
@@ -240,17 +207,15 @@ const MemberList: React.FC<Props> = ({ members, loading, onRefresh, onToggleFroz
                                 <td className="p-4">
                                     <div className="flex flex-col gap-2">
                                         <span
-                                            className={`inline-flex w-fit rounded-full px-2 py-0.5 text-xs font-semibold ${member.claim_password_hash ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`}
+                                            className="inline-flex w-fit rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700"
                                         >
-                                            {member.claim_password_hash ? '已設定' : '未設定'}
+                                            認領 {member.claim_count ?? 0} 次
                                         </span>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleSetClaimPassword(member)}
-                                            className="inline-flex w-fit items-center gap-1 rounded-full border border-red-100 px-3 py-1 text-xs font-medium text-[#CF2030] hover:bg-red-50"
-                                        >
-                                            <KeyRound size={12} /> 設定認領密碼
-                                        </button>
+                                        {member.claim_last_at && (
+                                            <span className="text-xs text-gray-500">
+                                                最近 {new Date(member.claim_last_at).toLocaleDateString('zh-TW')}
+                                            </span>
+                                        )}
                                     </div>
                                 </td>
                                 <td className="p-4 text-right">

@@ -116,7 +116,6 @@ cp .env.example .env
 |--------|--------|------|
 | `VITE_SUPABASE_URL` | **必填** | Supabase 專案 URL |
 | `VITE_SUPABASE_ANON_KEY` | **必填** | Supabase Anon Key |
-| `VITE_CLAIM_PASSWORD` | **必填** | 會員認領帳號用的密碼 |
 | `VITE_TURNSTILE_SITE_KEY` | 建議 | Cloudflare Turnstile 防機器人 |
 | `VITE_GA_ID` | 可選 | Google Analytics 4 評估 ID |
 | `VITE_FB_PIXEL_ID` | 可選 | Facebook Pixel ID |

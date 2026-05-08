@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { insforge, isBackendConfigured } from '../lib/insforge';
 import { getAuthRedirectUrl } from '../lib/authRedirect';
 import { useAuth } from '../contexts/auth-context';
-import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
+import { BriefcaseBusiness, Lock, Mail, AlertCircle, UserRound } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 
@@ -19,9 +19,8 @@ const Login: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
 
-    const [claimPassword, setClaimPassword] = useState('');
-    const [unclaimedMembers, setUnclaimedMembers] = useState<any[]>([]);
-    const [selectedMemberId, setSelectedMemberId] = useState<string | number | null>(null);
+    const [claimName, setClaimName] = useState('');
+    const [claimIndustry, setClaimIndustry] = useState('');
 
     // Validation helpers
     const validateEmail = (email: string) => {
@@ -75,49 +74,12 @@ const Login: React.FC = () => {
                 return;
             }
 
-            loadUnclaimedMembers();
             setMode('claim');
         } catch (err) {
             console.error('Unexpected error checking profile:', err);
             // Safety fallback
-            loadUnclaimedMembers();
             setMode('claim');
         }
-    };
-
-    const normalizeEmail = (e: string | null | undefined) => (e?.trim().toLowerCase() ?? '');
-
-    const loadUnclaimedMembers = async () => {
-        if (!user) return;
-
-        const { data, error } = await insforge.database
-            .from('members')
-            .select('id, name, industry, photo, email')
-            .is('user_id', null)
-            .order('id', { ascending: true });
-
-        if (error) {
-            console.error('載入未認領會員失敗:', error);
-            setUnclaimedMembers([]);
-            return;
-        }
-
-        const userEmail = normalizeEmail(user.email);
-        const rows = data ?? [];
-        const filtered = rows.filter((m) => {
-            const rowEmail = normalizeEmail(m.email);
-            if (!rowEmail) return true;
-            if (!userEmail) return true;
-            return rowEmail === userEmail;
-        });
-
-        filtered.sort((a, b) => {
-            const aMatch = userEmail && normalizeEmail(a.email) === userEmail ? 1 : 0;
-            const bMatch = userEmail && normalizeEmail(b.email) === userEmail ? 1 : 0;
-            return bMatch - aMatch;
-        });
-
-        setUnclaimedMembers(filtered);
     };
 
     const handleAuth = async (e: React.FormEvent) => {
@@ -209,43 +171,34 @@ const Login: React.FC = () => {
     };
 
     const handleClaim = async () => {
-        if (!selectedMemberId || !user) return;
+        if (!user) return;
+        const name = claimName.trim();
+        const industry = claimIndustry.trim();
+        if (!name || !industry) {
+            setMessage({ text: '請輸入中文全名與行業別。', type: 'error' });
+            return;
+        }
         setLoading(true);
 
         try {
-            const selected = unclaimedMembers.find((m) => m.id === selectedMemberId);
-            const rowEmail = normalizeEmail(selected?.email);
-            const userEmail = normalizeEmail(user.email);
-            if (rowEmail && userEmail && rowEmail !== userEmail) {
-                throw new Error('此會員檔案與您目前登入的 Email 不符，無法認領。');
-            }
-
-            const { data: verified, error: verifyErr } = await insforge.database.rpc('verify_member_claim', {
-                p_member_id: Number(selectedMemberId),
-                p_password: claimPassword,
+            const { data, error } = await insforge.database.rpc('claim_member_by_profile', {
+                p_name: name,
+                p_industry: industry,
             });
 
-            if (verifyErr) {
-                const msg = verifyErr.message || '';
+            if (error) {
+                const msg = error.message || '';
                 if (msg.includes('does not exist') || msg.includes('PGRST202') || msg.includes('42883')) {
-                    throw new Error('認領功能尚未完成資料庫設定，請管理員執行 scripts/member-claim-password.sql 後再試。');
+                    throw new Error('認領功能尚未完成資料庫設定，請管理員執行 scripts/member-name-industry-claim.sql 後再試。');
                 }
-                throw verifyErr;
+                throw error;
             }
 
-            if (verified !== true) {
-                throw new Error('會員認領密碼不正確，或此檔案尚未由管理員設定認領密碼。');
+            if (!data?.success) {
+                throw new Error(data?.message || '找不到符合的會員資料，請確認中文全名與行業別。');
             }
 
-            // Update the selected member with current user's UUID
-            const { error } = await insforge.database
-                .from('members')
-                .update({ user_id: user.id })
-                .eq('id', selectedMemberId);
-
-            if (error) throw error;
-
-            setMessage({ text: '綁定成功！', type: 'success' });
+            setMessage({ text: `綁定成功！目前累計認領 ${data.claim_count ?? 1} 次。`, type: 'success' });
             setTimeout(() => navigate('/member-edit'), 1000);
 
         } catch (err: any) {
@@ -475,95 +428,74 @@ const Login: React.FC = () => {
                     </form>
                 )}
 
-                {/* CLAIM PROFILE LIST */}
+                {/* CLAIM PROFILE */}
                 {mode === 'claim' && (
                     <div className="space-y-4">
                         <div className="mb-1 flex gap-3 rounded-2xl border border-red-100 bg-gradient-to-br from-red-50 to-white p-4 text-left text-sm leading-relaxed text-gray-800">
                             <AlertCircle className="mt-0.5 shrink-0 text-[#CF2030]" size={20} />
                             <div>
-                                <p className="font-bold text-gray-900">歡迎！請從下方選擇您的會員檔案進行綁定。</p>
-                                <p className="mt-1 text-xs text-gray-600">綁定後，只有您能編輯此檔案。</p>
+                                <p className="font-bold text-gray-900">歡迎！請輸入您的中文全名與行業別完成綁定。</p>
+                                <p className="mt-1 text-xs text-gray-600">認領可重複操作；每次成功認領都會累加統計次數，並將會員資料綁定到目前登入帳號。</p>
                                 {user?.email && (
                                     <p className="mt-2 text-xs text-gray-600">
-                                        若會員資料庫已填寫 Email，僅會顯示與您登入帳號（<span className="font-semibold text-gray-900">{user.email}</span>）相符的未認領檔案；若列表為空請洽管理員更新會員 Email。
+                                        目前登入帳號：<span className="font-semibold text-gray-900">{user.email}</span>
                                     </p>
                                 )}
                             </div>
                         </div>
 
-                        <div
-                            className="space-y-2 overflow-y-auto rounded-2xl border border-red-100/80 bg-white/90 p-2 pr-2 shadow-inner custom-scrollbar max-h-[min(50vh,420px)] md:max-h-[min(55vh,480px)]"
-                            {...claimScrollProps}
-                        >
-                            {unclaimedMembers.length === 0 ? (
-                                <div className="py-10 text-center text-sm text-gray-600">
-                                    沒有可供認領的會員資料
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-gray-700 font-bold text-sm mb-2">中文全名</label>
+                                <div className="relative">
+                                    <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
+                                    <input
+                                        type="text"
+                                        value={claimName}
+                                        onChange={e => setClaimName(e.target.value)}
+                                        className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
+                                        placeholder="例如：王小明"
+                                        required
+                                        autoComplete="name"
+                                    />
                                 </div>
-                            ) : (
-                                unclaimedMembers.map(m => (
-                                    <div
-                                        key={m.id}
-                                        role="button"
-                                        tabIndex={0}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                setSelectedMemberId(m.id);
-                                            }
-                                        }}
-                                        onClick={() => setSelectedMemberId(m.id)}
-                                        className={`flex cursor-pointer items-center justify-between rounded-xl border px-3 py-3 transition-all ${selectedMemberId === m.id
-                                            ? 'border-[#CF2030] bg-[#CF2030]/10 shadow-[0_8px_22px_rgba(207,32,48,0.12)] ring-2 ring-[#CF2030]/15'
-                                            : 'border-gray-200 bg-white hover:border-[#CF2030]/35 hover:bg-red-50/60 hover:shadow-sm'
-                                            }`}
-                                    >
-                                        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1.5">
-                                            <span className={`shrink-0 font-mono text-xs ${selectedMemberId === m.id ? 'text-[#CF2030]' : 'text-gray-400'}`}>
-                                                #{m.id}
-                                            </span>
-                                            <span className="min-w-0 max-w-full truncate font-semibold text-gray-900">{m.name}</span>
-                                            {m.industry && (
-                                                <span className="max-w-full truncate rounded-full bg-[#CF2030]/10 px-2.5 py-0.5 text-xs font-semibold text-[#A01828]">
-                                                    {m.industry}
-                                                </span>
-                                            )}
-                                        </div>
-                                        {selectedMemberId === m.id && <CheckCircle className="shrink-0 text-[#CF2030]" size={20} strokeWidth={2.5} />}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-
-                        <div className="mt-6 border-t border-gray-200 pt-6">
-                            <label className="block text-gray-700 font-bold text-sm mb-2">請輸入此會員的認領密碼</label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
-                                <input
-                                    type="password"
-                                    value={claimPassword}
-                                    onChange={e => setClaimPassword(e.target.value)}
-                                    className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
-                                    placeholder="由管理員為您設定的認領密碼"
-                                    required
-                                    autoComplete="off"
-                                />
                             </div>
-                            <p className="text-[10px] text-gray-500 mt-2">
-                                * 每位會員密碼不同；若尚無法認領，請洽分會管理員於後台為您設定。
+                            <div>
+                                <label className="block text-gray-700 font-bold text-sm mb-2">行業別</label>
+                                <div className="relative">
+                                    <BriefcaseBusiness className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
+                                    <input
+                                        type="text"
+                                        value={claimIndustry}
+                                        onChange={e => setClaimIndustry(e.target.value)}
+                                        className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
+                                        placeholder="請依會員名單上的行業別輸入"
+                                        required
+                                        autoComplete="organization-title"
+                                    />
+                                </div>
+                            </div>
+                            <p className="text-[10px] text-gray-500">
+                                * 系統會自動忽略前後空白與文字中間空白；若無法認領，請洽分會管理員確認姓名或行業別。
                             </p>
                         </div>
 
                         <button
                             type="button"
                             onClick={handleClaim}
-                            disabled={!selectedMemberId || !claimPassword || loading}
-                            className={`mt-4 w-full rounded-2xl py-3.5 text-sm font-black transition-all ${(!selectedMemberId || !claimPassword)
+                            disabled={!claimName.trim() || !claimIndustry.trim() || loading}
+                            className={`mt-4 w-full rounded-2xl py-3.5 text-sm font-black transition-all ${(!claimName.trim() || !claimIndustry.trim())
                                 ? 'cursor-not-allowed bg-gray-200 text-gray-500'
                                 : 'bg-gradient-to-r from-[#CF2030] to-[#E8394A] text-white shadow-[0_16px_34px_rgba(207,32,48,0.24)] hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(207,32,48,0.32)]'
                                 }`}
                         >
                             {loading ? '綁定中...' : '確認綁定'}
                         </button>
+
+                        <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-xs leading-5 text-gray-600">
+                            <p className="font-bold text-gray-800">之後登入方式</p>
+                            <p className="mt-1">認領只是把會員資料綁到帳號；後續仍使用 Google 或 Email 密碼登入。</p>
+                        </div>
 
                         <button
                             type="button"

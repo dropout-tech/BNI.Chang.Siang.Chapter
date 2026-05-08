@@ -49,9 +49,14 @@ npm start
 複製 `.env.example` 為 `.env` 並填入：
 - `VITE_SUPABASE_URL` — Supabase 專案 URL
 - `VITE_SUPABASE_ANON_KEY` — Supabase Anon Key
-- `VITE_CLAIM_PASSWORD` — 分會認領密碼
 
 詳見 `CLONE_GUIDE.md` 完整部署指南。
+
+## 會員認領
+
+會員第一次登入後，輸入「中文全名 + 行業別」即可認領會員檔案。認領可重複操作；每次成功認領都會將檔案綁定到目前登入帳號，並累加 `claim_count` 供後台統計。
+
+資料庫需先執行 `scripts/member-name-industry-claim.sql`。
 
 ## 品牌配置
 
