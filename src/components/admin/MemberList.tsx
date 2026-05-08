@@ -114,9 +114,9 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                             >
                                 認領 {member.claim_count ?? 0} 次
                             </span>
-                            {member.claim_last_at && <span className="text-gray-500">最近：{new Date(member.claim_last_at).toLocaleDateString('zh-TW')}</span>}
+                            {member.claim_last_at && <span className="text-[#A01828]">最近：{new Date(member.claim_last_at).toLocaleDateString('zh-TW')}</span>}
                             {member.claim_last_user_id && (
-                                <span className="font-mono text-[10px] text-gray-400" title={member.claim_last_user_id}>
+                                <span className="font-mono text-[10px] text-[#CF2030]/70" title={member.claim_last_user_id}>
                                     by {member.claim_last_user_id.slice(0, 8)}…
                                 </span>
                             )}
@@ -218,13 +218,13 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                             認領 {member.claim_count ?? 0} 次
                                         </span>
                                         {member.claim_last_at && (
-                                            <span className="text-xs text-gray-500">
+                                            <span className="text-xs text-[#A01828]">
                                                 最近 {new Date(member.claim_last_at).toLocaleDateString('zh-TW')}
                                             </span>
                                         )}
                                         {member.claim_last_user_id && (
                                             <span
-                                                className="font-mono text-[10px] text-gray-400"
+                                                className="font-mono text-[10px] text-[#CF2030]/70"
                                                 title={member.claim_last_user_id}
                                             >
                                                 by {member.claim_last_user_id.slice(0, 8)}…

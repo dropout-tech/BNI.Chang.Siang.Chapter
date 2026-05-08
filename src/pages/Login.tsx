@@ -438,20 +438,20 @@ const Login: React.FC = () => {
                 {/* CLAIM PROFILE */}
                 {mode === 'claim' && (
                     <div className="space-y-4">
-                        <div className="mb-1 flex gap-3 rounded-2xl border border-red-100 bg-gradient-to-br from-red-50 to-white p-4 text-left text-sm leading-relaxed text-gray-800">
+                        <div className="mb-1 flex gap-3 rounded-2xl border border-red-100 bg-gradient-to-br from-red-50 to-white p-4 text-left text-sm leading-relaxed text-[#7A1320]">
                             <AlertCircle className="mt-0.5 shrink-0 text-[#CF2030]" size={20} />
                             <div>
-                                <p className="font-bold text-gray-900">
+                                <p className="font-bold text-[#CF2030]">
                                     {forceClaim ? '重新認領會員檔案' : '歡迎！請輸入您的中文全名與行業別完成綁定。'}
                                 </p>
-                                <p className="mt-1 text-xs text-gray-600">
+                                <p className="mt-1 text-xs text-[#7A1320]/80">
                                     {forceClaim
                                         ? '輸入正確中文全名與行業別，即可把該會員資料改綁到目前登入帳號；累計次數會留存供管理員查核。'
                                         : '認領可重複操作；每次成功認領都會累加統計次數，並將會員資料綁定到目前登入帳號。'}
                                 </p>
                                 {user?.email && (
-                                    <p className="mt-2 text-xs text-gray-600">
-                                        目前登入帳號：<span className="font-semibold text-gray-900">{user.email}</span>
+                                    <p className="mt-2 text-xs text-[#7A1320]/80">
+                                        目前登入帳號：<span className="font-semibold text-[#CF2030]">{user.email}</span>
                                     </p>
                                 )}
                             </div>
@@ -488,7 +488,7 @@ const Login: React.FC = () => {
                                     />
                                 </div>
                             </div>
-                            <p className="text-[10px] text-gray-500">
+                            <p className="text-[10px] text-[#A01828]/70">
                                 * 系統會自動忽略前後空白與文字中間空白；若無法認領，請洽分會管理員確認姓名或行業別。
                             </p>
                         </div>
@@ -498,15 +498,15 @@ const Login: React.FC = () => {
                             onClick={handleClaim}
                             disabled={!claimName.trim() || !claimIndustry.trim() || loading}
                             className={`mt-4 w-full rounded-2xl py-3.5 text-sm font-black transition-all ${(!claimName.trim() || !claimIndustry.trim())
-                                ? 'cursor-not-allowed bg-gray-200 text-gray-500'
+                                ? 'cursor-not-allowed bg-red-100 text-[#CF2030]/40'
                                 : 'bg-gradient-to-r from-[#CF2030] to-[#E8394A] text-white shadow-[0_16px_34px_rgba(207,32,48,0.24)] hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(207,32,48,0.32)]'
                                 }`}
                         >
                             {loading ? '綁定中...' : '確認綁定'}
                         </button>
 
-                        <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-xs leading-5 text-gray-600">
-                            <p className="font-bold text-gray-800">之後登入方式</p>
+                        <div className="rounded-2xl border border-red-100 bg-gradient-to-br from-red-50 to-white p-4 text-xs leading-5 text-[#7A1320]">
+                            <p className="font-bold text-[#CF2030]">之後登入方式</p>
                             <p className="mt-1">認領只是把會員資料綁到帳號；後續仍使用 Google 或 Email 密碼登入。</p>
                         </div>
 
@@ -516,7 +516,7 @@ const Login: React.FC = () => {
                                 await insforge.auth.signOut();
                                 setMode('login');
                             }}
-                            className="w-full text-gray-500 text-sm py-2 hover:text-[#CF2030] mt-2"
+                            className="w-full text-[#CF2030]/70 text-sm py-2 hover:text-[#CF2030] mt-2"
                         >
                             登出並切換帳號
                         </button>
