@@ -24,15 +24,17 @@ const Home: React.FC = () => (
         <SEO description="BNI 長翔名人堂白金分會 — 匯聚各產業精英的金質商務交流平台。長翔展翼，商機無限。" keywords="BNI, 長翔分會, 商務引薦, 名人堂, 白金分會, 台北商會" />
 
         <PageHero
+            kicker={<>白金分會 · 每週三清晨 · 晶宴民生館</>}
             title={<><span className="text-[#CF2030]">長翔展翼</span><br /><span className="text-[#222]">商機無限</span></>}
-            subtitle={<>BNI 長翔名人堂白金分會<br />匯聚各產業精英的金質商務交流平台</>}
+            subtitle={<>BNI 長翔名人堂白金分會<br className="hidden sm:block" />匯聚各產業精英的金質商務交流平台</>}
             showScrollIndicator
         >
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10 px-4">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center sm:gap-5 px-4 md:px-0">
+                <motion.a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
+                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                     className="bni-btn px-10 py-4 text-lg rounded-full w-full sm:w-auto text-center">
-                    <Link to="/#contact" className="block">預約參訪</Link>
-                </motion.div>
+                    預約參訪
+                </motion.a>
                 <Link to="/about-bni"
                     className="px-10 py-4 border-2 border-[#CF2030] text-[#CF2030] font-semibold text-lg rounded-full hover:bg-[#CF2030] hover:text-white transition-all w-full sm:w-auto text-center">
                     了解 BNI
@@ -116,10 +118,10 @@ const Home: React.FC = () => (
                     <p className="text-white/80 text-lg mb-10 max-w-2xl mx-auto">
                         企業老闆都在使用最精準、有效率的業務引薦平台「BNI」。誠摯邀請您一同加入長翔！
                     </p>
-                    <Link to="/#contact"
+                    <a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-10 py-4 bg-white text-[#CF2030] font-bold text-lg rounded-full hover:bg-gray-50 transition-all shadow-xl shadow-black/10">
                         立即預約參訪 <ArrowRight size={20} />
-                    </Link>
+                    </a>
                 </motion.div>
             </div>
         </section>
