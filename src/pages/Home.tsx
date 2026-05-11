@@ -37,7 +37,7 @@ const Home: React.FC = () => (
                     預約參訪
                 </motion.a>
                 <Link to="/about-bni"
-                    className="px-10 py-4 border border-white/25 bg-white/[0.06] text-white font-semibold text-lg rounded-full hover:bg-white hover:text-[#CF2030] transition-all w-full sm:w-auto text-center backdrop-blur-md">
+                    className="w-full rounded-full border border-[#CF2030]/25 bg-white/75 px-10 py-4 text-center text-lg font-semibold text-[#CF2030] shadow-[0_16px_44px_rgba(207,32,48,0.08)] backdrop-blur-md transition-all hover:border-[#CF2030] hover:bg-[#CF2030] hover:text-white sm:w-auto">
                     了解 BNI
                 </Link>
             </div>
