@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DOMAIN = 'https://evershine.tw';
+const DOMAIN = 'https://changsiang.tw';
 
 const downloadFile = (url, dest) => {
     return new Promise((resolve, reject) => {

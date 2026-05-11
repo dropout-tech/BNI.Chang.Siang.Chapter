@@ -21,7 +21,7 @@ const CHAIN_TO_CATEGORY = {
 
 /** 與網站預設占位圖一致（請依部署網域調整） */
 const DEFAULT_PHOTO =
-    'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png';
+    'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png';
 
 const jsonPath = path.join(__dirname, '..', 'data', 'pdf-chain-members.json');
 const rows = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));

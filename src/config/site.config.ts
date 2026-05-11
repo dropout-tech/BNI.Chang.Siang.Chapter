@@ -44,8 +44,8 @@ export const siteConfig = {
     },
 
     logos: {
-        square: `${import.meta.env.BASE_URL}images/assets/logo/白色正方形logo.png`,
-        horizontal: `${import.meta.env.BASE_URL}images/assets/logo/透明底白字長條logo.png`,
+        square: `${import.meta.env.BASE_URL}images/assets/logo/bni-logo-new.png`,
+        horizontal: `${import.meta.env.BASE_URL}images/assets/logo/bni-logo-new.png`,
         bni: `${import.meta.env.BASE_URL}images/assets/logo/bni-logo-new.png`,
     },
 

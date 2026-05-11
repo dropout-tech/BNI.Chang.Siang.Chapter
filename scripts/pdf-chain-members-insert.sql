@@ -24,7 +24,7 @@ SELECT
 【SLOGAN】全面保健找惠燕 雕塑曲線好驚艷
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["營養保健"]'::jsonb,
   '["健康醫療"]'::jsonb,
@@ -55,7 +55,7 @@ SELECT
 【SLOGAN】物理治療找芃萱 通體舒暢似神仙
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["物理治療"]'::jsonb,
   '["健康醫療"]'::jsonb,
@@ -86,7 +86,7 @@ SELECT
 【SLOGAN】醫療保險找玉慧 平安喜樂更加倍
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["醫療保險"]'::jsonb,
   '["健康醫療"]'::jsonb,
@@ -117,7 +117,7 @@ SELECT
 【SLOGAN】健康檢查找展良 健康美麗壽命長
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["醫療健檢"]'::jsonb,
   '["健康醫療"]'::jsonb,
@@ -148,7 +148,7 @@ SELECT
 【SLOGAN】優質睡眠超感動 穿蓋保健找馨葳
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["負離子衣物寢具"]'::jsonb,
   '["健康醫療"]'::jsonb,
@@ -179,7 +179,7 @@ SELECT
 【SLOGAN】健康美麗找珈穎 身體事業皆雙贏
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["運動養身儀器"]'::jsonb,
   '["健康醫療"]'::jsonb,
@@ -210,7 +210,7 @@ SELECT
 【SLOGAN】智能淨化用唯廚 居家生活最幸福
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["智慧廚具"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -241,7 +241,7 @@ SELECT
 【SLOGAN】裝修大小無難事 大堂讓您好舒適
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["室內裝修統包"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -272,7 +272,7 @@ SELECT
 【SLOGAN】商空木作找健翔 事業健康都飛揚
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["商空木作"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -303,7 +303,7 @@ SELECT
 【SLOGAN】冷氣空調找木星 空間舒適又安心
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["冷氣空調"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -334,7 +334,7 @@ SELECT
 【SLOGAN】油漆工程找東裕 品質保證最給力
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["油漆工程"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -365,7 +365,7 @@ SELECT
 【SLOGAN】窗前好簾找彤心 質感美型又安心
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["窗簾家飾"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -396,7 +396,7 @@ SELECT
 【SLOGAN】水電工程找元星 元星施工最放心
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["水電工程"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -427,7 +427,7 @@ SELECT
 【SLOGAN】商用地板找新元 產品豐富最多元
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["地板工程"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -458,7 +458,7 @@ SELECT
 【SLOGAN】收納美學找沂臻 空間規劃一百分
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["系統櫃"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -489,7 +489,7 @@ SELECT
 【SLOGAN】搬家清運找特勤 安全效率快又勤
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["搬家清運"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -520,7 +520,7 @@ SELECT
 【SLOGAN】預見未來好 Design 空間設計宏鼎泰
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["住宅設計"]'::jsonb,
   '["工程裝修"]'::jsonb,
@@ -551,7 +551,7 @@ SELECT
 【SLOGAN】全面保險找瑩珊 愛人愛己最心安
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["保險長照產險"]'::jsonb,
   '["企業服務"]'::jsonb,
@@ -582,7 +582,7 @@ SELECT
 【SLOGAN】企業升級找鳳珠 績效業績更突出
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["系統ERP"]'::jsonb,
   '["企業服務"]'::jsonb,
@@ -613,7 +613,7 @@ SELECT
 【SLOGAN】數位課程最豐富 知識培訓找愛珠
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["數位課程與平台"]'::jsonb,
   '["企業服務"]'::jsonb,
@@ -644,7 +644,7 @@ SELECT
 【SLOGAN】企業永續找家和 人財事業萬事得
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["企業管理顧問"]'::jsonb,
   '["企業服務"]'::jsonb,
@@ -675,7 +675,7 @@ SELECT
 【SLOGAN】法律服務找元棻 風險控管一百分
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["法律服務"]'::jsonb,
   '["企業服務"]'::jsonb,
@@ -706,7 +706,7 @@ SELECT
 【SLOGAN】網路曝光找樂誠 名利雙收一定成
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["短影音運營"]'::jsonb,
   '["企業服務"]'::jsonb,
@@ -737,7 +737,7 @@ SELECT
 【SLOGAN】勞資雙贏找榮久 永續經營更長久
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["勞資顧問"]'::jsonb,
   '["企業服務"]'::jsonb,
@@ -768,7 +768,7 @@ SELECT
 【SLOGAN】攝影找 Vincent 品牌形象再提升
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["靜態攝影"]'::jsonb,
   '["企業服務"]'::jsonb,
@@ -799,7 +799,7 @@ SELECT
 【SLOGAN】安心生鮮找宜芳 美味佳餚最大方
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["生鮮食品"]'::jsonb,
   '["消費生活"]'::jsonb,
@@ -830,7 +830,7 @@ SELECT
 【SLOGAN】健康無毒找莉菁 清潔保養樣樣行
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["手工皂製作行銷教學"]'::jsonb,
   '["消費生活"]'::jsonb,
@@ -861,7 +861,7 @@ SELECT
 【SLOGAN】美髮能量找玉茹 變帥變美最幸福
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["髮品製造批發"]'::jsonb,
   '["消費生活"]'::jsonb,
@@ -892,7 +892,7 @@ SELECT
 【SLOGAN】氣球佈置找哲宇 歡樂繽紛So Easy
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["氣球佈置"]'::jsonb,
   '["消費生活"]'::jsonb,
@@ -923,7 +923,7 @@ SELECT
 【SLOGAN】團隊凝聚找Wudy 工作團隊變無敵
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["活動體驗企劃"]'::jsonb,
   '["消費生活"]'::jsonb,
@@ -954,7 +954,7 @@ SELECT
 【SLOGAN】環保生活找天勤 省錢省心一定行
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["環保居家生活館"]'::jsonb,
   '["消費生活"]'::jsonb,
@@ -985,7 +985,7 @@ SELECT
 【SLOGAN】逆齡回春找妍禾 白皙透亮有光澤
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["美容行銷"]'::jsonb,
   '["消費生活"]'::jsonb,
@@ -1016,7 +1016,7 @@ SELECT
 【SLOGAN】尊榮移動找極安 極致享受好心安
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["尊榮移動整合服務"]'::jsonb,
   '["資產管理"]'::jsonb,
@@ -1047,7 +1047,7 @@ SELECT
 【SLOGAN】人生大事找震芳 四道習題有解方
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["生命產業"]'::jsonb,
   '["資產管理"]'::jsonb,
@@ -1078,7 +1078,7 @@ SELECT
 【SLOGAN】買車賣車找小胖 服務保證一級棒
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["中古車買賣"]'::jsonb,
   '["資產管理"]'::jsonb,
@@ -1109,7 +1109,7 @@ SELECT
 【SLOGAN】房屋代銷找宗平 專業安心沒問題
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["不動產代銷"]'::jsonb,
   '["資產管理"]'::jsonb,
@@ -1140,7 +1140,7 @@ SELECT
 【SLOGAN】海外地產找士懿 身家又多好幾億
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["海外房地產"]'::jsonb,
   '["資產管理"]'::jsonb,
@@ -1171,7 +1171,7 @@ SELECT
 【SLOGAN】投資移民找書華 共築未來創輝煌
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["移民顧問"]'::jsonb,
   '["資產管理"]'::jsonb,
@@ -1202,7 +1202,7 @@ SELECT
 【SLOGAN】保養升級都準到 辰羽出馬最可靠
 
 資料來源：《長翔五大產業類別及Slogan》PDF（20260224）。',
-  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/白色正方形logo.png',
+  'https://changsiang.tw/BNI.Chang.Siang.Chapter/images/assets/logo/bni-logo-new.png',
   'center',
   '["汽車保修"]'::jsonb,
   '["資產管理"]'::jsonb,

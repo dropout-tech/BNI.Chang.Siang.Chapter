@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
-import { LuxuryBackground, GlowingChevron } from '../common/PremiumDecorations';
 import { useFaqs } from '../../hooks/useFaqs';
 
 const FAQItem: React.FC<{ question: string, answer: string, isOpen: boolean, toggle: () => void, index: number }> = ({ question, answer, isOpen, toggle, index }) => {
@@ -20,7 +19,7 @@ const FAQItem: React.FC<{ question: string, answer: string, isOpen: boolean, tog
                 <span className={`text-xl md:text-2xl font-medium transition-colors duration-300 pr-8 ${isOpen ? 'text-[#CF2030]' : 'text-[#333] group-hover:text-[#CF2030]'}`}>
                     {question}
                 </span>
-                <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300 ${isOpen ? 'bg-[#CF2030] border-[#CF2030] text-[#333]' : 'border-gray-300 text-gray-500 group-hover:border-[#CF2030] group-hover:text-[#CF2030]'}`}>
+                <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300 ${isOpen ? 'bg-[#CF2030] border-[#CF2030] text-white shadow-[0_10px_25px_rgba(207,32,48,0.22)]' : 'border-gray-300 text-gray-500 group-hover:border-[#CF2030] group-hover:text-[#CF2030]'}`}>
                     {isOpen ? <Minus size={18} /> : <Plus size={18} />}
                 </span>
             </button>
@@ -53,7 +52,11 @@ const FAQ: React.FC = () => {
 
     return (
         <section className="min-h-screen flex flex-col justify-center py-20 relative overflow-hidden bg-transparent" id="faq">
-            <LuxuryBackground />
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute left-1/2 top-10 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-[#CF2030]/[0.055] blur-3xl" />
+                <div className="absolute right-[8%] top-24 h-36 w-36 rounded-full border border-[#CF2030]/10" />
+                <div className="absolute left-[10%] bottom-20 h-44 w-44 rounded-full border border-[#D4AF37]/15" />
+            </div>
             <div className="container mx-auto px-4 z-10 relative">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -62,9 +65,11 @@ const FAQ: React.FC = () => {
                     className="text-center mb-16"
                 >
                     <div className="flex items-center justify-center gap-4 mb-4">
-                        <GlowingChevron direction="left" className="hidden sm:block opacity-70" />
-                        <h2 className="text-3xl md:text-5xl font-black text-[#333] gold-text drop-shadow-md">BNI 台灣商會常見問題</h2>
-                        <GlowingChevron direction="right" className="hidden sm:block opacity-70" />
+                        <span className="hidden sm:block h-px w-12 bg-gradient-to-r from-transparent via-[#D4AF37]/70 to-[#CF2030]/40" />
+                        <h2 className="text-3xl md:text-5xl font-black text-[#222] drop-shadow-sm">
+                            BNI 台灣商會<span className="text-[#CF2030]">常見問題</span>
+                        </h2>
+                        <span className="hidden sm:block h-px w-12 bg-gradient-to-r from-[#CF2030]/40 via-[#D4AF37]/70 to-transparent" />
                     </div>
                     <p className="text-gray-500 max-w-2xl mx-auto text-lg">
                         關於加入 BNI 長翔名人堂白金分會，我們整理了台灣企業主最關心的問題
