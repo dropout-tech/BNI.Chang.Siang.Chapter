@@ -10,7 +10,6 @@ import ScrollToTop from './components/common/ScrollToTop';
 import PageTracker from './components/common/PageTracker';
 import BottomNav from './components/layout/BottomNav';
 import CustomCursor from './components/common/CustomCursor';
-import AnimationEasterEggs from './components/common/AnimationEasterEggs';
 import { SkeletonHero } from './components/common/Skeleton';
 import { AuthProvider } from './contexts/AuthProvider';
 import Lenis from 'lenis';
@@ -102,7 +101,6 @@ function App() {
         <div className="grain-heavy" />
         
         <CustomCursor />
-        <AnimationEasterEggs />
         <div className="flex flex-col min-h-screen relative z-10">
           <Navbar />
           <main className="flex-grow pb-[70px] md:pb-0 pt-[calc(0.25rem+4rem+1.75rem)] md:pt-[calc(0.25rem+5rem+1.75rem)]">

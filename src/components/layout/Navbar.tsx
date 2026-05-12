@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
 
             <div className="container mx-auto px-4 flex justify-between items-center h-16 md:h-20">
                 {/* Logo */}
-                <NavLink to="/" data-easter-logo="true" className="flex items-center gap-3 shrink-0">
+                <NavLink to="/" className="flex items-center gap-3 shrink-0">
                     <img src={assetUrl('/images/assets/logo/bni-logo-new.png')} alt="BNI" className="h-10 md:h-12 w-auto" />
                     <div className="hidden sm:block border-l border-[#CF2030]/15 pl-3">
                         <div className="text-[#333] font-bold text-sm leading-tight">長翔名人堂</div>

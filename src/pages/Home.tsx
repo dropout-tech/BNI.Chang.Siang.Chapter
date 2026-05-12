@@ -25,7 +25,7 @@ const Home: React.FC = () => (
 
         <PageHero
             kicker={<>白金分會 · 每週三清晨 · 晶宴民生館</>}
-            title={<><span data-easter-burst="true" className="cursor-pointer text-[#CF2030]">長翔展翼</span><br /><span data-easter-sweep="true" className="cursor-pointer text-[#222]">商機無限</span></>}
+            title={<><span className="text-[#CF2030]">長翔展翼</span><br /><span className="text-[#222]">商機無限</span></>}
             subtitle={<>BNI 長翔名人堂白金分會<br className="hidden sm:block" />匯聚各產業精英的金質商務交流平台</>}
             showScrollIndicator
             variant="home"

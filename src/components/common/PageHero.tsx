@@ -137,16 +137,11 @@ const PageHero: React.FC<PageHeroProps> = ({
             </motion.div>
 
             {subtitle && (
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
-                    data-easter-bni={isHome ? 'true' : undefined}
-                    className={isHome ? 'relative mx-auto max-w-2xl rounded-[1.35rem] border border-[#CF2030]/12 bg-white/76 px-6 py-5 text-base leading-relaxed text-gray-600 shadow-[0_24px_70px_-34px_rgba(207,32,48,0.32)] backdrop-blur-md md:px-10 md:text-lg md:leading-relaxed' : 'relative mx-auto max-w-xl border border-[#CF2030]/[0.12] bg-white/80 px-6 py-5 text-[0.9375rem] leading-relaxed text-gray-600 shadow-[0_22px_50px_-24px_rgba(207,32,48,0.18)] backdrop-blur-sm md:max-w-2xl md:px-10 md:text-lg md:leading-relaxed'}
-                    style={{
-                        borderRadius: '1rem',
-                        boxShadow:
-                            isHome
-                                ? 'inset 0 1px 0 rgba(255,255,255,0.94), 0 24px 70px -34px rgba(207,32,48,0.32), 0 1px 0 rgba(255,255,255,0.9)'
-                                : 'inset 0 1px 0 rgba(255,255,255,0.92), 0 22px 50px -24px rgba(207,32,48,0.14)',
-                    }}
+                <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    className={isHome ? 'relative mx-auto max-w-2xl text-base font-medium leading-relaxed text-gray-600 md:text-lg md:leading-relaxed' : 'relative mx-auto max-w-xl text-[0.9375rem] leading-relaxed text-gray-600 md:max-w-2xl md:text-lg md:leading-relaxed'}
                 >
                     {subtitle}
                 </motion.div>
