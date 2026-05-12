@@ -115,7 +115,6 @@ const AnimationEasterEggs = () => {
   const [activeEgg, setActiveEgg] = useState<ActiveEgg | null>(null);
   const timeoutRef = useRef<number | null>(null);
   const clickRef = useRef({ count: 0, lastAt: 0 });
-  const sequenceRef = useRef('');
 
   useEffect(() => {
     const trigger = (kind: EggKind) => {
@@ -126,7 +125,24 @@ const AnimationEasterEggs = () => {
 
     const onClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
-      if (!target?.closest('[data-easter-logo="true"]')) return;
+      if (!target) return;
+
+      if (target.closest('[data-easter-burst="true"]')) {
+        trigger('logo');
+        return;
+      }
+
+      if (target.closest('[data-easter-sweep="true"]')) {
+        trigger('changsiang');
+        return;
+      }
+
+      if (target.closest('[data-easter-bni="true"]')) {
+        trigger('bni');
+        return;
+      }
+
+      if (!target.closest('[data-easter-logo="true"]')) return;
 
       const now = window.performance.now();
       const nextCount = now - clickRef.current.lastAt < 900 ? clickRef.current.count + 1 : 1;
@@ -138,38 +154,10 @@ const AnimationEasterEggs = () => {
       }
     };
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (
-        target?.tagName === 'INPUT' ||
-        target?.tagName === 'TEXTAREA' ||
-        target?.tagName === 'SELECT' ||
-        target?.isContentEditable
-      ) {
-        return;
-      }
-
-      if (event.key.length !== 1 || !/^[a-z]$/i.test(event.key)) return;
-      sequenceRef.current = `${sequenceRef.current}${event.key.toUpperCase()}`.slice(-12);
-
-      if (sequenceRef.current.endsWith('CHANGSIANG')) {
-        sequenceRef.current = '';
-        trigger('changsiang');
-        return;
-      }
-
-      if (sequenceRef.current.endsWith('BNI')) {
-        sequenceRef.current = '';
-        trigger('bni');
-      }
-    };
-
     window.addEventListener('click', onClick);
-    window.addEventListener('keydown', onKeyDown);
 
     return () => {
       window.removeEventListener('click', onClick);
-      window.removeEventListener('keydown', onKeyDown);
       if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
     };
   }, []);
