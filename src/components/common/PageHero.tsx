@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { assetUrl } from '../../lib/assets';
 
 interface PageHeroProps {
     title: React.ReactNode;
@@ -11,15 +12,6 @@ interface PageHeroProps {
     variant?: 'default' | 'home';
 }
 
-const heroParticles = [
-    { left: '14%', top: '24%', delay: 0.2, size: '3px' },
-    { left: '28%', top: '70%', delay: 1.4, size: '2px' },
-    { left: '52%', top: '18%', delay: 0.8, size: '2px' },
-    { left: '73%', top: '66%', delay: 1.8, size: '3px' },
-    { left: '86%', top: '34%', delay: 0.4, size: '2px' },
-    { left: '43%', top: '82%', delay: 2.2, size: '2px' },
-];
-
 const PageHero: React.FC<PageHeroProps> = ({
     title,
     subtitle,
@@ -29,29 +21,50 @@ const PageHero: React.FC<PageHeroProps> = ({
     variant = 'default',
 }) => {
     const isHome = variant === 'home';
+    const homeHeroImage = assetUrl('/images/assets/hero/chang-siang-hero-bg.webp');
 
     return (
     <section className="relative flex min-h-[88vh] flex-col justify-center overflow-hidden bg-white pb-24 pt-8 text-center md:min-h-[90vh] md:pb-28 md:pt-10">
         {isHome ? (
             <>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.98),transparent_18%),radial-gradient(circle_at_18%_18%,rgba(207,32,48,0.13),transparent_34%),radial-gradient(circle_at_82%_14%,rgba(212,175,55,0.11),transparent_30%),linear-gradient(180deg,#ffffff_0%,#fff8f8_58%,#ffffff_100%)]" />
+                <div
+                    className="absolute inset-0 scale-[1.04] bg-cover bg-center"
+                    style={{
+                        backgroundImage: `url(${homeHeroImage})`,
+                        filter: 'saturate(0.9) contrast(1.05)',
+                    }}
+                />
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        background:
+                            'linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.88) 34%, rgba(255,255,255,0.64) 60%, rgba(255,255,255,0.78) 100%)',
+                    }}
+                />
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        background:
+                            'radial-gradient(circle at 20% 25%, rgba(207,32,48,0.20), transparent 34%), radial-gradient(circle at 78% 18%, rgba(212,175,55,0.14), transparent 28%), linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.56) 74%, #ffffff 100%)',
+                    }}
+                />
                 <motion.div
                     aria-hidden
-                    animate={{ x: ['-10%', '7%', '-10%'], opacity: [0.18, 0.42, 0.18] }}
-                    transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute left-1/2 top-[44%] h-[46vh] w-[130vw] -translate-x-1/2 -translate-y-1/2 rotate-[-8deg] bg-[linear-gradient(90deg,transparent,rgba(207,32,48,0.13),rgba(255,255,255,0.8),transparent)] blur-3xl"
+                    animate={{ x: ['-12%', '8%', '-12%'], opacity: [0.16, 0.36, 0.16] }}
+                    transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute left-1/2 top-[42%] h-[42vh] w-[130vw] -translate-x-1/2 -translate-y-1/2 rotate-[-7deg] bg-[linear-gradient(90deg,transparent,rgba(207,32,48,0.18),rgba(255,255,255,0.72),transparent)] blur-3xl"
                 />
                 <motion.div
                     aria-hidden
                     animate={{ rotate: [0, 4, 0], scale: [1, 1.03, 1] }}
                     transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute -right-24 -top-20 h-[560px] w-[560px] rounded-full border border-[#CF2030]/10 shadow-[inset_0_0_80px_rgba(207,32,48,0.035)]"
+                    className="absolute -right-24 -top-20 h-[560px] w-[560px] rounded-full border border-white/35 shadow-[inset_0_0_90px_rgba(255,255,255,0.16)]"
                 />
                 <motion.div
                     aria-hidden
                     animate={{ rotate: [0, -4, 0], opacity: [0.3, 0.58, 0.3] }}
                     transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute -left-28 bottom-[-18%] h-[520px] w-[720px] rounded-[100%] border-t border-[#CF2030]/12 shadow-[0_-28px_90px_rgba(207,32,48,0.08)]"
+                    className="absolute -left-28 bottom-[-18%] h-[520px] w-[720px] rounded-[100%] border-t border-[#CF2030]/18 shadow-[0_-28px_90px_rgba(207,32,48,0.14)]"
                 />
                 <div className="absolute inset-0 opacity-[0.08]" style={{
                     backgroundImage: 'linear-gradient(rgba(207,32,48,0.45) 1px, transparent 1px), linear-gradient(90deg, rgba(207,32,48,0.45) 1px, transparent 1px)',
@@ -59,16 +72,6 @@ const PageHero: React.FC<PageHeroProps> = ({
                     maskImage: 'linear-gradient(to bottom, black 0%, black 58%, transparent 100%)',
                     WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 58%, transparent 100%)',
                 }} />
-                {heroParticles.map((particle) => (
-                    <motion.div
-                        key={`${particle.left}-${particle.top}`}
-                        aria-hidden
-                        animate={{ y: [0, -18, 0], opacity: [0.16, 0.72, 0.16], scale: [1, 1.4, 1] }}
-                        transition={{ duration: 6.5, repeat: Infinity, delay: particle.delay, ease: 'easeInOut' }}
-                        className="absolute rounded-full bg-[#CF2030] shadow-[0_0_18px_rgba(207,32,48,0.38)]"
-                        style={{ left: particle.left, top: particle.top, width: particle.size, height: particle.size }}
-                    />
-                ))}
                 <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-white to-transparent" />
             </>
         ) : (
