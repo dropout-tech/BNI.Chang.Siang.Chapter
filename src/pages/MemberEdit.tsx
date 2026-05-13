@@ -20,6 +20,38 @@ interface MemberLink {
     icon: string;
 }
 
+type ReferralTargetsForm = {
+    good: string;
+    ideal: string;
+    dream: string;
+};
+
+const EMPTY_REFERRAL_TARGETS: ReferralTargetsForm = {
+    good: '',
+    ideal: '',
+    dream: '',
+};
+
+function getIntroSection(text: string, heading: string): string {
+    const marker = `【${heading}】`;
+    const start = text.indexOf(marker);
+    if (start === -1) return '';
+    const rest = text.slice(start + marker.length);
+    const next = rest.indexOf('【');
+    return (next === -1 ? rest : rest.slice(0, next)).trim();
+}
+
+function normalizeReferralTargets(value: unknown, fullIntro: string): ReferralTargetsForm {
+    const targets = value && typeof value === 'object' && !Array.isArray(value)
+        ? value as Partial<ReferralTargetsForm>
+        : {};
+    return {
+        good: typeof targets.good === 'string' ? targets.good : '',
+        ideal: typeof targets.ideal === 'string' ? targets.ideal : getIntroSection(fullIntro, '理想引薦對象'),
+        dream: typeof targets.dream === 'string' ? targets.dream : '',
+    };
+}
+
 const MemberEdit: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
     const navigate = useNavigate();
@@ -35,6 +67,7 @@ const MemberEdit: React.FC = () => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [shortIntro, setShortIntro] = useState('');
     const [fullIntro, setFullIntro] = useState('');
+    const [referralTargets, setReferralTargets] = useState<ReferralTargetsForm>(EMPTY_REFERRAL_TARGETS);
     const [services, setServices] = useState<string[]>(['', '', '']);
     const [hashtags, setHashtags] = useState<string[]>(['', '', '']);
     const [links, setLinks] = useState<MemberLink[]>([
@@ -116,6 +149,7 @@ const MemberEdit: React.FC = () => {
                 setIndustry(m.industry || '');
                 setShortIntro(m.shortIntro || '');
                 setFullIntro(m.fullIntro || '');
+                setReferralTargets(normalizeReferralTargets(m.referral_targets, m.fullIntro || ''));
                 setPhoto((m.photo || '').trim());
                 setPhotoPosition(m.photoPosition || 'center');
                 setPhone(m.phone || '');
@@ -267,6 +301,11 @@ const MemberEdit: React.FC = () => {
                 category: selectedCategories.map(c => sanitizeText(c, 30)).join(','),
                 shortIntro: sanitizeText(shortIntro, 200),
                 fullIntro: sanitizeText(fullIntro, 3000),
+                referral_targets: {
+                    good: sanitizeText(referralTargets.good, 600),
+                    ideal: sanitizeText(referralTargets.ideal, 600),
+                    dream: sanitizeText(referralTargets.dream, 600),
+                },
                 services: services.filter(s => s.trim()).map(s => sanitizeText(s, 100)),
                 hashtags: hashtags.filter(h => h.trim()).map(h => sanitizeText(h, 30)),
                 links: linksObject,
@@ -603,6 +642,40 @@ const MemberEdit: React.FC = () => {
                                     <p className="mt-2 text-xs text-[#CF2030]/70 leading-relaxed italic">
                                         💡 <strong>AI 搜尋優化小提醒：</strong>建議使用自然語言描述。例如：「我是一位專門協助電商企業處理節稅問題的專業會計師...」這能幫助 AI 搜尋引擎 (如 ChatGPT/Perplexity) 更精準地將您推薦給目標客戶。
                                     </p>
+                                </div>
+                                <div className="rounded-2xl border border-red-100 bg-gradient-to-br from-red-50/70 to-white p-4">
+                                    <div className="mb-4">
+                                        <h3 className="text-base font-black text-[#CF2030]">三層引薦對象</h3>
+                                        <p className="mt-1 text-xs leading-5 text-gray-500">
+                                            這三個欄位會顯示在會員公開頁，協助訪客更精準理解可以介紹哪些客戶給您。
+                                        </p>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {[
+                                            { key: 'good', label: '好的引薦', placeholder: '例如：正在尋找基礎服務、初步諮詢或可先建立合作關係的對象。' },
+                                            { key: 'ideal', label: '理想引薦', placeholder: '例如：最符合您服務定位、預算與決策條件的客戶類型。' },
+                                            { key: 'dream', label: '夢幻引薦', placeholder: '例如：最想被介紹認識的企業、職位、品牌或高價值合作對象。' },
+                                        ].map((item) => (
+                                            <div key={item.key}>
+                                                <label className="block text-gray-700 mb-2 font-medium">{item.label}</label>
+                                                <textarea
+                                                    value={referralTargets[item.key as keyof ReferralTargetsForm]}
+                                                    onChange={(e) => {
+                                                        updateField(setReferralTargets, {
+                                                            ...referralTargets,
+                                                            [item.key]: e.target.value,
+                                                        });
+                                                    }}
+                                                    maxLength={600}
+                                                    className="h-24 w-full resize-none rounded-lg border border-gray-200 bg-white p-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
+                                                    placeholder={item.placeholder}
+                                                />
+                                                <div className="text-right text-xs text-gray-500">
+                                                    {referralTargets[item.key as keyof ReferralTargetsForm].length}/600
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>

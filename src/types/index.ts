@@ -9,6 +9,7 @@ export interface Member {
     title: string;
     shortIntro: string;
     fullIntro: string;
+    referral_targets?: ReferralTargets | null;
     links: { [key: string]: string } | MemberLink[];
     services: string[];
     hashtags: string[];
@@ -25,6 +26,12 @@ export interface Member {
     traffic_score?: number | null;
     traffic_level?: 'green' | 'yellow' | 'red' | null;
     latest_traffic_month?: string | null;
+}
+
+export interface ReferralTargets {
+    good?: string;
+    ideal?: string;
+    dream?: string;
 }
 
 export interface MemberLink {

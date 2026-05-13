@@ -14,6 +14,7 @@ export interface Member {
     company: string;
     shortIntro: string;
     fullIntro: string;
+    referral_targets?: ReferralTargets | null;
     services: string[];
     hashtags: string[];
     links: { [key: string]: string } | { type: string; url: string; icon?: string }[];
@@ -30,6 +31,12 @@ export interface Member {
     traffic_level?: 'green' | 'yellow' | 'red' | null;
     latest_traffic_month?: string | null;
 }
+
+export type ReferralTargets = {
+    good?: string;
+    ideal?: string;
+    dream?: string;
+};
 
 type TrafficScoreRow = {
     member_id: number;

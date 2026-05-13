@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Briefcase, Building, Crown, Mail, Phone, Sparkles, Target } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { useMembers } from '../hooks/useMembers';
+import type { Member } from '../hooks/useMembers';
 import { assetUrl } from '../lib/assets';
 import { siteConfig } from '../config/site.config';
 import { decodeMemberParam, getMemberPath } from '../lib/memberSlug';
@@ -15,6 +16,31 @@ function getIntroSection(text: string, heading: string): string {
     const rest = text.slice(start + marker.length);
     const next = rest.indexOf('【');
     return (next === -1 ? rest : rest.slice(0, next)).trim();
+}
+
+function getReferralTargetLevels(member: Member | undefined) {
+    const fallbackIdeal = member ? getIntroSection(member.fullIntro || '', '理想引薦對象') : '';
+    const targets = member?.referral_targets ?? {};
+    return [
+        {
+            key: 'good',
+            label: '好的引薦',
+            description: targets.good?.trim() || '',
+            fallback: '正在整理適合初步交流的合作對象。',
+        },
+        {
+            key: 'ideal',
+            label: '理想引薦',
+            description: targets.ideal?.trim() || fallbackIdeal,
+            fallback: '歡迎與會員一對一了解更精準的合作對象。',
+        },
+        {
+            key: 'dream',
+            label: '夢幻引薦',
+            description: targets.dream?.trim() || '',
+            fallback: '正在整理最期待被介紹認識的夢幻客戶。',
+        },
+    ];
 }
 
 const MemberProfile: React.FC = () => {
@@ -32,7 +58,7 @@ const MemberProfile: React.FC = () => {
 
     const photo = member?.photo ? assetUrl(member.photo) : siteConfig.defaultPhoto;
     const isDefaultPhoto = photo === siteConfig.defaultPhoto || !member?.photo;
-    const idealTargets = member ? getIntroSection(member.fullIntro || '', '理想引薦對象') : '';
+    const referralTargetLevels = getReferralTargetLevels(member);
     const intro = member?.fullIntro?.split('【理想引薦對象】')[0]?.trim() || member?.shortIntro || '';
 
     if (loading) {
@@ -121,13 +147,20 @@ const MemberProfile: React.FC = () => {
                                 <p className="whitespace-pre-line text-base leading-8 text-gray-700">{intro}</p>
                             </div>
 
-                            <div className="grid gap-6 md:grid-cols-2">
+                            <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr]">
                                 <div className="rounded-[28px] border border-red-100 bg-white p-6 shadow-[0_20px_60px_rgba(24,24,27,0.05)]">
                                     <div className="mb-4 flex items-center gap-3">
                                         <Target className="text-[#CF2030]" size={22} />
                                         <h2 className="text-xl font-black text-gray-950">理想引薦對象</h2>
                                     </div>
-                                    <p className="leading-7 text-gray-700">{idealTargets || '歡迎與會員一對一了解更精準的合作對象。'}</p>
+                                    <div className="space-y-3">
+                                        {referralTargetLevels.map((target) => (
+                                            <div key={target.key} className="rounded-2xl border border-red-50 bg-gradient-to-br from-red-50/70 to-white p-4">
+                                                <div className="mb-2 text-sm font-black tracking-[0.12em] text-[#CF2030]">{target.label}</div>
+                                                <p className="whitespace-pre-line leading-7 text-gray-700">{target.description || target.fallback}</p>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 <div className="rounded-[28px] border border-red-100 bg-white p-6 shadow-[0_20px_60px_rgba(24,24,27,0.05)]">
