@@ -24,7 +24,7 @@ const PageHero: React.FC<PageHeroProps> = ({
     const homeHeroImage = assetUrl('/images/assets/hero/chang-siang-hero-bg.webp');
 
     return (
-    <section className={`relative flex min-h-[88vh] flex-col justify-center overflow-hidden bg-white pb-24 pt-8 text-center md:min-h-[90vh] md:pb-28 md:pt-10 ${isHome ? 'md:text-left' : ''}`}>
+    <section className={`relative flex min-h-[88vh] flex-col justify-center overflow-hidden bg-white pb-24 pt-8 text-center md:min-h-[90vh] md:pb-28 md:pt-10 ${isHome ? '-mt-7 md:text-left' : ''}`}>
         {isHome ? (
             <>
                 <div

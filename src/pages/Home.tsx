@@ -5,7 +5,6 @@ import { ArrowRight, Handshake, Target, GraduationCap, Heart, ChevronRight } fro
 import PageHero from '../components/common/PageHero';
 import SectionWrapper from '../components/common/SectionWrapper';
 import MemberWall from '../components/home/MemberWall';
-import Results from '../components/home/Results';
 import FAQ from '../components/home/FAQ';
 import Contact from '../components/home/Contact';
 import SEO from '../components/common/SEO';
@@ -102,7 +101,6 @@ const Home: React.FC = () => (
         </section>
 
         <MemberWall />
-        <Results />
         <FAQ />
         <Contact />
 
