@@ -21,6 +21,7 @@ const Contact: React.FC = () => {
             member: member || null
         };
     });
+    const hasValue = (value?: string | null) => Boolean(value?.trim());
 
     return (
         <section className="relative overflow-hidden bg-gradient-to-br from-white via-red-50/70 to-white py-24 md:py-32" id="contact">
@@ -77,7 +78,7 @@ const Contact: React.FC = () => {
                                     src={item.member?.photo ? assetUrl(item.member.photo) : assetUrl(`/images/members/${item.name}.jpg`)}
                                     alt={item.name}
                                     className={`h-full w-full rounded-full ${item.member?.photo ? 'object-cover' : 'object-contain p-5'}`}
-                                    style={{ objectPosition: 'top' }}
+                                    style={{ objectPosition: item.member?.photoPosition || 'center 12%' }}
                                     onError={(e) => e.currentTarget.src = assetUrl('/images/assets/logo/bni-logo-new.png')}
                                 />
                             </div>
@@ -87,19 +88,27 @@ const Contact: React.FC = () => {
                             <div className="mb-1 text-2xl font-black text-gray-950">{item.name}</div>
                             <div className="mb-5 text-base font-bold text-[#CF2030]">{item.member?.industry || 'BNI 長翔分會幹部'}</div>
 
-                            <div className="mt-auto w-full space-y-3 rounded-2xl border border-red-100 bg-gradient-to-br from-red-50/80 to-white p-4 text-base">
-                                <div className="flex flex-col items-center justify-center gap-1 text-gray-600">
-                                    <span className="font-medium text-[#333] text-center">{item.member?.company || '待更新'}</span>
+                            {(hasValue(item.member?.company) || hasValue(item.member?.phone) || hasValue(item.member?.email)) && (
+                                <div className="mt-auto w-full space-y-3 rounded-2xl border border-red-100 bg-gradient-to-br from-red-50/80 to-white p-4 text-base">
+                                    {hasValue(item.member?.company) && (
+                                        <div className="flex flex-col items-center justify-center gap-1 text-gray-600">
+                                            <span className="font-medium text-[#333] text-center">{item.member?.company?.trim()}</span>
+                                        </div>
+                                    )}
+                                    {hasValue(item.member?.phone) && (
+                                        <div className="flex items-center justify-center gap-2 text-gray-600">
+                                            <Phone size={16} className="text-[#CF2030] shrink-0" />
+                                            <span>{item.member?.phone?.trim()}</span>
+                                        </div>
+                                    )}
+                                    {hasValue(item.member?.email) && (
+                                        <div className="flex items-center justify-center gap-2 text-gray-600">
+                                            <Mail size={16} className="text-[#CF2030] shrink-0" />
+                                            <span className="text-sm break-all">{item.member?.email?.trim()}</span>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="flex items-center justify-center gap-2 text-gray-600">
-                                    <Phone size={16} className="text-[#CF2030] shrink-0" />
-                                    <span>{item.member?.phone || '待更新'}</span>
-                                </div>
-                                <div className="flex items-center justify-center gap-2 text-gray-600">
-                                    <Mail size={16} className="text-[#CF2030] shrink-0" />
-                                    <span className="text-sm break-all">{item.member?.email || '待更新'}</span>
-                                </div>
-                            </div>
+                            )}
                         </motion.div>
                     ))}
                 </div>

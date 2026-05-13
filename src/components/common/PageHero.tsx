@@ -24,28 +24,28 @@ const PageHero: React.FC<PageHeroProps> = ({
     const homeHeroImage = assetUrl('/images/assets/hero/chang-siang-hero-bg.webp');
 
     return (
-    <section className="relative flex min-h-[88vh] flex-col justify-center overflow-hidden bg-white pb-24 pt-8 text-center md:min-h-[90vh] md:pb-28 md:pt-10">
+    <section className={`relative flex min-h-[88vh] flex-col justify-center overflow-hidden bg-white pb-24 pt-8 text-center md:min-h-[90vh] md:pb-28 md:pt-10 ${isHome ? 'md:text-left' : ''}`}>
         {isHome ? (
             <>
                 <div
-                    className="absolute inset-0 scale-[1.04] bg-cover bg-center"
+                    className="absolute inset-0 scale-[1.02] bg-cover bg-[center_43%]"
                     style={{
                         backgroundImage: `url(${homeHeroImage})`,
-                        filter: 'saturate(0.9) contrast(1.05)',
+                        filter: 'saturate(0.98) contrast(1.08) brightness(1.04)',
                     }}
                 />
                 <div
                     className="absolute inset-0"
                     style={{
                         background:
-                            'linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.88) 34%, rgba(255,255,255,0.64) 60%, rgba(255,255,255,0.78) 100%)',
+                            'linear-gradient(90deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.58) 34%, rgba(255,255,255,0.20) 66%, rgba(255,255,255,0.12) 100%)',
                     }}
                 />
                 <div
                     className="absolute inset-0"
                     style={{
                         background:
-                            'radial-gradient(circle at 20% 25%, rgba(207,32,48,0.20), transparent 34%), radial-gradient(circle at 78% 18%, rgba(212,175,55,0.14), transparent 28%), linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.56) 74%, #ffffff 100%)',
+                            'radial-gradient(circle at 18% 28%, rgba(207,32,48,0.20), transparent 32%), radial-gradient(circle at 78% 18%, rgba(212,175,55,0.08), transparent 24%), linear-gradient(180deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.10) 58%, #ffffff 100%)',
                     }}
                 />
                 <motion.div
@@ -72,7 +72,7 @@ const PageHero: React.FC<PageHeroProps> = ({
                     maskImage: 'linear-gradient(to bottom, black 0%, black 58%, transparent 100%)',
                     WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 58%, transparent 100%)',
                 }} />
-                <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-white to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white via-white/58 to-transparent" />
             </>
         ) : (
             <>
@@ -109,14 +109,14 @@ const PageHero: React.FC<PageHeroProps> = ({
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 mx-auto w-full max-w-5xl px-4 md:max-w-[56rem]"
+            className={isHome ? 'relative z-10 mx-auto w-full max-w-6xl px-5 md:px-8' : 'relative z-10 mx-auto w-full max-w-5xl px-4 md:max-w-[56rem]'}
         >
             {(kicker || isHome) && (
                 <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55, delay: 0.08 }}
-                    className="mx-auto mb-7 inline-flex max-w-full flex-wrap items-center justify-center gap-2 px-4"
+                    className={isHome ? 'mb-7 inline-flex max-w-full flex-wrap items-center justify-center gap-2 px-4 md:justify-start md:px-0' : 'mx-auto mb-7 inline-flex max-w-full flex-wrap items-center justify-center gap-2 px-4'}
                 >
                     <span className={isHome ? 'inline-flex items-center rounded-full border border-[#CF2030]/16 bg-white/80 px-4 py-2 text-[0.68rem] font-black uppercase tracking-[0.32em] text-[#CF2030] shadow-[0_16px_48px_rgba(207,32,48,0.10)] backdrop-blur-md md:px-5 md:text-xs' : 'inline-flex items-center rounded-full border border-[#CF2030]/20 bg-white/85 px-4 py-2 text-[11px] font-black uppercase tracking-[0.42em] text-[#CF2030] shadow-[0_1px_2px_rgba(0,0,0,0.04)] backdrop-blur-sm md:px-5 md:text-xs'}>
                         {kicker || '白金分會・每週三清晨・晶宴民生館'}
@@ -128,14 +128,14 @@ const PageHero: React.FC<PageHeroProps> = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: kicker ? 0.14 : 0.08 }}
-                className="relative mb-8 md:mb-9"
+                className={isHome ? 'relative mb-8 md:mb-9 md:max-w-[34rem]' : 'relative mb-8 md:mb-9'}
             >
-                <h1 className={isHome ? 'text-5xl font-black leading-[0.98] tracking-tight text-[#19191d] drop-shadow-[0_1px_0_rgba(255,255,255,1)] sm:text-6xl md:text-7xl lg:text-8xl [&_span:first-child]:bg-[linear-gradient(135deg,#CF2030_0%,#E8394A_46%,#A51926_100%)] [&_span:first-child]:bg-clip-text [&_span:first-child]:text-transparent [&_span:last-child]:text-[#19191d]' : 'text-[2.65rem] font-black leading-[1.08] tracking-tight text-[#222] drop-shadow-[0_1px_0_rgba(255,255,255,1)] sm:text-5xl md:text-6xl lg:text-7xl'}>
+                <h1 className={isHome ? 'text-5xl font-black leading-[0.98] tracking-tight text-[#19191d] drop-shadow-[0_3px_18px_rgba(255,255,255,0.96)] sm:text-6xl md:text-7xl lg:text-8xl [&_span:first-child]:bg-[linear-gradient(135deg,#CF2030_0%,#E8394A_46%,#A51926_100%)] [&_span:first-child]:bg-clip-text [&_span:first-child]:text-transparent [&_span:last-child]:text-[#19191d]' : 'text-[2.65rem] font-black leading-[1.08] tracking-tight text-[#222] drop-shadow-[0_1px_0_rgba(255,255,255,1)] sm:text-5xl md:text-6xl lg:text-7xl'}>
                     {title}
                 </h1>
                 <span
                     aria-hidden
-                    className={isHome ? 'mx-auto mt-7 flex h-[3px] w-20 justify-center rounded-full bg-gradient-to-r from-transparent via-[#CF2030] to-transparent shadow-[0_0_18px_rgba(207,32,48,0.18)]' : 'mx-auto mt-6 flex h-[3px] w-16 justify-center rounded-full bg-gradient-to-r from-[#CF2030] to-[#E8394A] md:mt-7 md:w-[4.25rem]'}
+                    className={isHome ? 'mx-auto mt-7 flex h-[3px] w-20 justify-center rounded-full bg-gradient-to-r from-transparent via-[#CF2030] to-transparent shadow-[0_0_18px_rgba(207,32,48,0.18)] md:mx-0 md:w-24 md:from-[#CF2030] md:via-[#E8394A] md:to-transparent' : 'mx-auto mt-6 flex h-[3px] w-16 justify-center rounded-full bg-gradient-to-r from-[#CF2030] to-[#E8394A] md:mt-7 md:w-[4.25rem]'}
                 />
             </motion.div>
 
@@ -144,7 +144,7 @@ const PageHero: React.FC<PageHeroProps> = ({
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.4 }}
-                    className={isHome ? 'relative mx-auto max-w-2xl text-base font-medium leading-relaxed text-gray-600 md:text-lg md:leading-relaxed' : 'relative mx-auto max-w-xl text-[0.9375rem] leading-relaxed text-gray-600 md:max-w-2xl md:text-lg md:leading-relaxed'}
+                    className={isHome ? 'relative mx-auto max-w-2xl text-base font-semibold leading-relaxed text-gray-700 drop-shadow-[0_2px_12px_rgba(255,255,255,0.92)] md:mx-0 md:max-w-[31rem] md:text-lg md:leading-relaxed' : 'relative mx-auto max-w-xl text-[0.9375rem] leading-relaxed text-gray-600 md:max-w-2xl md:text-lg md:leading-relaxed'}
                 >
                     {subtitle}
                 </motion.div>
@@ -155,11 +155,11 @@ const PageHero: React.FC<PageHeroProps> = ({
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55, delay: 0.48 }}
-                    className="relative mt-10 md:mt-12"
+                    className={isHome ? 'relative mt-10 md:mt-12 md:max-w-[34rem]' : 'relative mt-10 md:mt-12'}
                 >
                     <span
                         aria-hidden
-                        className={isHome ? 'mx-auto mb-8 block h-px max-w-[220px] bg-gradient-to-r from-transparent via-[#CF2030]/16 to-transparent' : 'mx-auto mb-8 block h-px max-w-[200px] bg-gradient-to-r from-transparent via-[#CF2030]/15 to-transparent'}
+                        className={isHome ? 'mx-auto mb-8 block h-px max-w-[220px] bg-gradient-to-r from-transparent via-[#CF2030]/16 to-transparent md:mx-0 md:max-w-[260px] md:from-[#CF2030]/28 md:via-[#CF2030]/12' : 'mx-auto mb-8 block h-px max-w-[200px] bg-gradient-to-r from-transparent via-[#CF2030]/15 to-transparent'}
                     />
                     {children}
                 </motion.div>

@@ -30,7 +30,7 @@ const Home: React.FC = () => (
             showScrollIndicator
             variant="home"
         >
-            <div className="flex flex-col gap-4 px-4 sm:flex-row sm:justify-center sm:gap-5 md:px-0">
+            <div className="flex flex-col gap-4 px-4 sm:flex-row sm:justify-center sm:gap-5 md:justify-start md:px-0">
                 <motion.a href="https://www.facebook.com/BNI.Chang.Siang.Chapter/" target="_blank" rel="noopener noreferrer"
                     whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                     className="bni-btn w-full rounded-full px-10 py-4 text-center text-lg shadow-[0_18px_46px_rgba(207,32,48,0.45)] sm:w-auto">
