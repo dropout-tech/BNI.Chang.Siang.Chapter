@@ -191,87 +191,69 @@ const PageHero: React.FC<PageHeroProps> = ({
                 </>
             ) : (
                 <>
-                    <div className="mx-auto grid max-w-5xl items-center gap-10 pb-1 lg:max-w-none lg:grid-cols-12 lg:gap-12 xl:gap-14">
-                        <div className="relative z-[1] lg:col-span-7">
-                            <div className="relative overflow-hidden rounded-[1.75rem] border border-[#CF2030]/15 bg-white/82 p-7 shadow-[0_28px_80px_rgba(207,32,48,0.14),inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-xl ring-1 ring-black/[0.04] md:rounded-[2rem] md:p-10 lg:text-left">
-                                <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-90" />
-                                <div className="pointer-events-none absolute -right-28 -top-28 h-52 w-52 rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.24),transparent_70%)]" />
-                                <div className="pointer-events-none absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-[radial-gradient(circle,rgba(207,32,48,0.08),transparent_72%)]" />
+                    <div className="mx-auto max-w-5xl pb-1 lg:max-w-6xl">
+                        <div className="overflow-hidden rounded-2xl border border-[#CF2030]/10 bg-white/80 shadow-[0_22px_70px_rgba(207,32,48,0.1)] ring-1 ring-black/[0.03] backdrop-blur-md md:rounded-[1.75rem]">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-stretch">
+                                <div className="relative flex flex-col justify-center px-7 py-9 sm:px-9 sm:py-10 md:py-11 lg:px-10 lg:py-12 lg:text-left">
+                                    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#CF2030]/10 to-transparent" />
+                                    <div className="pointer-events-none absolute -bottom-24 -left-20 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(207,32,48,0.06),transparent_70%)]" />
 
-                                <motion.div
-                                    initial={{ opacity: 0, y: 12 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.55, delay: 0.06 }}
-                                    className="mb-5 flex justify-center lg:justify-start"
-                                >
-                                    {kicker ? (
-                                        <span className="inline-flex max-w-full flex-wrap items-center justify-center rounded-full border border-[#CF2030]/18 bg-gradient-to-r from-red-50/95 via-white to-amber-50/50 px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-[#CF2030] shadow-[0_8px_28px_rgba(207,32,48,0.1)] sm:text-xs lg:justify-start">
-                                            {kicker}
-                                        </span>
-                                    ) : (
-                                        <span className="inline-flex max-w-[min(100%,22rem)] flex-wrap items-center justify-center gap-x-2 gap-y-0.5 rounded-full border border-[#CF2030]/18 bg-gradient-to-r from-red-50/95 via-white to-amber-50/50 px-4 py-2 text-center text-[11px] font-bold leading-snug text-[#333] shadow-[0_8px_28px_rgba(207,32,48,0.1)] sm:max-w-none sm:text-xs lg:text-left">
-                                            <span className="font-black tracking-wide text-[#CF2030]">BNI</span>
-                                            <span className="text-[#444]">{siteConfig.branchName}</span>
-                                        </span>
-                                    )}
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.7, delay: 0.1 }}
-                                    className="relative mb-6 md:mb-7"
-                                >
-                                    <h1 className="text-balance text-[2.35rem] font-black leading-[1.12] tracking-tight text-[#141414] sm:text-4xl md:text-5xl lg:text-6xl lg:leading-[1.1]">
-                                        {title}
-                                    </h1>
-                                    <span
-                                        aria-hidden
-                                        className="mx-auto mt-5 flex h-[3px] w-24 justify-center rounded-full bg-gradient-to-r from-[#CF2030] via-[#E8C547] to-[#CF2030] shadow-[0_2px_14px_rgba(207,32,48,0.2)] sm:mt-6 md:mt-7 md:w-28 lg:mx-0"
-                                    />
-                                </motion.div>
-
-                                {subtitle && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 15 }}
+                                        initial={{ opacity: 0, y: 12 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.6, delay: 0.28 }}
-                                        className="relative mx-auto max-w-2xl text-pretty text-[0.9375rem] leading-relaxed text-gray-700 sm:text-base md:max-w-none md:text-lg md:leading-relaxed lg:mx-0"
+                                        transition={{ duration: 0.55, delay: 0.06 }}
+                                        className="relative mb-4 flex justify-center lg:mb-5 lg:justify-start"
                                     >
-                                        {subtitle}
+                                        {kicker ? (
+                                            <span className="inline-flex max-w-full flex-wrap items-center justify-center rounded-full border border-[#CF2030]/14 bg-red-50/80 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#CF2030] sm:px-4 sm:text-[11px] lg:justify-start">
+                                                {kicker}
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 rounded-full border border-[#CF2030]/12 bg-gradient-to-r from-red-50/90 to-white px-3.5 py-1.5 text-[10px] font-semibold text-[#444] shadow-sm sm:px-4 sm:text-[11px] lg:justify-start">
+                                                <span className="font-black text-[#CF2030]">BNI</span>
+                                                <span>{siteConfig.branchName}</span>
+                                            </span>
+                                        )}
                                     </motion.div>
-                                )}
-                            </div>
 
-                            <div className="relative mx-auto mt-8 max-w-lg lg:hidden">
-                                <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-white/70 shadow-[0_16px_48px_rgba(207,32,48,0.15)]">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.7, delay: 0.1 }}
+                                        className="relative mb-5 md:mb-6"
+                                    >
+                                        <h1 className="text-balance text-[2.1rem] font-black leading-[1.12] tracking-tight text-[#141414] sm:text-4xl md:text-[2.6rem] lg:text-5xl lg:leading-[1.08]">
+                                            {title}
+                                        </h1>
+                                        <span
+                                            aria-hidden
+                                            className="mx-auto mt-4 flex h-[3px] w-20 justify-center rounded-full bg-gradient-to-r from-[#CF2030] via-[#E8C547] to-[#CF2030] shadow-sm sm:mt-5 sm:w-24 lg:mx-0"
+                                        />
+                                    </motion.div>
+
+                                    {subtitle && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 15 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.6, delay: 0.24 }}
+                                            className="relative mx-auto max-w-xl text-pretty text-[0.9375rem] leading-relaxed text-gray-600 sm:text-base md:max-w-lg md:text-[1.05rem] md:leading-relaxed lg:mx-0 lg:max-w-none"
+                                        >
+                                            {subtitle}
+                                        </motion.div>
+                                    )}
+                                </div>
+
+                                <div className="relative aspect-[16/10] min-h-[13rem] sm:aspect-[16/9] lg:aspect-auto lg:min-h-[17.5rem]">
                                     <div
-                                        className="absolute inset-0 scale-105 bg-cover bg-center"
+                                        className="absolute inset-0 bg-cover bg-[center_38%]"
                                         style={{ backgroundImage: `url(${homeHeroImage})` }}
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/55 to-white/20" />
-                                    <div className="absolute inset-x-4 bottom-3 flex items-center justify-center rounded-lg bg-white/90 py-2.5 backdrop-blur-sm">
-                                        <img src={siteConfig.logos.square} alt="" className="h-10 w-auto opacity-95" width={120} height={40} />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="relative hidden lg:col-span-5 lg:block">
-                            <div className="pointer-events-none absolute -right-6 top-1/2 z-[1] h-[78%] w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-[#CF2030]/25 to-transparent" />
-                            <div className="relative mx-auto max-w-sm">
-                                <div className="absolute -left-1 top-10 z-[2] rounded-r-lg rounded-tl-sm bg-[#CF2030] px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-lg">
-                                    名人堂
-                                </div>
-                                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-white/90 shadow-[0_32px_90px_rgba(207,32,48,0.22)] ring-1 ring-[#CF2030]/10">
-                                    <div
-                                        className="absolute inset-0 bg-cover bg-[center_40%]"
-                                        style={{ backgroundImage: `url(${homeHeroImage})` }}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/35 to-transparent" />
-                                    <div className="absolute inset-x-5 bottom-5 flex flex-col items-center gap-2 rounded-xl bg-white/92 px-4 py-4 text-center shadow-md backdrop-blur-md">
-                                        <img src={siteConfig.logos.square} alt="BNI" className="h-12 w-auto" width={140} height={48} />
-                                        <p className="text-[11px] font-semibold leading-snug text-gray-600">{siteConfig.meeting.displayLine}</p>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/5 to-transparent lg:bg-gradient-to-r lg:from-white/88 lg:via-white/25 lg:to-transparent" />
+                                    <div className="absolute inset-x-3 bottom-3 flex items-center gap-3 rounded-xl border border-white/50 bg-white/92 px-3 py-2.5 shadow-md backdrop-blur-sm sm:inset-x-4 sm:bottom-4 sm:px-4 sm:py-3 lg:bottom-5 lg:left-5 lg:right-auto lg:max-w-[13.5rem] lg:flex-col lg:items-start lg:gap-2 lg:px-3.5 lg:py-3">
+                                        <img src={siteConfig.logos.square} alt="BNI" className="h-9 w-auto shrink-0 sm:h-10" width={120} height={36} />
+                                        <p className="min-w-0 text-left text-[10px] font-medium leading-snug text-gray-600 sm:text-[11px] lg:text-[11px]">
+                                            {siteConfig.meeting.displayLine}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -283,11 +265,11 @@ const PageHero: React.FC<PageHeroProps> = ({
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.55, delay: 0.42 }}
-                            className="relative mx-auto mt-11 max-w-3xl md:mt-14"
+                            className="relative mx-auto mt-10 max-w-3xl md:mt-12"
                         >
                             <span
                                 aria-hidden
-                                className="mx-auto mb-7 block h-px max-w-[260px] bg-gradient-to-r from-transparent via-[#CF2030]/22 to-transparent sm:mb-8 md:max-w-[300px]"
+                                className="mx-auto mb-6 block h-px max-w-[240px] bg-gradient-to-r from-transparent via-[#CF2030]/18 to-transparent md:max-w-[280px]"
                             />
                             {children}
                         </motion.div>
