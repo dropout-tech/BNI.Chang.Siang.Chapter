@@ -8,6 +8,7 @@ import MemberWall from '../components/home/MemberWall';
 import FAQ from '../components/home/FAQ';
 import Contact from '../components/home/Contact';
 import SEO from '../components/common/SEO';
+import { siteConfig } from '../config/site.config';
 
 const f = { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-80px" }, transition: { duration: 0.6 } };
 
@@ -20,10 +21,10 @@ const bniFeatures = [
 
 const Home: React.FC = () => (
     <div className="overflow-hidden">
-        <SEO description="BNI 長翔名人堂白金分會 — 匯聚各產業精英的金質商務交流平台。長翔展翼，商機無限。" keywords="BNI, 長翔分會, 商務引薦, 名人堂, 白金分會, 台北商會" />
+        <SEO description={siteConfig.branchFullName} keywords="BNI, 長翔分會, 商務引薦, 名人堂, 白金分會, 台北商會" />
 
         <PageHero
-            kicker={<>白金分會 · 每週三清晨 · 晶宴民生館</>}
+            kicker={<>白金分會 · {siteConfig.meeting.displayLine}</>}
             title={<><span className="text-[#CF2030]">長翔展翼</span><br /><span className="text-[#222]">商機無限</span></>}
             subtitle={<>BNI 長翔名人堂白金分會<br className="hidden sm:block" />匯聚各產業精英的金質商務交流平台</>}
             showScrollIndicator
@@ -73,7 +74,7 @@ const Home: React.FC = () => (
                         <h2 className="text-3xl md:text-4xl font-black text-[#222] mb-4 leading-tight">以熱情積極、<br />付出者著稱</h2>
                         <div className="red-line mb-6" />
                         <p className="text-gray-600 leading-relaxed text-lg mb-6">
-                            BNI 長翔名人堂白金分會，匯聚台北各產業精英。每週三於晶宴會館面對面深度交流。
+                            BNI 長翔名人堂白金分會，匯聚台北各產業精英。{siteConfig.meeting.displayLine}，面對面深度交流。
                             2022年9月成功創造97%綠燈紀錄，正邁向全綠燈分會。
                         </p>
                         <Link to="/about-us" className="inline-flex items-center gap-1 text-[#CF2030] hover:text-[#A51926] font-semibold transition-colors group">
@@ -84,9 +85,9 @@ const Home: React.FC = () => (
                         <div className="grid grid-cols-2 gap-4">
                             {[
                                 { num: '97%', label: '綠燈紀錄', sub: '2022年9月' },
-                                { num: '50+', label: '產業代表', sub: '多元領域' },
+                                { num: '40+', label: '產業代表', sub: '多元領域' },
                                 { num: '白金', label: '分會等級', sub: '名人堂' },
-                                { num: '中山', label: '晶宴會館', sub: '每週三' },
+                                { num: '中山', label: siteConfig.location.venue, sub: siteConfig.meeting.dayZh },
                             ].map((s, i) => (
                                 <div key={s.label} className="card-elevated p-5 text-center">
                                     <div className="text-2xl font-black text-[#CF2030] mb-1">{s.num}</div>

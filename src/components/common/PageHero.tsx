@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { assetUrl } from '../../lib/assets';
+import { siteConfig } from '../../config/site.config';
 
 interface PageHeroProps {
     title: React.ReactNode;
@@ -119,7 +120,7 @@ const PageHero: React.FC<PageHeroProps> = ({
                     className={isHome ? 'mb-7 inline-flex max-w-full flex-wrap items-center justify-center gap-2 px-4 md:justify-start md:px-0' : 'mx-auto mb-7 inline-flex max-w-full flex-wrap items-center justify-center gap-2 px-4'}
                 >
                     <span className={isHome ? 'inline-flex items-center rounded-full border border-[#CF2030]/16 bg-white/80 px-4 py-2 text-[0.68rem] font-black uppercase tracking-[0.32em] text-[#CF2030] shadow-[0_16px_48px_rgba(207,32,48,0.10)] backdrop-blur-md md:px-5 md:text-xs' : 'inline-flex items-center rounded-full border border-[#CF2030]/20 bg-white/85 px-4 py-2 text-[11px] font-black uppercase tracking-[0.42em] text-[#CF2030] shadow-[0_1px_2px_rgba(0,0,0,0.04)] backdrop-blur-sm md:px-5 md:text-xs'}>
-                        {kicker || '白金分會・每週三清晨・晶宴民生館'}
+                        {kicker || <>白金分會・{siteConfig.meeting.displayLine}</>}
                     </span>
                 </motion.div>
             )}

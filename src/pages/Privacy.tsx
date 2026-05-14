@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/common/SEO';
+import { siteConfig } from '../config/site.config';
 
 const Privacy: React.FC = () => {
     const navigate = useNavigate();
@@ -12,7 +13,7 @@ const Privacy: React.FC = () => {
         <div className="min-h-screen bg-gradient-to-br from-white via-red-50/50 to-white px-4 pt-8 pb-16">
             <SEO
                 title="隱私權政策與服務條款"
-                description="BNI 長翔名人堂白金分會隱私權政策與服務條款。了解我們如何保護您的個人資訊和使用條件。"
+                description={siteConfig.branchFullName}
                 keywords="隱私權政策, 服務條款, BNI長翔, 個資保護"
                 breadcrumbs={[{ name: '隱私權政策', path: '/privacy' }]}
             />

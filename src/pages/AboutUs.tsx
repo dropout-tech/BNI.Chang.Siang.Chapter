@@ -20,7 +20,7 @@ const advantages = [
 
 const AboutUs: React.FC = () => (
     <div className="overflow-hidden">
-        <SEO description="BNI 長翔名人堂白金分會 — 以熱情積極、付出者著稱的金質商務交流平台。了解長翔的故事、優勢與產業鏈。" />
+        <SEO description={siteConfig.branchFullName} />
         <PageHero title={<>關於長翔</>} subtitle="長翔展翼，商機無限 — 以熱情積極、付出者著稱的精英商務社群" />
 
         <SectionWrapper>
@@ -28,7 +28,7 @@ const AboutUs: React.FC = () => (
                 <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-8 md:p-12">
                     <h3 className="text-xl font-bold text-[#333] mb-4">長翔的故事</h3>
                     <p className="leading-relaxed mb-4 text-gray-700">
-                        BNI 長翔名人堂白金分會，座落於台北市中山區晶宴會館（民生館），是 BNI 體系中最具代表性的分會之一。「長翔」，取自「長空翱翔」之意，象徵著每一位夥伴都能在這個平台上展翅高飛。
+                        BNI 長翔名人堂白金分會，例會於{siteConfig.meeting.displayLine}（{siteConfig.location.address}），是 BNI 體系中最具代表性的分會之一。「長翔」，取自「長空翱翔」之意，象徵著每一位夥伴都能在這個平台上展翅高飛。
                     </p>
                     <p className="text-gray-500 leading-relaxed mb-4">
                         從創會至今，長翔始終秉持「付出者收穫」的精神。我們不只是一個每週見面的商務團體，更是一群志同道合的事業夥伴，彼此支持、共同成長。

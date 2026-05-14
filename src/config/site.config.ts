@@ -16,13 +16,15 @@ export const siteConfig = {
     siteDomain: 'changsiang.tw',
 
     meeting: {
-        day: 'Wednesday',
-        dayZh: '週三',
+        day: 'Tuesday',
+        dayZh: '週二',
         startTime: '06:30',
         endTime: '08:30',
         timezone: 'Asia/Taipei',
         format: 'offline' as const,
         formatDescription: '實體例會，面對面深度交流',
+        /** 網站內文、Hero 等處顯示的例會時間地點（一句話） */
+        displayLine: '每週二 晶宴日光香頌',
     },
 
     location: {
@@ -33,8 +35,8 @@ export const siteConfig = {
         latitude: 25.0583,
         longitude: 121.5425,
         geoRegion: 'TW-TPE',
-        address: '台北市中山區民生東路三段8號B2',
-        venue: '晶宴會館（民生館）',
+        address: '10480 臺北市中山區民生東路三段8號1F',
+        venue: '晶宴日光香頌',
     },
 
     social: {

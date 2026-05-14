@@ -2,6 +2,7 @@ import React from 'react';
 import { ExternalLink, Mail, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { assetUrl } from '../../lib/assets';
+import { siteConfig } from '../../config/site.config';
 
 const Footer: React.FC = () => (
     <footer className="relative mt-auto overflow-hidden bg-white pt-16 pb-24 text-gray-700 md:pb-8">
@@ -15,10 +16,10 @@ const Footer: React.FC = () => (
                         <img src={assetUrl('/images/assets/logo/bni-logo-new.png')} alt="BNI" className="h-12 w-auto" />
                     </Link>
                     <p className="max-w-sm text-sm leading-relaxed text-gray-600">
-                        BNI 長翔名人堂白金分會 — 以熱情積極、付出者著稱的金質商務交流平台。每週三早晨於晶宴會館實體例會。
+                        BNI 長翔名人堂白金分會 — 以熱情積極、付出者著稱的金質商務交流平台。{siteConfig.meeting.displayLine}舉行實體例會。
                     </p>
                     <p className="flex items-center gap-1 text-xs text-gray-500">
-                        <MapPin size={12} /> 台北市中山區民生東路三段8號B2（晶宴會館）
+                        <MapPin size={12} /> {siteConfig.location.address}（{siteConfig.location.venue}）
                     </p>
                 </div>
 

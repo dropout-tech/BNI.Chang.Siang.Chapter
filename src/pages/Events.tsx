@@ -4,6 +4,7 @@ import { Calendar, Zap, Users, GraduationCap, PartyPopper } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SectionWrapper from '../components/common/SectionWrapper';
 import SEO from '../components/common/SEO';
+import { siteConfig } from '../config/site.config';
 
 const f = { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-80px" }, transition: { duration: 0.6 } };
 
@@ -16,7 +17,7 @@ const events = [
 
 const Events: React.FC = () => (
     <div className="overflow-hidden">
-        <SEO description="BNI 長翔名人堂白金分會活動紀錄 — Power Day、BOD、尾牙春酒等特殊日子，展現長翔有溫度的一面。" />
+        <SEO description={siteConfig.branchFullName} />
         <PageHero title={<>活動紀錄</>} subtitle="Power Day、BOD、尾牙春酒⋯⋯ 展現長翔有溫度的一面" />
 
         <SectionWrapper>

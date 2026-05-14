@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Mail, Phone } from 'lucide-react';
 import { useMembers } from '../../hooks/useMembers';
 import { assetUrl } from '../../lib/assets';
+import { siteConfig } from '../../config/site.config';
 import { LuxuryBackground, GlowingChevron } from '../common/PremiumDecorations';
 
 const Contact: React.FC = () => {
@@ -57,7 +58,7 @@ const Contact: React.FC = () => {
                     >
                         歡迎與 BNI 長翔名人堂白金分會聯繫。無論是業務合作、商會參訪申請，或想了解更多資訊，我們隨時為您服務。<br /><br />
                         <span className="font-bold text-[#CF2030]">歡迎和長翔三長其中一位聯繫，讓參訪 CTA 更明確。</span><br /><br />
-                        📍 例會地點：晶宴會館（民生館）<br />台北市中山區民生東路三段8號B2
+                        📍 例會地點：{siteConfig.location.venue}<br />{siteConfig.location.address}
                     </motion.p>
                 </div>
 

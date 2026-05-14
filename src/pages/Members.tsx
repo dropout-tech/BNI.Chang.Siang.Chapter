@@ -102,13 +102,13 @@ const Members: React.FC = () => {
         <div className="min-h-screen relative">
             <SEO
                 title="台灣商會會員 | BNI 長翔名人堂白金分會企業家名錄"
-                description="探索 BNI 長翔名人堂白金分會的優秀企業家與專業人士。我們涵蓋健康醫療、工程裝修、企業服務、消費生活、資產管理五大產業鏈，為台灣企業主媒合專業合作夥伴。"
+                description="探索 BNI 長翔名人堂白金分會"
                 keywords="台灣商會會員, BNI會員, 長翔會員, 企業家名錄, 台北商會, 商務媒合, 行業專家, 企業合作, 台灣企業家, 商會推薦"
                 breadcrumbs={[{ name: '會員介紹', path: '/members' }]}
                 structuredData={{
                     '@type': 'CollectionPage',
                     name: 'BNI 長翔名人堂白金分會台灣商會會員名錄',
-                    description: '台灣 BNI 長翔名人堂白金分會涵蓋五大產業鏈的優秀企業家與專業人士。',
+                    description: '台灣 BNI 長翔名人堂白金分會',
                     url: 'https://changsiang.tw/members',
                     isPartOf: { '@id': 'https://changsiang.tw/#website' },
                     inLanguage: 'zh-TW'

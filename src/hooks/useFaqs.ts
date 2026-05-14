@@ -17,7 +17,7 @@ export const DEFAULT_FAQS: FAQEntry[] = [
     },
     {
         question: '長翔分會的例會是怎麼進行的？',
-        answer: '長翔每週三早晨實體聚會，透過專業的會議流程、會員介紹、主題簡報與引薦報告，建立真實的人脈連結。',
+        answer: '長翔每週二於晶宴日光香頌實體聚會，透過專業的會議流程、會員介紹、主題簡報與引薦報告，建立真實的人脈連結。',
         sort_order: 3,
         is_active: true,
     },

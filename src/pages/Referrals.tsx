@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Quote } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SEO from '../components/common/SEO';
+import { siteConfig } from '../config/site.config';
 
 const Referrals: React.FC = () => {
     const { referrals, loading, error } = useReferrals();
@@ -33,13 +34,13 @@ const Referrals: React.FC = () => {
         <div className="min-h-screen relative overflow-hidden">
             <SEO
                 title="商會引薦成功案例 | BNI 台灣商務合作實績"
-                description="見證台灣 BNI 長翔名人堂白金分會的商務引薦實力。透過真實的引薦成功案例，展示台灣頂尖商會如何透過專業對接與互利合作，為企業主創造巨大的商業價值與商務合作機會。"
+                description="見證台灣 BNI 長翔名人堂白金分會"
                 keywords="商會引薦案例, BNI成功案例, 台灣商務合作, 商會合作實績, 引薦成功故事, 商務媒合案例, 台灣商會, BNI台灣"
                 breadcrumbs={[{ name: '引薦案例', path: '/referrals' }]}
                 structuredData={{
                     '@type': 'CollectionPage',
                     name: 'BNI 長翔名人堂白金分會商務引薦成功案例',
-                    description: '台灣 BNI 長翔名人堂白金分會商務引薦成功案例與合作實績。',
+                    description: '台灣 BNI 長翔名人堂白金分會',
                     url: 'https://changsiang.tw/referrals',
                     isPartOf: { '@id': 'https://changsiang.tw/#website' },
                     inLanguage: 'zh-TW'

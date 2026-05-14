@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useCountUp } from '../hooks/useCountUp';
 import PageHero from '../components/common/PageHero';
 import SEO from '../components/common/SEO';
+import { siteConfig } from '../config/site.config';
 
 const StatCard: React.FC<{ value: number, label: React.ReactNode, subtext?: string, isLarge?: boolean }> = ({ value, label, subtext, isLarge }) => {
     const { count, elementRef } = useCountUp(value, 2000);
@@ -27,7 +28,7 @@ const BNIPage: React.FC = () => {
         <div className="min-h-screen pt-0">
             <SEO
                 title="認識 BNI | 全球最大商會・台灣線上商務引薦系統"
-                description="BNI 是全球最大的商會暨商務引薦組織，遍及 76+ 國家、擁有 34 萬+ 會員。BNI 長翔名人堂白金分會 100% 支援線上與會，在台灣擁有 245 個分會、近萬名企業主會員。透過「付出者收穫 Givers Gain」核心價值，協助台灣企業主建立信任的商務合作關係。"
+                description={`BNI 是全球最大的商會暨商務引薦組織，遍及 76+ 國家、擁有 34 萬+ 會員。${siteConfig.branchFullName}`}
                 keywords="什麼是BNI, BNI商會, 台灣商會, 全球商會, 線上商會, 線上BNI, 商務引薦系統, 付出者收穫, Givers Gain, 台灣BNI, BNI台灣, 台灣商務社團, 商會組織, 企業家商會, BNI七大核心價值, 線上商務例會"
                 breadcrumbs={[{ name: '認識 BNI', path: '/bni' }]}
                 structuredData={{
@@ -232,7 +233,7 @@ const BNIPage: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <Link to="/members" className="group bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-gray-100 hover:border-[#CF2030]/50 transition-all">
                             <h3 className="text-lg font-bold text-[#CF2030] mb-2 group-hover:text-white transition-colors">認識商會會員</h3>
-                            <p className="text-gray-400 text-sm">探索 BNI 長翔名人堂白金分會 60+ 個產業的優秀台灣企業家</p>
+                            <p className="text-gray-400 text-sm">探索 BNI 長翔名人堂白金分會 40+ 個產業的優秀台灣企業家</p>
                         </Link>
                         <Link to="/referrals" className="group bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-gray-100 hover:border-[#CF2030]/50 transition-all">
                             <h3 className="text-lg font-bold text-[#CF2030] mb-2 group-hover:text-white transition-colors">引薦成功案例</h3>
