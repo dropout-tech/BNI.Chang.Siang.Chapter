@@ -10,9 +10,9 @@ const Contact: React.FC = () => {
     const { members } = useMembers();
 
     const roles = [
-        { title: '主席', name: '吳庭彰' },
         { title: '副主席', name: '汪哲宇' },
-        { title: '秘書財務', name: '劉書華' }
+        { title: '主席', name: '吳庭彰' },
+        { title: '秘書財務', name: '劉書華' },
     ];
 
     const leadership = roles.map(role => {

@@ -32,11 +32,11 @@ const values = [
 ];
 
 const basics = [
-    { n: '引薦', en: 'Referrals', desc: '主動為夥伴介紹商業機會。' },
-    { n: '邀請賓客', en: 'Visitors', desc: '邀請商業人脈來體驗例會。' },
-    { n: '一對一', en: '1-to-1', desc: '與夥伴深度對話，了解彼此需求。' },
-    { n: '教育訓練', en: 'Education', desc: '持續學習商務技巧與人脈經營。' },
-    { n: '出席', en: 'Attendance', desc: '穩定出席每週例會，展現承諾。' },
+    { n: '每週出席', en: 'Attendance', desc: '穩定出席每週例會，展現承諾。' },
+    { n: '培訓學習', en: 'Education', desc: '持續學習商務技巧與人脈經營。' },
+    { n: '商務拜訪', en: '1-to-1', desc: '與夥伴深度對話，了解彼此需求。' },
+    { n: '邀約來賓', en: 'Visitors', desc: '邀請商業人脈來體驗例會。' },
+    { n: '給予引薦', en: 'Referrals', desc: '主動為夥伴介紹商業機會。' },
 ];
 
 const AboutBNI: React.FC = () => (
@@ -85,7 +85,7 @@ const AboutBNI: React.FC = () => (
             </div>
         </SectionWrapper>
 
-        <SectionWrapper title="BNI 五大基本功" subtitle="每位會員的行動指南">
+        <SectionWrapper title="BNI 五大商務基礎" subtitle="每位會員的行動指南，更是自己公司運營的行動指南">
             <div className="max-w-3xl mx-auto space-y-4">
                 {basics.map((b, i) => (
                     <motion.div key={b.n} {...f} transition={{ ...f.transition, delay: i * 0.08 }}
