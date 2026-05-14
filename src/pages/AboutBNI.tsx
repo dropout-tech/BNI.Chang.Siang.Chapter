@@ -59,7 +59,7 @@ const AboutBNI: React.FC = () => (
                     </motion.div>
                 ))}
             </div>
-            <h3 className="text-2xl font-bold text-white text-center mb-8">BNI 台灣成績</h3>
+            <h3 className="text-2xl font-bold text-[#CF2030] text-center mb-8">BNI 台灣成績</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
                 {twStats.map((s, i) => (
                     <motion.div key={s.label} {...f} transition={{ ...f.transition, delay: i * 0.1 }} className="bg-white border border-gray-100 shadow-sm rounded-xl p-6 text-center">
@@ -86,14 +86,17 @@ const AboutBNI: React.FC = () => (
         </SectionWrapper>
 
         <SectionWrapper title="BNI 五大商務基礎" subtitle="每位會員的行動指南，更是自己公司運營的行動指南">
-            <div className="max-w-3xl mx-auto space-y-4">
+            <div className="mx-auto max-w-3xl space-y-3 rounded-2xl border border-[#CF2030]/12 bg-gradient-to-b from-[#FFF8F8] to-white p-4 shadow-[0_12px_40px_rgba(207,32,48,0.06)] md:p-6 md:space-y-4">
                 {basics.map((b, i) => (
                     <motion.div key={b.n} {...f} transition={{ ...f.transition, delay: i * 0.08 }}
-                        className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 flex items-center gap-4 hover:border-[#CF2030]/30 transition-all">
-                        <div className="w-10 h-10 rounded-full bg-[#CF2030] flex items-center justify-center text-white font-bold text-sm shrink-0">{i + 1}</div>
-                        <div>
-                            <h4 className="font-bold text-white">{b.n} <span className="text-[#CF2030]/60 text-sm font-normal">({b.en})</span></h4>
-                            <p className="text-gray-500 text-sm">{b.desc}</p>
+                        className="flex items-start gap-4 rounded-xl border border-gray-100/80 bg-white p-4 shadow-sm transition-all hover:border-[#CF2030]/35 hover:shadow-md md:items-center md:p-5">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#CF2030] text-sm font-black text-white shadow-[0_6px_16px_rgba(207,32,48,0.35)]">{i + 1}</div>
+                        <div className="min-w-0 flex-1">
+                            <h4 className="text-base font-bold leading-snug text-[#CF2030] md:text-lg">
+                                {b.n}{' '}
+                                <span className="text-sm font-semibold text-[#A51926]/90">({b.en})</span>
+                            </h4>
+                            <p className="mt-1 text-sm leading-relaxed text-[#991B1B] md:text-[15px]">{b.desc}</p>
                         </div>
                     </motion.div>
                 ))}
