@@ -23,6 +23,23 @@ function isRealMemberPhoto(photo: string | null | undefined): boolean {
     return true;
 }
 
+/** API 可能回傳 snake_case 或 camelCase；統一成單一欄位供列表與篩選使用 */
+function resolveMemberFrozenAt(member: Record<string, unknown>): string | null {
+    const raw = member.frozen_at ?? member.frozenAt;
+    if (raw == null) return null;
+    const s = String(raw).trim();
+    if (!s || s === 'null' || s === 'undefined') return null;
+    return s;
+}
+
+function isMemberFrozen(member: Record<string, unknown>): boolean {
+    return resolveMemberFrozenAt(member) != null;
+}
+
+function normalizeAdminMemberRow(member: any): any {
+    return { ...member, frozen_at: resolveMemberFrozenAt(member) };
+}
+
 const Admin: React.FC = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -187,15 +204,16 @@ const Admin: React.FC = () => {
                     }
                 });
             const membersData = (membersRes.data || []).map((member: any) => {
-                const score = latestScoreByMember.get(Number(member.id));
+                const base = normalizeAdminMemberRow(member);
+                const score = latestScoreByMember.get(Number(base.id));
                 return score
                     ? {
-                        ...member,
+                        ...base,
                         traffic_score: score.score,
                         traffic_level: score.level,
                         latest_traffic_month: score.month,
                     }
-                    : member;
+                    : base;
             });
             setMembers(membersData);
             setFaqs(faqsRes.data?.length ? faqsRes.data : DEFAULT_FAQS);
@@ -232,7 +250,7 @@ const Admin: React.FC = () => {
             const visitsCount = pageViewsRes.count || 0;
             const socialClicksCount = socialClicksRes.count || 0;
 
-            const activeMembers = membersData.filter((m: any) => !m.frozen_at);
+            const activeMembers = membersData.filter((m: any) => !isMemberFrozen(m));
             const industryCounts: { [key: string]: number } = {};
             let hasPhotoCount = 0;
             activeMembers.forEach((m: any) => {
@@ -330,7 +348,7 @@ const Admin: React.FC = () => {
     };
 
     const handleToggleFrozen = async (member: any) => {
-        const isFrozen = !!member.frozen_at;
+        const isFrozen = isMemberFrozen(member);
         const reason = isFrozen ? null : sanitizeText(prompt('請輸入冷凍原因（例如：離開分會、開信用狀）') || '', 120);
         if (!isFrozen && !reason) return;
 
@@ -431,12 +449,21 @@ const Admin: React.FC = () => {
         }
     };
 
+    const searchQuery = memberSearch.trim().toLowerCase();
+    const memberFieldMatches = (value: unknown) =>
+        String(value ?? '').toLowerCase().includes(searchQuery);
+
     const filteredMembers = members
-        .filter(m => showFrozenMembers ? !!m.frozen_at : !m.frozen_at)
+        .filter(m => showFrozenMembers ? isMemberFrozen(m) : !isMemberFrozen(m))
         .filter(m =>
-            m.name?.toLowerCase().includes(memberSearch.toLowerCase()) ||
-            m.company?.toLowerCase().includes(memberSearch.toLowerCase()) ||
-            m.industry?.toLowerCase().includes(memberSearch.toLowerCase())
+            !searchQuery ||
+            memberFieldMatches(m.name) ||
+            memberFieldMatches(m.company) ||
+            memberFieldMatches(m.Company) ||
+            memberFieldMatches(m.industry) ||
+            memberFieldMatches(m.email) ||
+            memberFieldMatches(m.phone) ||
+            memberFieldMatches(m.slug)
         )
         .sort((a, b) => sortMembersByTraffic
             ? (Number(b.traffic_score) || 0) - (Number(a.traffic_score) || 0)
