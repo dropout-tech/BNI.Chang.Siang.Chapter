@@ -75,7 +75,7 @@ const Home: React.FC = () => (
                         <div className="red-line mb-6" />
                         <p className="text-gray-600 leading-relaxed text-lg mb-6">
                             BNI 長翔名人堂白金分會，匯聚台北各產業精英。{siteConfig.meeting.displayLine}，面對面深度交流。
-                            2026年4月達成90%綠燈紀錄，正邁向全綠燈分會。
+                            2026年4月90%綠燈紀錄，正邁向全綠燈分會。
                         </p>
                         <Link to="/about-us" className="inline-flex items-center gap-1 text-[#CF2030] hover:text-[#A51926] font-semibold transition-colors group">
                             了解長翔的故事 <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -84,10 +84,9 @@ const Home: React.FC = () => (
                     <motion.div {...f} transition={{ ...f.transition, delay: 0.2 }} className="flex-1">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="card-elevated p-5 text-center">
-                                <div className="text-2xl font-black text-[#CF2030] mb-1 leading-snug">
-                                    2026年4月90%
+                                <div className="text-xl sm:text-2xl font-black text-[#CF2030] leading-snug">
+                                    90% 2026年4月綠燈紀錄
                                 </div>
-                                <div className="text-sm font-semibold text-[#222]">綠燈紀錄</div>
                             </div>
                             {[
                                 { num: '40+', label: '產業代表', sub: '多元領域' },
