@@ -365,6 +365,22 @@ const Admin: React.FC = () => {
         }
     };
 
+    const handleToggleAdmin = async (member: any, checked: boolean) => {
+        if (checked && !confirm(`確定要授予「${member.name}」管理員權限嗎？`)) return;
+        if (!checked && !confirm(`確定要移除「${member.name}」的管理員權限嗎？`)) return;
+        try {
+            const { error } = await insforge.database
+                .from('members')
+                .update({ is_admin: checked, updatedAt: new Date().toISOString() })
+                .eq('id', member.id);
+            if (error) throw error;
+            setMembers(prev => prev.map(item => item.id === member.id ? { ...item, is_admin: checked } : item));
+            alert(checked ? `已授予 ${member.name} 管理員權限` : `已移除 ${member.name} 的管理員權限`);
+        } catch (err: any) {
+            alert('管理員權限更新失敗: ' + err.message);
+        }
+    };
+
     const getTrafficLevel = (score: number) => {
         if (score >= 70) return 'green';
         if (score >= 40) return 'yellow';
@@ -410,7 +426,19 @@ const Admin: React.FC = () => {
             const { error } = await query;
             if (error) throw error;
             alert('Q&A 已儲存');
-            fetchDashboardData();
+
+            // 精準重載 FAQ，保留本地尚未存入 DB 的項目，避免全頁重載時覆蓋掉未儲存的預設項目
+            const { data: dbFaqs } = await insforge.database
+                .from('faqs')
+                .select('*')
+                .order('sort_order', { ascending: true });
+            setFaqs(prev => {
+                const dbData = dbFaqs || [];
+                const unsaved = prev.filter(f => !f.id);
+                return [...dbData, ...unsaved].sort(
+                    (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
+                );
+            });
         } catch (err: any) {
             alert('Q&A 儲存失敗: ' + err.message);
         }
@@ -432,7 +460,11 @@ const Admin: React.FC = () => {
     };
 
     const filteredMembers = members
-        .filter(m => showFrozenMembers ? !!m.frozen_at : !m.frozen_at)
+        .filter(m => {
+            // 有搜尋字時，同時顯示活躍與冷凍會員
+            if (memberSearch.trim()) return true;
+            return showFrozenMembers ? !!m.frozen_at : !m.frozen_at;
+        })
         .filter(m =>
             m.name?.toLowerCase().includes(memberSearch.toLowerCase()) ||
             m.company?.toLowerCase().includes(memberSearch.toLowerCase()) ||
@@ -603,11 +635,16 @@ const Admin: React.FC = () => {
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 <input
                                     type="text"
-                                    placeholder="搜尋會員..."
+                                    placeholder="搜尋會員（含冷凍）..."
                                     value={memberSearch}
                                     onChange={e => setMemberSearch(e.target.value)}
                                     className="w-full rounded-full border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#CF2030] focus:ring-2 focus:ring-red-100"
                                 />
+                                {memberSearch.trim() && (
+                                    <div className="absolute -bottom-5 left-3 text-[11px] text-[#CF2030] font-medium whitespace-nowrap">
+                                        搜尋全部（含冷凍）
+                                    </div>
+                                )}
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
                                 <button
@@ -652,6 +689,7 @@ const Admin: React.FC = () => {
                             onRefresh={fetchDashboardData}
                             onToggleFrozen={handleToggleFrozen}
                             onToggleGold={handleToggleGold}
+                            onToggleAdmin={handleToggleAdmin}
                             onSaveTrafficScore={handleSaveTrafficScore}
                         />
                     </div>

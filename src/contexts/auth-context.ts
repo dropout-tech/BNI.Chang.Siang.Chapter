@@ -10,14 +10,15 @@ export interface AuthContextValue {
     user: AuthUser | null;
     loading: boolean;
     signOut: () => Promise<void>;
-    refreshUser: () => Promise<void>;
+    /** 從伺服器同步使用者；成功取得已登入使用者時為 true */
+    refreshUser: () => Promise<boolean>;
 }
 
 export const AuthContext = createContext<AuthContextValue>({
     user: null,
     loading: true,
     signOut: async () => {},
-    refreshUser: async () => {},
+    refreshUser: async () => false,
 });
 
 export function useAuth(): AuthContextValue {

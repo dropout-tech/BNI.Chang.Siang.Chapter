@@ -25,7 +25,13 @@ export async function getLinkedMemberAccount(user: AuthLikeUser | null | undefin
     return data as LinkedMemberAccount;
 }
 
+/**
+ * 後台權限：與 DB `is_admin()` 對齊——
+ * 1) 白名單信箱（`adminAccess.ts`）可直接進後台，不需綁定 members；
+ * 2) 已綁定 members 且 `is_admin === true` 者。
+ */
 export function hasAdminAccess(user: AuthLikeUser | null | undefined, linkedMember: LinkedMemberAccount | null): boolean {
-    if (!user || !linkedMember) return false;
-    return isAdminEmail(user.email) || linkedMember.is_admin === true;
+    if (!user) return false;
+    if (isAdminEmail(user.email)) return true;
+    return linkedMember?.is_admin === true;
 }

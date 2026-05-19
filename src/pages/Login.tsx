@@ -14,12 +14,14 @@ const Login: React.FC = () => {
     const [searchParams] = useSearchParams();
     const forceClaim = searchParams.get('claim') === 'true';
     const { user, refreshUser } = useAuth();
-    const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'claim'>('login');
+    const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'claim' | 'reset_password'>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
+    /** InsForge 信件連結回跳的 reset token（otp） */
+    const [resetOtp, setResetOtp] = useState('');
 
     const [claimName, setClaimName] = useState('');
     const [claimIndustry, setClaimIndustry] = useState('');
@@ -59,6 +61,42 @@ const Login: React.FC = () => {
         return { valid: true, message: '密碼符合要求' };
     };
 
+    /** InsForge 信箱驗證／重設密碼／OAuth 回跳 query（見 docs.insforge.dev） */
+    useEffect(() => {
+        const sp = new URLSearchParams(window.location.search);
+        const status = sp.get('insforge_status');
+        const type = sp.get('insforge_type');
+        const token = sp.get('token');
+        const errMsg = sp.get('insforge_error');
+
+        if (!type && !status && !token) return;
+
+        if (type === 'verify_email') {
+            if (status === 'success') {
+                setMessage({ text: '信箱驗證成功，請使用您的 Email 與密碼登入。', type: 'success' });
+            } else if (status === 'error') {
+                setMessage({
+                    text: errMsg || '信箱驗證失敗，請稍後再試或使用重新寄送驗證信。',
+                    type: 'error',
+                });
+            }
+            window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash}`);
+            return;
+        }
+
+        if (type === 'reset_password') {
+            if (status === 'ready' && token) {
+                setResetOtp(token);
+                setMode('reset_password');
+                setMessage(null);
+            } else if (status === 'error') {
+                setMessage({ text: errMsg || '重設密碼連結無效或已過期，請重新申請「忘記密碼」。', type: 'error' });
+                setMode('login');
+            }
+            window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash}`);
+        }
+    }, []);
+
     useEffect(() => {
         // If logged in, check profile linkage
         if (user) {
@@ -76,8 +114,13 @@ const Login: React.FC = () => {
 
         try {
             const linkedMember = await getLinkedMemberAccount(user);
+            // 白名單管理員可能尚未綁定 members，仍應進後台
+            if (hasAdminAccess(user, linkedMember)) {
+                navigate('/admin');
+                return;
+            }
             if (linkedMember) {
-                navigate(hasAdminAccess(user, linkedMember) ? '/admin' : '/member-edit');
+                navigate('/member-edit');
                 return;
             }
 
@@ -140,12 +183,44 @@ const Login: React.FC = () => {
                     password,
                 });
                 if (error) throw error;
-                await refreshUser();
-                // useEffect will trigger checkProfile once user is set
+                let ok = await refreshUser();
+                if (!ok) {
+                    for (let attempt = 0; attempt < 10 && !ok; attempt++) {
+                        await new Promise((r) => setTimeout(r, 100 + attempt * 40));
+                        ok = await refreshUser();
+                    }
+                }
+                if (!ok) {
+                    throw new Error(
+                        '登入成功但無法建立連線工作階段，請重新整理頁面後再試，或改用「Google 登入」。',
+                    );
+                }
+                // useEffect 會依 user 觸發 checkProfile
+            } else if (mode === 'reset_password') {
+                const passwordValidation = await validatePassword(password);
+                if (!passwordValidation.valid) {
+                    throw new Error(passwordValidation.message);
+                }
+                if (password !== confirmPassword) {
+                    throw new Error('兩次輸入的密碼不一致');
+                }
+                if (!resetOtp.trim()) {
+                    throw new Error('重設連結無效或已過期，請回到「忘記密碼」重新寄送信件。');
+                }
+                const { error } = await insforge.auth.resetPassword({
+                    newPassword: password,
+                    otp: resetOtp.trim(),
+                });
+                if (error) throw error;
+                setResetOtp('');
+                setPassword('');
+                setConfirmPassword('');
+                setMessage({ text: '密碼已更新，請使用新密碼登入。', type: 'success' });
+                setMode('login');
             } else if (mode === 'forgot') {
                 const { error } = await insforge.auth.sendResetPasswordEmail({
                     email,
-                    redirectTo: getAuthRedirectUrl('member-edit?reset=true'),
+                    redirectTo: getAuthRedirectUrl('login'),
                 });
                 if (error) throw error;
                 setMessage({ text: '密碼重設信已發送，請檢查您的信箱。', type: 'success' });
@@ -249,12 +324,18 @@ const Login: React.FC = () => {
                     <h1 className="text-3xl font-black tracking-tight text-gray-950">
                         {mode === 'login' && '會員登入'}
                         {mode === 'signup' && '註冊新帳號'}
-                        {mode === 'forgot' && '重設密碼'}
+                        {mode === 'forgot' && '忘記密碼'}
+                        {mode === 'reset_password' && '設定新密碼'}
                         {mode === 'claim' && '認領您的會員檔案'}
                     </h1>
                     {(mode === 'login' || mode === 'signup') && (
                         <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
                             建議使用 Google 登入，登入後即可認領或管理您的會員資料。
+                        </p>
+                    )}
+                    {mode === 'reset_password' && (
+                        <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
+                            請設定強密碼（至少 8 字元，含英文與數字）。完成後請用新密碼登入。
                         </p>
                     )}
                 </div>
@@ -310,9 +391,10 @@ const Login: React.FC = () => {
                     </div>
                 )}
 
-                {/* LOGIN / SIGNUP / FORGOT FORM */}
-                {['login', 'signup', 'forgot'].includes(mode) && (
+                {/* LOGIN / SIGNUP / FORGOT / RESET PASSWORD FORM */}
+                {['login', 'signup', 'forgot', 'reset_password'].includes(mode) && (
                     <form onSubmit={handleAuth} className="space-y-4">
+                        {(mode === 'login' || mode === 'signup' || mode === 'forgot') && (
                         <div>
                             <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
                             <div className="relative">
@@ -327,11 +409,14 @@ const Login: React.FC = () => {
                                 />
                             </div>
                         </div>
+                        )}
 
-                        {mode !== 'forgot' && (
+                        {(mode === 'login' || mode === 'signup' || mode === 'reset_password') && (
                             <>
                                 <div>
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">密碼</label>
+                                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                                        {mode === 'reset_password' ? '新密碼' : '密碼'}
+                                    </label>
                                     <div className="relative">
                                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
                                         <input
@@ -341,15 +426,15 @@ const Login: React.FC = () => {
                                             className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
                                             placeholder="••••••••"
                                             required
-                                            minLength={6}
+                                            minLength={mode === 'login' ? 6 : 8}
                                         />
                                     </div>
-                                    {mode === 'signup' && (
+                                    {(mode === 'signup' || mode === 'reset_password') && (
                                         <p className="text-xs text-gray-500 mt-1">至少 8 個字元，需包含英文字母與數字</p>
                                     )}
                                 </div>
 
-                                {mode === 'signup' && (
+                                {(mode === 'signup' || mode === 'reset_password') && (
                                     <div>
                                         <label className="block text-gray-700 text-sm font-bold mb-2">確認密碼</label>
                                         <div className="relative">
@@ -376,7 +461,9 @@ const Login: React.FC = () => {
                         >
                             {loading ? '處理中...' :
                                 mode === 'login' ? '登入' :
-                                    mode === 'signup' ? '註冊' : '發送重設信'}
+                                    mode === 'signup' ? '註冊' :
+                                        mode === 'forgot' ? '發送重設信' :
+                                            '更新密碼'}
                         </button>
 
                         {(mode === 'login' || mode === 'signup') && (
@@ -428,6 +515,22 @@ const Login: React.FC = () => {
                                     想起密碼了？
                                     <button type="button" onClick={() => setMode('login')} className="text-[#CF2030] hover:underline ml-1">
                                         返回登入
+                                    </button>
+                                </p>
+                            )}
+                            {mode === 'reset_password' && (
+                                <p>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setResetOtp('');
+                                            setPassword('');
+                                            setConfirmPassword('');
+                                            setMode('login');
+                                        }}
+                                        className="text-[#CF2030] hover:underline"
+                                    >
+                                        取消並返回登入
                                     </button>
                                 </p>
                             )}

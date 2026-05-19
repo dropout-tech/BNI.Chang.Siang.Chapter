@@ -21,7 +21,7 @@ const About: React.FC = () => (
             <motion.div {...f} className="text-center mb-14">
                 <h2 className="text-3xl md:text-4xl font-black text-[#333] mb-3">關於 BNI 長翔</h2>
                 <div className="red-line mx-auto mb-4" />
-                <p className="text-gray-500 text-lg max-w-3xl mx-auto">以熱情積極、付出者著稱。2022年9月創下97%綠燈紀錄</p>
+                <p className="text-gray-500 text-lg max-w-3xl mx-auto">以熱情積極、付出者著稱。2026年4月90%綠燈紀錄</p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-6">

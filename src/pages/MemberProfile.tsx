@@ -102,85 +102,54 @@ const MemberProfile: React.FC = () => {
                         回到長翔夥伴
                     </Link>
 
-                    <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+                    <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
                         <motion.aside
                             initial={{ opacity: 0, y: 24 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="rounded-[36px] border border-red-100 bg-white p-8 text-center shadow-[0_30px_90px_rgba(207,32,48,0.12)]"
+                            className="space-y-6 rounded-[36px] border border-red-100 bg-white p-8 shadow-[0_30px_90px_rgba(207,32,48,0.12)]"
                         >
-                            <div className="mx-auto mb-6 h-44 w-44 rounded-full border-2 border-[#CF2030] bg-white p-2 shadow-[0_20px_54px_rgba(207,32,48,0.2)]">
-                                <img
-                                    src={photo}
-                                    alt={member.name}
-                                    className={`h-full w-full rounded-full ${isDefaultPhoto ? 'object-contain p-7' : 'object-cover'}`}
-                                    style={{ objectPosition: member.photoPosition || 'center 20%' }}
-                                    onError={(event) => { event.currentTarget.src = siteConfig.defaultPhoto; }}
-                                />
-                            </div>
-                            <div className="mb-4 inline-flex rounded-full border border-red-100 bg-red-50 px-4 py-1 text-xs font-black tracking-[0.18em] text-[#CF2030]">
-                                {member.category}
-                            </div>
-                            <h1 className="mb-3 text-4xl font-black tracking-tight text-gray-950">{member.name}</h1>
-                            {member.is_gold_badge && (
-                                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-yellow-200 bg-yellow-50 px-4 py-2 text-sm font-black text-yellow-700" title="金質獎章">
-                                    <Crown size={18} />
-                                    金質獎章
+                            <div className="text-center">
+                                <div className="mx-auto mb-6 h-44 w-44 rounded-full border-2 border-[#CF2030] bg-white p-2 shadow-[0_20px_54px_rgba(207,32,48,0.2)]">
+                                    <img
+                                        src={photo}
+                                        alt={member.name}
+                                        className={`h-full w-full rounded-full ${isDefaultPhoto ? 'object-contain p-7' : 'object-cover'}`}
+                                        style={{ objectPosition: member.photoPosition || 'center 20%' }}
+                                        onError={(event) => { event.currentTarget.src = siteConfig.defaultPhoto; }}
+                                    />
                                 </div>
-                            )}
-                            <p className="mb-6 text-lg font-bold text-[#CF2030]">{member.industry}</p>
-                            <p className="rounded-2xl bg-gradient-to-br from-red-50 to-white p-5 text-base font-semibold leading-relaxed text-gray-700">
-                                {member.shortIntro}
-                            </p>
-                        </motion.aside>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 24 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="space-y-6"
-                        >
-                            <div className="rounded-[32px] border border-red-100 bg-white p-7 shadow-[0_24px_70px_rgba(24,24,27,0.06)] md:p-9">
-                                <div className="mb-5 flex items-center gap-3">
-                                    <Sparkles className="text-[#CF2030]" size={24} />
-                                    <h2 className="text-2xl font-black text-gray-950">專業介紹</h2>
+                                <div className="mb-4 inline-flex rounded-full border border-red-100 bg-red-50 px-4 py-1 text-xs font-black tracking-[0.18em] text-[#CF2030]">
+                                    {member.category}
                                 </div>
-                                <p className="whitespace-pre-line text-base leading-8 text-gray-700">{intro}</p>
+                                <h1 className="mb-3 text-4xl font-black tracking-tight text-gray-950">{member.name}</h1>
+                                {member.is_gold_badge && (
+                                    <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-yellow-200 bg-yellow-50 px-4 py-2 text-sm font-black text-yellow-700" title="金質獎章">
+                                        <Crown size={18} />
+                                        金質獎章
+                                    </div>
+                                )}
+                                <p className="text-lg font-bold text-[#CF2030]">{member.industry}</p>
                             </div>
 
-                            <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr]">
-                                <div className="rounded-[28px] border border-red-100 bg-white p-6 shadow-[0_20px_60px_rgba(24,24,27,0.05)]">
-                                    <div className="mb-4 flex items-center gap-3">
-                                        <Target className="text-[#CF2030]" size={22} />
-                                        <h2 className="text-xl font-black text-gray-950">理想引薦對象</h2>
-                                    </div>
-                                    <div className="space-y-3">
-                                        {referralTargetLevels.map((target) => (
-                                            <div key={target.key} className="rounded-2xl border border-red-50 bg-gradient-to-br from-red-50/70 to-white p-4">
-                                                <div className="mb-2 text-sm font-black tracking-[0.12em] text-[#CF2030]">{target.label}</div>
-                                                <p className="whitespace-pre-line leading-7 text-gray-700">{target.description || target.fallback}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                            <p className="rounded-2xl bg-gradient-to-br from-red-50 to-white p-5 text-base font-semibold leading-relaxed text-gray-700">{member.shortIntro}</p>
 
-                                <div className="rounded-[28px] border border-red-100 bg-white p-6 shadow-[0_20px_60px_rgba(24,24,27,0.05)]">
-                                    <div className="mb-4 flex items-center gap-3">
-                                        <Briefcase className="text-[#CF2030]" size={22} />
-                                        <h2 className="text-xl font-black text-gray-950">服務項目</h2>
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {(member.services?.length ? member.services : [member.industry]).map((service) => (
-                                            <span key={service} className="rounded-full bg-red-50 px-3 py-1 text-sm font-bold text-[#CF2030]">
-                                                {service}
-                                            </span>
-                                        ))}
-                                    </div>
+                            <div className="rounded-[24px] border border-red-100 bg-white p-5 shadow-[0_16px_44px_rgba(24,24,27,0.04)]">
+                                <div className="mb-4 flex items-center gap-3">
+                                    <Briefcase className="text-[#CF2030]" size={20} />
+                                    <h2 className="text-lg font-black text-gray-950">服務項目</h2>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {(member.services?.length ? member.services : [member.industry]).map((service) => (
+                                        <span key={service} className="rounded-full bg-red-50 px-3 py-1 text-sm font-bold text-[#CF2030]">
+                                            {service}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
 
-                            <div className="rounded-[28px] border border-red-100 bg-white p-6 shadow-[0_20px_60px_rgba(24,24,27,0.05)]">
-                                <h2 className="mb-4 text-xl font-black text-gray-950">會員資訊</h2>
-                                <div className="grid gap-3 text-sm text-gray-700 md:grid-cols-2">
+                            <div className="rounded-[24px] border border-red-100 bg-white p-5 shadow-[0_16px_44px_rgba(24,24,27,0.04)]">
+                                <h2 className="mb-4 text-lg font-black text-gray-950">會員資訊</h2>
+                                <div className="space-y-3 text-sm text-gray-700">
                                     {member.company && (
                                         <div className="flex items-center gap-2">
                                             <Building size={16} className="text-[#CF2030]" />
@@ -205,6 +174,36 @@ const MemberProfile: React.FC = () => {
                                             {member.phone}
                                         </a>
                                     )}
+                                </div>
+                            </div>
+                        </motion.aside>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 24 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="space-y-6"
+                        >
+                            <div className="rounded-[32px] border border-red-100 bg-white p-7 shadow-[0_24px_70px_rgba(24,24,27,0.06)] md:p-9">
+                                <div className="mb-5 flex items-center gap-3">
+                                    <Sparkles className="text-[#CF2030]" size={24} />
+                                    <h2 className="text-2xl font-black text-gray-950">專業介紹</h2>
+                                </div>
+                                <p className="whitespace-pre-line text-base leading-8 text-gray-700">{intro}</p>
+                            </div>
+
+                            <div className="rounded-[28px] border border-red-100 bg-white p-6 shadow-[0_20px_60px_rgba(24,24,27,0.05)]">
+                                <div className="mb-4 flex items-center gap-3">
+                                    <Target className="text-[#CF2030]" size={22} />
+                                    <h2 className="text-xl font-black text-gray-950">引薦對象</h2>
+                                </div>
+                                <div className="grid gap-3 md:grid-cols-3">
+                                    {referralTargetLevels.map((target) => (
+                                        <div key={target.key} className="rounded-2xl border border-red-50 bg-gradient-to-br from-red-50/70 to-white p-4">
+                                            <div className="mb-2 text-sm font-black tracking-[0.12em] text-[#CF2030]">{target.label}</div>
+                                            <p className="whitespace-pre-line leading-7 text-gray-700">{target.description || target.fallback}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </motion.div>

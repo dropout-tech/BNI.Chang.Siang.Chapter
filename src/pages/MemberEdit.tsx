@@ -115,12 +115,17 @@ const MemberEdit: React.FC = () => {
         setLoading(true);
         try {
             const linkedMember = await getLinkedMemberAccount(user);
+            // 已登入但未認領會員：僅白名單可改走後台；其餘應去認領流程
             if (!linkedMember) {
-                navigate('/login');
+                if (hasAdminAccess(user, null)) {
+                    navigate('/admin');
+                } else {
+                    navigate('/login');
+                }
                 return;
             }
 
-            // Admin privileges only activate after the account is claimed.
+            // Admin privileges: whitelist email OR members.is_admin
             const adminAccess = hasAdminAccess(user, linkedMember);
             setIsAdmin(adminAccess);
 
@@ -622,6 +627,9 @@ const MemberEdit: React.FC = () => {
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-gray-700 mb-2 font-medium">簡短介紹 (列表頁顯示)</label>
+                                    <p className="mb-2 text-xs leading-5 text-gray-500">
+                                        建議 20-60 字，像吳庭彰主席目前的「團隊凝聚找Wudy 工作團隊變無敵」這種一句話定位最適合。
+                                    </p>
                                     <textarea
                                         value={shortIntro}
                                         onChange={(e) => updateField(setShortIntro, e.target.value)}
@@ -633,6 +641,9 @@ const MemberEdit: React.FC = () => {
                                 </div>
                                 <div>
                                     <label className="block text-gray-700 mb-2 font-medium">完整介紹 (詳細頁顯示)</label>
+                                    <p className="mb-2 text-xs leading-5 text-gray-500">
+                                        建議 300-900 字。主席目前約 800 字，適合拆成「我是誰、如何服務、服務項目、為什麼選我」幾段。
+                                    </p>
                                     <textarea
                                         value={fullIntro}
                                         onChange={(e) => updateField(setFullIntro, e.target.value)}
@@ -647,17 +658,18 @@ const MemberEdit: React.FC = () => {
                                     <div className="mb-4">
                                         <h3 className="text-base font-black text-[#CF2030]">三層引薦對象</h3>
                                         <p className="mt-1 text-xs leading-5 text-gray-500">
-                                            這三個欄位會顯示在會員公開頁，協助訪客更精準理解可以介紹哪些客戶給您。
+                                            這三個欄位會顯示在會員公開頁。每欄建議 50-160 字，讓會員能快速判斷可以介紹哪些客戶給您。
                                         </p>
                                     </div>
                                     <div className="space-y-4">
                                         {[
-                                            { key: 'good', label: '好的引薦', placeholder: '例如：正在尋找基礎服務、初步諮詢或可先建立合作關係的對象。' },
-                                            { key: 'ideal', label: '理想引薦', placeholder: '例如：最符合您服務定位、預算與決策條件的客戶類型。' },
-                                            { key: 'dream', label: '夢幻引薦', placeholder: '例如：最想被介紹認識的企業、職位、品牌或高價值合作對象。' },
+                                            { key: 'good', label: '好的引薦', hint: '建議 50-120 字，描述可以先聊聊、容易開始合作的對象。', placeholder: '例如：正在尋找基礎服務、初步諮詢或可先建立合作關係的對象。' },
+                                            { key: 'ideal', label: '理想引薦', hint: '建議 80-160 字，描述最符合您服務定位、預算與決策條件的客戶。', placeholder: '例如：最符合您服務定位、預算與決策條件的客戶類型。' },
+                                            { key: 'dream', label: '夢幻引薦', hint: '建議 50-120 字，描述最想被介紹認識的企業、職位、品牌或高價值合作對象。', placeholder: '例如：最想被介紹認識的企業、職位、品牌或高價值合作對象。' },
                                         ].map((item) => (
                                             <div key={item.key}>
                                                 <label className="block text-gray-700 mb-2 font-medium">{item.label}</label>
+                                                <p className="mb-2 text-xs leading-5 text-gray-500">{item.hint}</p>
                                                 <textarea
                                                     value={referralTargets[item.key as keyof ReferralTargetsForm]}
                                                     onChange={(e) => {

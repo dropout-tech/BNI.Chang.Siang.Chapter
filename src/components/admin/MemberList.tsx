@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Crown, Edit, RotateCcw, Save, Snowflake, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Crown, Edit, RotateCcw, Save, Shield, Snowflake, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { insforge, isBackendConfigured } from '../../lib/insforge';
 
@@ -12,6 +12,7 @@ interface Member {
     title?: string;
     photo?: string;
     is_gold_badge?: boolean;
+    is_admin?: boolean;
     frozen_at?: string | null;
     frozen_reason?: string | null;
     traffic_score?: number | null;
@@ -28,6 +29,7 @@ interface Props {
     onRefresh: () => void;
     onToggleFrozen?: (member: Member) => void;
     onToggleGold?: (member: Member, checked: boolean) => void;
+    onToggleAdmin?: (member: Member, checked: boolean) => void;
     onSaveTrafficScore?: (member: Member, score: number) => void;
 }
 
@@ -45,7 +47,7 @@ const levelClassName: Record<'green' | 'yellow' | 'red', string> = {
     red: 'bg-red-100 text-red-700 border-red-200',
 };
 
-const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onToggleGold, onSaveTrafficScore }) => {
+const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onToggleGold, onToggleAdmin, onSaveTrafficScore }) => {
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [scoreDrafts, setScoreDrafts] = useState<Record<string, number>>({});
@@ -89,7 +91,14 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                 {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
                             </div>
                             <div className="min-w-0 flex-1">
-                                <div className="font-bold text-gray-950 truncate">{member.name}</div>
+                                <div className="font-bold text-gray-950 truncate flex items-center gap-2">
+                                    {member.name}
+                                    {member.frozen_at && (
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-500 shrink-0">
+                                            <Snowflake size={10} /> 冷凍
+                                        </span>
+                                    )}
+                                </div>
                                 <div className="text-sm text-[#CF2030] truncate">{member.industry}</div>
                                 <div className="text-xs text-gray-500 truncate">{member.company} {member.position || member.title ? `· ${member.position || member.title}` : ''}</div>
                             </div>
@@ -103,6 +112,14 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                     onChange={(event) => onToggleGold?.(member, event.target.checked)}
                                 />
                                 金質獎章
+                            </label>
+                            <label className={`flex items-center gap-2 rounded-lg px-3 py-2 ${member.is_admin ? 'bg-red-50 text-[#CF2030] font-bold' : 'bg-white text-gray-600'}`}>
+                                <input
+                                    type="checkbox"
+                                    checked={member.is_admin === true}
+                                    onChange={(event) => onToggleAdmin?.(member, event.target.checked)}
+                                />
+                                <Shield size={12} /> 管理員
                             </label>
                             <div className={`rounded-lg border px-3 py-2 text-center font-bold ${levelClassName[member.traffic_level || getTrafficLevel(scoreDrafts[member.id] ?? 0)]}`}>
                                 紅綠燈 {scoreDrafts[member.id] ?? 0}
@@ -154,6 +171,7 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                             <th className="p-4">產業/公司</th>
                             <th className="p-4">職稱</th>
                             <th className="p-4">金質</th>
+                            <th className="p-4">管理員</th>
                             <th className="p-4">紅綠燈</th>
                             <th className="p-4">認領</th>
                             <th className="p-4 text-right">操作</th>
@@ -166,7 +184,14 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                     <div className="w-10 h-10 rounded-full overflow-hidden bg-red-50 shrink-0">
                                         {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
                                     </div>
-                                    <span className="font-medium text-gray-950">{member.name}</span>
+                                    <div>
+                                        <span className="font-medium text-gray-950">{member.name}</span>
+                                        {member.frozen_at && (
+                                            <div className="inline-flex items-center gap-1 ml-2 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-500">
+                                                <Snowflake size={10} /> 冷凍
+                                            </div>
+                                        )}
+                                    </div>
                                 </td>
                                 <td className="p-4 text-gray-600">
                                     <div className="text-gray-950 text-sm">{member.industry}</div>
@@ -184,6 +209,17 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                             className="h-4 w-4 accent-[#CF2030]"
                                         />
                                         {member.is_gold_badge && <Crown size={16} className="text-yellow-500" />}
+                                    </label>
+                                </td>
+                                <td className="p-4">
+                                    <label className={`inline-flex items-center gap-2 text-sm rounded-full px-2 py-1 ${member.is_admin ? 'bg-red-50 text-[#CF2030] font-bold' : 'text-gray-500'}`}>
+                                        <input
+                                            type="checkbox"
+                                            checked={member.is_admin === true}
+                                            onChange={(event) => onToggleAdmin?.(member, event.target.checked)}
+                                            className="h-4 w-4 accent-[#CF2030]"
+                                        />
+                                        <Shield size={14} />
                                     </label>
                                 </td>
                                 <td className="p-4">
