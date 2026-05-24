@@ -14,6 +14,7 @@ import { siteConfig } from '../config/site.config';
 import { sanitizeText } from '../lib/sanitize';
 import { DEFAULT_FAQS } from '../hooks/useFaqs';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
+import { isBypassClaimAdminEmail, SYSTEM_SUPPORT_TEAM } from '../lib/adminAccess';
 import type { AuditLog, FAQEntry } from '../types';
 
 function isRealMemberPhoto(photo: string | null | undefined): boolean {
@@ -79,6 +80,10 @@ const Admin: React.FC = () => {
         }
 
         try {
+            if (isBypassClaimAdminEmail(user.email)) {
+                return;
+            }
+
             const linkedMember = await getLinkedMemberAccount(user);
             if (!hasAdminAccess(user, linkedMember)) {
                 if (!linkedMember) {
@@ -207,9 +212,7 @@ const Admin: React.FC = () => {
             setReferrals(refData);
 
             // Derive Recent Updates (Avoid extra API call)
-            const systemNames = ['呂學承', '彭顯智', '潘芷盈'];
             const sortedByUpdate = [...membersData]
-                .filter(m => !systemNames.includes(m.name))
                 .sort((a, b) => {
                     const dateA = new Date(a.updatedAt || a.updated_at || 0).getTime();
                     const dateB = new Date(b.updatedAt || b.updated_at || 0).getTime();
@@ -574,14 +577,14 @@ const Admin: React.FC = () => {
                                 <Shield size={20} className="text-[#CF2030]" /> 系統維運團隊
                             </h3>
                             <div className="space-y-4 flex-grow">
-                                {['呂學承', '彭顯智', '潘芷盈'].map(name => (
+                                {SYSTEM_SUPPORT_TEAM.map(({ name, role }) => (
                                     <div key={name} className="flex items-center gap-3 p-3 bg-red-50/50 rounded-xl border border-red-100 hover:border-[#CF2030]/30 transition-colors">
                                         <div className="w-10 h-10 rounded-full bg-[#CF2030]/20 flex items-center justify-center text-[#CF2030] text-sm font-bold border border-[#CF2030]/30">
                                             {name[0]}
                                         </div>
                                         <div>
                                             <div className="text-sm font-bold text-gray-950">{name}</div>
-                                            <div className="text-[10px] text-[#CF2030]/70 uppercase tracking-widest font-medium">系統管理員</div>
+                                            <div className="text-[10px] text-[#CF2030]/70 uppercase tracking-widest font-medium">{role}</div>
                                         </div>
                                     </div>
                                 ))}

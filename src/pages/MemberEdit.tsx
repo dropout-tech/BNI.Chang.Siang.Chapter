@@ -11,6 +11,7 @@ import SEO from '../components/common/SEO';
 import { sanitizeText, sanitizeUrl } from '../lib/sanitize';
 import { siteConfig } from '../config/site.config';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
+import { isBypassClaimAdminEmail } from '../lib/adminAccess';
 
 const CATEGORIES = [...siteConfig.industries];
 
@@ -81,27 +82,33 @@ const MemberEdit: React.FC = () => {
         if (!user || !isBackendConfigured) return;
         setLoading(true);
         try {
+            const searchParams = new URLSearchParams(window.location.search);
+            const targetId = searchParams.get('id');
             const linkedMember = await getLinkedMemberAccount(user);
-            if (!linkedMember) {
+            const adminAccess = hasAdminAccess(user, linkedMember);
+            setIsAdmin(adminAccess);
+
+            if (!linkedMember && !isBypassClaimAdminEmail(user.email)) {
                 navigate('/login');
                 return;
             }
 
-            // Admin privileges only activate after the account is claimed.
-            const adminAccess = hasAdminAccess(user, linkedMember);
-            setIsAdmin(adminAccess);
-
-            const searchParams = new URLSearchParams(window.location.search);
-            const targetId = searchParams.get('id');
+            if (!linkedMember && isBypassClaimAdminEmail(user.email) && !targetId) {
+                navigate('/admin');
+                return;
+            }
 
             let query = insforge.database.from('members').select('*');
 
             if (targetId && adminAccess) {
                 // Admin editing another member by ID
                 query = query.eq('id', targetId);
-            } else {
+            } else if (linkedMember) {
                 // Normal user editing self
                 query = query.eq('user_id', user.id);
+            } else {
+                navigate('/admin');
+                return;
             }
 
             const { data, error } = await query.single();

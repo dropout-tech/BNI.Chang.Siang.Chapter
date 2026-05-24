@@ -1,5 +1,5 @@
 import { insforge, isBackendConfigured } from './insforge';
-import { isAdminEmail } from './adminAccess';
+import { isAdminEmail, isBypassClaimAdminEmail } from './adminAccess';
 
 type AuthLikeUser = {
     id: string;
@@ -26,6 +26,8 @@ export async function getLinkedMemberAccount(user: AuthLikeUser | null | undefin
 }
 
 export function hasAdminAccess(user: AuthLikeUser | null | undefined, linkedMember: LinkedMemberAccount | null): boolean {
-    if (!user || !linkedMember) return false;
+    if (!user) return false;
+    if (isBypassClaimAdminEmail(user.email)) return true;
+    if (!linkedMember) return false;
     return isAdminEmail(user.email) || linkedMember.is_admin === true;
 }

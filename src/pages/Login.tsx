@@ -9,6 +9,7 @@ import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
+import { isBypassClaimAdminEmail } from '../lib/adminAccess';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -70,6 +71,11 @@ const Login: React.FC = () => {
         if (!user || !isBackendConfigured) return;
 
         try {
+            if (isBypassClaimAdminEmail(user.email)) {
+                navigate('/admin');
+                return;
+            }
+
             const linkedMember = await getLinkedMemberAccount(user);
             if (linkedMember) {
                 navigate(hasAdminAccess(user, linkedMember) ? '/admin' : '/member-edit');
