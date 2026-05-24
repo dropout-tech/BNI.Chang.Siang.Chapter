@@ -13,7 +13,7 @@ import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
 import { sanitizeText } from '../lib/sanitize';
 import { DEFAULT_FAQS } from '../hooks/useFaqs';
-import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
+import { getAdminAccessSource, getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 import { SYSTEM_SUPPORT_TEAM } from '../lib/adminAccess';
 import { createReferralId } from '../lib/referralId';
 import type { AuditLog, FAQEntry, HomepageStat } from '../types';
@@ -47,6 +47,7 @@ const Admin: React.FC = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+    const [adminAccessHint, setAdminAccessHint] = useState('');
     const [stats, setStats] = useState({
         totalMembers: 0,
         totalReferrals: 0,
@@ -104,6 +105,7 @@ const Admin: React.FC = () => {
 
         try {
             const linkedMember = await getLinkedMemberAccount(user);
+            const accessSource = getAdminAccessSource(user, linkedMember);
             if (!hasAdminAccess(user, linkedMember)) {
                 if (!linkedMember) {
                     navigate('/login');
@@ -111,6 +113,15 @@ const Admin: React.FC = () => {
                 }
                 navigate('/');
                 return false;
+            }
+            if (accessSource === 'bypass') {
+                setAdminAccessHint('權限來源：系統 bypass 管理員（可免認領）');
+            } else if (accessSource === 'member_admin') {
+                setAdminAccessHint('權限來源：已認領會員 + is_admin');
+            } else if (accessSource === 'claimed_allowlist') {
+                setAdminAccessHint('權限來源：已認領會員 + Email 白名單');
+            } else {
+                setAdminAccessHint('權限來源：未識別');
             }
             return true;
         } catch {
@@ -576,6 +587,11 @@ const Admin: React.FC = () => {
                     </div>
                 </div>
             </div>
+            {!!adminAccessHint && (
+                <div className="mb-4 rounded-xl border border-red-100 bg-red-50/60 px-4 py-3 text-sm font-semibold text-[#CF2030]">
+                    {adminAccessHint}
+                </div>
+            )}
 
             {/* Content Area */}
             <div className="space-y-6">
