@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/auth-context';
 import { BriefcaseBusiness, Lock, Mail, AlertCircle, UserRound } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
+import { isBypassClaimAdminEmail } from '../lib/adminAccess';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -113,8 +114,12 @@ const Login: React.FC = () => {
         }
 
         try {
+            if (isBypassClaimAdminEmail(user.email)) {
+                navigate('/admin');
+                return;
+            }
+
             const linkedMember = await getLinkedMemberAccount(user);
-            // 白名單管理員可能尚未綁定 members，仍應進後台
             if (hasAdminAccess(user, linkedMember)) {
                 navigate('/admin');
                 return;

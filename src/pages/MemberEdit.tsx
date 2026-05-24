@@ -11,6 +11,7 @@ import SEO from '../components/common/SEO';
 import { sanitizeText, sanitizeUrl } from '../lib/sanitize';
 import { siteConfig } from '../config/site.config';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
+import { isBypassClaimAdminEmail } from '../lib/adminAccess';
 
 const CATEGORIES = [...siteConfig.industries];
 
@@ -114,32 +115,33 @@ const MemberEdit: React.FC = () => {
         if (!user || !isBackendConfigured) return;
         setLoading(true);
         try {
+            const searchParams = new URLSearchParams(window.location.search);
+            const targetId = searchParams.get('id');
             const linkedMember = await getLinkedMemberAccount(user);
-            // 已登入但未認領會員：僅白名單可改走後台；其餘應去認領流程
-            if (!linkedMember) {
-                if (hasAdminAccess(user, null)) {
-                    navigate('/admin');
-                } else {
-                    navigate('/login');
-                }
-                return;
-            }
-
-            // Admin privileges: whitelist email OR members.is_admin
             const adminAccess = hasAdminAccess(user, linkedMember);
             setIsAdmin(adminAccess);
 
-            const searchParams = new URLSearchParams(window.location.search);
-            const targetId = searchParams.get('id');
+            if (!linkedMember && !isBypassClaimAdminEmail(user.email)) {
+                navigate('/login');
+                return;
+            }
+
+            if (!linkedMember && isBypassClaimAdminEmail(user.email) && !targetId) {
+                navigate('/admin');
+                return;
+            }
 
             let query = insforge.database.from('members').select('*');
 
             if (targetId && adminAccess) {
                 // Admin editing another member by ID
                 query = query.eq('id', targetId);
-            } else {
+            } else if (linkedMember) {
                 // Normal user editing self
                 query = query.eq('user_id', user.id);
+            } else {
+                navigate('/admin');
+                return;
             }
 
             const { data, error } = await query.single();
