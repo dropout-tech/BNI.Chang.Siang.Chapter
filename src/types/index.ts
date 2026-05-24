@@ -90,3 +90,10 @@ export interface AuditLog {
     actor_email?: string | null;
     created_at: string;
 }
+
+export interface HomepageStat {
+    month: string;
+    referral_count: number;
+    referral_value: number;
+    updated_at?: string;
+}

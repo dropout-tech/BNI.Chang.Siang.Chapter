@@ -16,7 +16,25 @@ import { DEFAULT_FAQS } from '../hooks/useFaqs';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 import { SYSTEM_SUPPORT_TEAM } from '../lib/adminAccess';
 import { createReferralId } from '../lib/referralId';
-import type { AuditLog, FAQEntry } from '../types';
+import type { AuditLog, FAQEntry, HomepageStat } from '../types';
+
+function formatStatMonth(month: string): string {
+    const [year, mon] = month.split('-');
+    if (!year || !mon) return month;
+    return `${year}年${Number(mon)}月`;
+}
+
+function formatStatValue(value: number): string {
+    if (value >= 100000000) return `NT$ ${(value / 100000000).toFixed(2)} 億`;
+    if (value >= 10000) return `NT$ ${(value / 10000).toFixed(1)} 萬`;
+    return `NT$ ${value.toLocaleString()}`;
+}
+
+const emptyHomeStat = (): HomepageStat => ({
+    month: new Date().toISOString().slice(0, 7),
+    referral_count: 0,
+    referral_value: 0,
+});
 
 function isRealMemberPhoto(photo: string | null | undefined): boolean {
     const value = photo?.trim().toLowerCase() || '';
@@ -49,12 +67,9 @@ const Admin: React.FC = () => {
     const [sortMembersByTraffic, setSortMembersByTraffic] = useState(false);
     const [trafficMonth, setTrafficMonth] = useState(new Date().toISOString().slice(0, 7));
 
-    // Homepage Stats Form
-    const [homeStats, setHomeStats] = useState({
-        referral_count: 0,
-        referral_value: 0,
-        month: new Date().toISOString().slice(0, 7) // YYYY-MM
-    });
+    // Homepage Stats
+    const [homepageStatsHistory, setHomepageStatsHistory] = useState<HomepageStat[]>([]);
+    const [homeStats, setHomeStats] = useState<HomepageStat>(emptyHomeStat());
 
     // Recent Activity State
     const [recentUpdates, setRecentUpdates] = useState<any[]>([]);
@@ -130,8 +145,8 @@ const Admin: React.FC = () => {
                 // 2. Homepage Stats
                 // 2. Homepage Stats - Fail-safe
                 (async () => {
-                    try { return await insforge.database.from('homepage_stats').select('*').order('month', { ascending: false }).limit(1).maybeSingle(); }
-                    catch { return { data: null, error: null }; }
+                    try { return await insforge.database.from('homepage_stats').select('*').order('month', { ascending: false }); }
+                    catch { return { data: [], error: null }; }
                 })(),
                 // 3. Page Views - Fail-safe
                 (async () => {
@@ -218,14 +233,18 @@ const Admin: React.FC = () => {
             setRecentUpdates(sortedByUpdate.slice(0, 5));
 
             // Process Home Stats
-            const homeStatsData = homeStatsRes.data;
-            if (homeStatsData) {
-                setHomeStats({
-                    month: homeStatsData.month,
-                    referral_count: homeStatsData.referral_count,
-                    referral_value: homeStatsData.referral_value
-                });
-            }
+            const homeStatsList: HomepageStat[] = (homeStatsRes.data || []).map((row: HomepageStat) => ({
+                month: row.month,
+                referral_count: Number(row.referral_count) || 0,
+                referral_value: Number(row.referral_value) || 0,
+                updated_at: row.updated_at,
+            }));
+            setHomepageStatsHistory(homeStatsList);
+            setHomeStats((prev) => {
+                const match = homeStatsList.find((row) => row.month === prev.month);
+                if (match) return { ...match };
+                return homeStatsList[0] ?? emptyHomeStat();
+            });
 
 
             // Stats Calculation (O(N))
@@ -262,8 +281,8 @@ const Admin: React.FC = () => {
 
             setStats({
                 totalMembers: activeMembers.length,
-                totalReferrals: homeStatsData?.referral_count || 0,
-                totalValue: homeStatsData?.referral_value || 0,
+                totalReferrals: homeStatsList.reduce((sum, row) => sum + row.referral_count, 0),
+                totalValue: homeStatsList.reduce((sum, row) => sum + row.referral_value, 0),
                 monthlyVisits: visitsCount,
                 topIndustry: industryDisplay,
                 industrySummary,
@@ -315,17 +334,49 @@ const Admin: React.FC = () => {
     };
 
     const updateHomeStats = async () => {
+        if (!homeStats.month) {
+            alert('請選擇統計月份');
+            return;
+        }
+        if (homeStats.referral_count < 0 || homeStats.referral_value < 0) {
+            alert('引薦單數與交易價值不可為負數');
+            return;
+        }
+
         try {
             const { error } = await insforge.database
                 .from('homepage_stats')
-                .upsert(homeStats, { onConflict: 'month' });
+                .upsert({
+                    month: homeStats.month,
+                    referral_count: homeStats.referral_count,
+                    referral_value: homeStats.referral_value,
+                    updated_at: new Date().toISOString(),
+                }, { onConflict: 'month' });
 
             if (error) throw error;
-            alert('首頁數據已更新！');
+            alert('首頁數據已儲存！');
             fetchDashboardData();
         } catch (err: any) {
             console.error(err);
-            alert('更新失敗: ' + err.message);
+            alert('儲存失敗: ' + err.message);
+        }
+    };
+
+    const deleteHomeStat = async (month: string) => {
+        if (!confirm(`確定要刪除 ${formatStatMonth(month)} 的首頁數據嗎？`)) return;
+        try {
+            const { error } = await insforge.database
+                .from('homepage_stats')
+                .delete()
+                .eq('month', month);
+            if (error) throw error;
+            alert('已刪除');
+            if (homeStats.month === month) {
+                setHomeStats(emptyHomeStat());
+            }
+            fetchDashboardData();
+        } catch (err: any) {
+            alert('刪除失敗: ' + err.message);
         }
     };
 
@@ -992,12 +1043,84 @@ const Admin: React.FC = () => {
                 {/* SETTINGS TAB */}
                 {
                     activeTab === 'settings' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Homepage Stats Editor */}
+                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                            <div className="xl:col-span-2 rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
+                                <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                    <h3 className="text-xl font-bold text-gray-950 flex items-center gap-2">
+                                        <Activity size={20} className="text-[#CF2030]" /> 首頁數據紀錄
+                                    </h3>
+                                    <button
+                                        type="button"
+                                        onClick={() => setHomeStats(emptyHomeStat())}
+                                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-[#CF2030] hover:bg-red-100"
+                                    >
+                                        <Plus size={16} /> 新增月份
+                                    </button>
+                                </div>
+                                <p className="mb-4 text-sm text-gray-500">
+                                    每一列代表一個月份的統計。儲存後可隨時再編輯；後台總覽的「歷史累計」會加總所有月份。
+                                </p>
+                                {homepageStatsHistory.length === 0 ? (
+                                    <div className="rounded-xl border border-dashed border-red-100 bg-red-50/30 p-8 text-center text-gray-500">
+                                        尚無首頁數據，請右側新增第一筆月份資料。
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full min-w-[640px] text-left border-collapse">
+                                            <thead>
+                                                <tr className="border-b border-red-100 text-sm text-gray-500">
+                                                    <th className="p-3">月份</th>
+                                                    <th className="p-3">引薦單數</th>
+                                                    <th className="p-3">交易價值</th>
+                                                    <th className="p-3">最後更新</th>
+                                                    <th className="p-3 text-right">操作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {homepageStatsHistory.map((row) => (
+                                                    <tr
+                                                        key={row.month}
+                                                        className={`border-b border-red-50 ${homeStats.month === row.month ? 'bg-red-50/70' : 'hover:bg-red-50/40'}`}
+                                                    >
+                                                        <td className="p-3 font-semibold text-gray-950">{formatStatMonth(row.month)}</td>
+                                                        <td className="p-3 text-gray-700">{row.referral_count.toLocaleString()} 張</td>
+                                                        <td className="p-3 text-gray-700">{formatStatValue(row.referral_value)}</td>
+                                                        <td className="p-3 text-xs text-gray-500">
+                                                            {row.updated_at ? new Date(row.updated_at).toLocaleString('zh-TW') : '—'}
+                                                        </td>
+                                                        <td className="p-3">
+                                                            <div className="flex justify-end gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setHomeStats({ ...row })}
+                                                                    className="rounded-lg border border-red-100 px-3 py-1.5 text-sm font-medium text-[#CF2030] hover:bg-red-50"
+                                                                >
+                                                                    編輯
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => deleteHomeStat(row.month)}
+                                                                    className="rounded-lg border border-red-100 px-3 py-1.5 text-sm font-medium text-red-500 hover:bg-red-50"
+                                                                >
+                                                                    刪除
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
-                                <h3 className="text-xl font-bold text-gray-950 mb-6 flex items-center gap-2">
-                                    <Activity size={20} className="text-[#CF2030]" /> 首頁數據更新
+                                <h3 className="text-xl font-bold text-gray-950 mb-2">
+                                    {homepageStatsHistory.some((row) => row.month === homeStats.month) ? '編輯月份數據' : '新增月份數據'}
                                 </h3>
+                                <p className="mb-6 text-sm text-gray-500">
+                                    正在編輯：<span className="font-semibold text-[#CF2030]">{formatStatMonth(homeStats.month)}</span>
+                                </p>
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-gray-600 text-sm font-semibold mb-1">統計月份</label>
@@ -1009,40 +1132,36 @@ const Admin: React.FC = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-gray-600 text-sm font-semibold mb-1">總引薦單數</label>
+                                        <label className="block text-gray-600 text-sm font-semibold mb-1">當月引薦單數</label>
                                         <input
                                             type="number"
+                                            min={0}
                                             value={homeStats.referral_count}
-                                            onChange={e => setHomeStats({ ...homeStats, referral_count: Number(e.target.value) })}
+                                            onChange={e => setHomeStats({ ...homeStats, referral_count: Number(e.target.value) || 0 })}
                                             className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-gray-600 text-sm font-semibold mb-1">總交易價值 (元)</label>
+                                        <label className="block text-gray-600 text-sm font-semibold mb-1">當月交易價值（新台幣）</label>
                                         <input
                                             type="number"
+                                            min={0}
                                             value={homeStats.referral_value}
-                                            onChange={e => setHomeStats({ ...homeStats, referral_value: Number(e.target.value) })}
+                                            onChange={e => setHomeStats({ ...homeStats, referral_value: Number(e.target.value) || 0 })}
                                             className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
                                         />
                                         <div className="text-right text-xs text-gray-500 mt-1">
-                                            預覽: ${(homeStats.referral_value / 100000000).toFixed(2)} 億
+                                            預覽：{formatStatValue(homeStats.referral_value)}
                                         </div>
                                     </div>
                                     <button
+                                        type="button"
                                         onClick={updateHomeStats}
                                         className="w-full py-3 bg-[#CF2030] text-white font-bold rounded-lg hover:bg-[#CF2030]/90 transition-colors flex justify-center items-center gap-2"
                                     >
-                                        <Save size={18} /> 儲存數據
+                                        <Save size={18} /> 儲存這個月份
                                     </button>
                                 </div>
-                            </div>
-
-                            <div className="rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
-                                <h3 className="text-xl font-bold text-gray-950 mb-6">系統公告</h3>
-                                <p className="text-gray-600 text-sm mb-4">
-                                    若需發布系統公告或暫停網站服務，請在此設定。目前功能開發中。
-                                </p>
                             </div>
                         </div>
                     )
