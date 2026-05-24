@@ -181,6 +181,20 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION public.ensure_referral_id()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.id IS NULL OR trim(NEW.id) = '' THEN
+    NEW.id := 'ref-' || replace(gen_random_uuid()::text, '-', '');
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION public.ensure_member_slug()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -263,6 +277,12 @@ BEGIN
   RETURN COALESCE(NEW, OLD);
 END;
 $$;
+
+DROP TRIGGER IF EXISTS referrals_ensure_id ON public.referrals;
+CREATE TRIGGER referrals_ensure_id
+  BEFORE INSERT ON public.referrals
+  FOR EACH ROW
+  EXECUTE FUNCTION public.ensure_referral_id();
 
 DROP TRIGGER IF EXISTS members_ensure_slug ON public.members;
 CREATE TRIGGER members_ensure_slug

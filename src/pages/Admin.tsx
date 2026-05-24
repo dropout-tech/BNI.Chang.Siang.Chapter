@@ -15,6 +15,7 @@ import { sanitizeText } from '../lib/sanitize';
 import { DEFAULT_FAQS } from '../hooks/useFaqs';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 import { SYSTEM_SUPPORT_TEAM } from '../lib/adminAccess';
+import { createReferralId } from '../lib/referralId';
 import type { AuditLog, FAQEntry } from '../types';
 
 function isRealMemberPhoto(photo: string | null | undefined): boolean {
@@ -780,6 +781,7 @@ const Admin: React.FC = () => {
                                         }
 
                                         const { error } = await insforge.database.from('referrals').insert([{
+                                            id: createReferralId(),
                                             title,
                                             description,
                                             referrer_name,
