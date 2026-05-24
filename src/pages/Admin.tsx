@@ -85,14 +85,21 @@ const Admin: React.FC = () => {
     });
 
     useEffect(() => {
-        checkAdmin();
-        fetchDashboardData();
+        const initAdmin = async () => {
+            const allowed = await checkAdmin();
+            if (allowed) {
+                await fetchDashboardData();
+            } else {
+                setLoading(false);
+            }
+        };
+        void initAdmin();
     }, [user]);
 
-    const checkAdmin = async () => {
+    const checkAdmin = async (): Promise<boolean> => {
         if (!user || !isBackendConfigured) {
             navigate('/login');
-            return;
+            return false;
         }
 
         try {
@@ -100,12 +107,15 @@ const Admin: React.FC = () => {
             if (!hasAdminAccess(user, linkedMember)) {
                 if (!linkedMember) {
                     navigate('/login');
-                    return;
+                    return false;
                 }
                 navigate('/');
+                return false;
             }
+            return true;
         } catch {
             navigate('/');
+            return false;
         }
     };
 
