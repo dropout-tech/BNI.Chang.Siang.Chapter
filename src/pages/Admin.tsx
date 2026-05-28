@@ -5,7 +5,8 @@ import { insforge, isBackendConfigured } from '../lib/insforge';
 import { useAuth } from '../contexts/auth-context';
 import {
     Users, Activity, DollarSign, Calendar,
-    Trash2, Plus, Save, Search, Shield, RefreshCw, HelpCircle, FileText
+    Trash2, Plus, Save, Search, Shield, RefreshCw, HelpCircle, FileText,
+    Zap
 } from 'lucide-react';
 import StatsCard from '../components/common/StatsCard';
 import MemberList from '../components/admin/MemberList';
@@ -16,7 +17,7 @@ import { DEFAULT_FAQS } from '../hooks/useFaqs';
 import { getAdminAccessSource, getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 import { SYSTEM_SUPPORT_TEAM } from '../lib/adminAccess';
 import { createReferralId } from '../lib/referralId';
-import type { AuditLog, FAQEntry, HomepageStat } from '../types';
+import type { AuditLog, EventEntry, FAQEntry, HomepageStat } from '../types';
 
 function formatStatMonth(month: string): string {
     const [year, mon] = month.split('-');
@@ -59,7 +60,7 @@ const Admin: React.FC = () => {
     });
 
     // Tab State
-    const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'referrals' | 'faq' | 'audit' | 'settings'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'referrals' | 'events' | 'faq' | 'audit' | 'settings'>('overview');
 
     // Members Data
     const [members, setMembers] = useState<any[]>([]);
@@ -84,6 +85,20 @@ const Admin: React.FC = () => {
     const [marketingStats, setMarketingStats] = useState({
         socialClicks: 0
     });
+
+    // Events
+    const [events, setEvents] = useState<EventEntry[]>([]);
+    const [editingEvent, setEditingEvent] = useState<EventEntry | null>(null);
+    const [eventForm, setEventForm] = useState<EventEntry>({
+        title: '',
+        category: '活動',
+        event_date: '不定期',
+        description: '',
+        icon_name: 'Calendar',
+        is_published: true,
+        sort_order: 0,
+    });
+    const [eventSaving, setEventSaving] = useState(false);
 
     useEffect(() => {
         const initAdmin = async () => {
@@ -147,7 +162,8 @@ const Admin: React.FC = () => {
                 socialClicksRes,
                 trafficScoresRes,
                 faqsRes,
-                auditLogsRes
+                auditLogsRes,
+                eventsRes
             ] = await Promise.all([
                 // 1. Members - Resilient Fetching
                 (async () => {
@@ -210,6 +226,10 @@ const Admin: React.FC = () => {
                 (async () => {
                     try { return await insforge.database.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(100); }
                     catch { return { data: [], error: null }; }
+                })(),
+                (async () => {
+                    try { return await insforge.database.from('events').select('*').order('sort_order', { ascending: true }); }
+                    catch { return { data: [], error: null }; }
                 })()
             ]);
 
@@ -238,6 +258,7 @@ const Admin: React.FC = () => {
             setMembers(membersData);
             setFaqs(faqsRes.data?.length ? faqsRes.data : DEFAULT_FAQS);
             setAuditLogs(auditLogsRes.data || []);
+            setEvents((eventsRes.data || []) as EventEntry[]);
 
             // Process Referrals
             if (referralsRes.error) console.error('Referrals fetch error:', referralsRes.error);
@@ -531,6 +552,61 @@ const Admin: React.FC = () => {
         }
     };
 
+    // ── Events CRUD ──────────────────────────────────────────────
+    const emptyEventForm = (): EventEntry => ({
+        title: '', category: '活動', event_date: '不定期',
+        description: '', icon_name: 'Calendar', is_published: true, sort_order: events.length,
+    });
+
+    const startEditEvent = (ev: EventEntry) => {
+        setEditingEvent(ev);
+        setEventForm({ ...ev });
+    };
+
+    const cancelEditEvent = () => {
+        setEditingEvent(null);
+        setEventForm(emptyEventForm());
+    };
+
+    const handleSaveEvent = async () => {
+        if (!eventForm.title.trim()) { alert('請填寫活動名稱'); return; }
+        setEventSaving(true);
+        try {
+            const payload = {
+                title: sanitizeText(eventForm.title, 200),
+                category: sanitizeText(eventForm.category, 100),
+                event_date: sanitizeText(eventForm.event_date, 100),
+                description: sanitizeText(eventForm.description, 2000),
+                icon_name: eventForm.icon_name || 'Calendar',
+                is_published: eventForm.is_published,
+                sort_order: Number(eventForm.sort_order) || 0,
+                updated_at: new Date().toISOString(),
+            };
+            const { error } = editingEvent?.id
+                ? await insforge.database.from('events').update(payload).eq('id', editingEvent.id)
+                : await insforge.database.from('events').insert([payload]);
+            if (error) throw error;
+            const { data } = await insforge.database.from('events').select('*').order('sort_order', { ascending: true });
+            setEvents((data || []) as EventEntry[]);
+            cancelEditEvent();
+        } catch (err: any) {
+            alert('儲存失敗: ' + err.message);
+        } finally {
+            setEventSaving(false);
+        }
+    };
+
+    const handleDeleteEvent = async (ev: EventEntry) => {
+        if (!confirm(`確定刪除「${ev.title}」？`)) return;
+        try {
+            const { error } = await insforge.database.from('events').delete().eq('id', ev.id!);
+            if (error) throw error;
+            setEvents(prev => prev.filter(e => e.id !== ev.id));
+        } catch (err: any) {
+            alert('刪除失敗: ' + err.message);
+        }
+    };
+
     const filteredMembers = members
         .filter(m => {
             // 有搜尋字時，同時顯示活躍與冷凍會員
@@ -569,9 +645,10 @@ const Admin: React.FC = () => {
                             { id: 'overview', label: '總覽' },
                             { id: 'members', label: '會員' },
                             { id: 'referrals', label: '引薦' },
+                            { id: 'events', label: '活動紀錄' },
                             { id: 'faq', label: 'Q&A' },
-                            { id: 'audit', label: '紀錄' },
-                            { id: 'settings', label: '設定' }
+                            { id: 'audit', label: '異動紀錄' },
+                            { id: 'settings', label: '首頁數據' }
                         ].map(tab => (
                             <button
                                 key={tab.id}
@@ -960,6 +1037,146 @@ const Admin: React.FC = () => {
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* EVENTS TAB */}
+                {activeTab === 'events' && (
+                    <div className="space-y-6">
+                        {/* Form: Add / Edit event */}
+                        <div className="rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
+                            <h2 className="text-lg font-bold text-gray-950 mb-4 flex items-center gap-2">
+                                <Zap size={18} className="text-[#CF2030]" />
+                                {editingEvent ? '編輯活動' : '新增活動'}
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">活動名稱 <span className="text-red-500">*</span></label>
+                                    <input
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#CF2030]/30"
+                                        placeholder="例：Power Day — 產業鏈串聯日"
+                                        value={eventForm.title}
+                                        onChange={e => setEventForm(prev => ({ ...prev, title: e.target.value }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">類別</label>
+                                    <input
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#CF2030]/30"
+                                        placeholder="例：Power Day、BOD、教育訓練"
+                                        value={eventForm.category}
+                                        onChange={e => setEventForm(prev => ({ ...prev, category: e.target.value }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">舉辦頻率</label>
+                                    <input
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#CF2030]/30"
+                                        placeholder="例：每月舉辦、定期舉辦、不定期"
+                                        value={eventForm.event_date}
+                                        onChange={e => setEventForm(prev => ({ ...prev, event_date: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">活動說明</label>
+                                    <textarea
+                                        rows={3}
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#CF2030]/30"
+                                        placeholder="活動簡短描述..."
+                                        value={eventForm.description}
+                                        onChange={e => setEventForm(prev => ({ ...prev, description: e.target.value }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">圖示名稱（Lucide icon）</label>
+                                    <input
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#CF2030]/30"
+                                        placeholder="Calendar / Zap / Users / GraduationCap"
+                                        value={eventForm.icon_name || ''}
+                                        onChange={e => setEventForm(prev => ({ ...prev, icon_name: e.target.value }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">排列順序</label>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#CF2030]/30"
+                                        value={eventForm.sort_order}
+                                        onChange={e => setEventForm(prev => ({ ...prev, sort_order: Number(e.target.value) }))}
+                                    />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="event-published"
+                                        className="h-4 w-4 accent-[#CF2030]"
+                                        checked={eventForm.is_published}
+                                        onChange={e => setEventForm(prev => ({ ...prev, is_published: e.target.checked }))}
+                                    />
+                                    <label htmlFor="event-published" className="text-sm font-semibold text-gray-700">公開顯示</label>
+                                </div>
+                            </div>
+                            <div className="mt-4 flex gap-3">
+                                <button
+                                    onClick={handleSaveEvent}
+                                    disabled={eventSaving}
+                                    className="flex items-center gap-2 rounded-xl bg-[#CF2030] px-5 py-2 text-sm font-bold text-white hover:bg-[#A01828] disabled:opacity-50 transition-colors"
+                                >
+                                    <Save size={15} /> {eventSaving ? '儲存中...' : (editingEvent ? '更新活動' : '新增活動')}
+                                </button>
+                                {editingEvent && (
+                                    <button
+                                        onClick={cancelEditEvent}
+                                        className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-2 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+                                    >
+                                        取消
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Event List */}
+                        <div className="rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
+                            <h2 className="text-lg font-bold text-gray-950 mb-4">活動列表（{events.length} 筆）</h2>
+                            {events.length === 0 ? (
+                                <p className="text-center text-gray-400 py-8">尚無活動資料</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {events.map(ev => (
+                                        <div key={ev.id} className="flex items-start justify-between gap-4 rounded-xl border border-red-50 bg-red-50/30 p-4">
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <span className="font-bold text-gray-950">{ev.title}</span>
+                                                    <span className="rounded-full bg-[#CF2030]/10 px-2 py-0.5 text-xs font-semibold text-[#CF2030]">{ev.category}</span>
+                                                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{ev.event_date}</span>
+                                                    {!ev.is_published && (
+                                                        <span className="rounded-full bg-yellow-50 px-2 py-0.5 text-xs font-semibold text-yellow-600">未公開</span>
+                                                    )}
+                                                </div>
+                                                {ev.description && (
+                                                    <p className="mt-1 text-sm text-gray-500 line-clamp-2">{ev.description}</p>
+                                                )}
+                                            </div>
+                                            <div className="flex gap-2 shrink-0">
+                                                <button
+                                                    onClick={() => startEditEvent(ev)}
+                                                    className="rounded-full bg-red-50 px-3 py-1.5 text-xs font-bold text-[#CF2030] hover:bg-[#CF2030]/20 transition-colors"
+                                                >
+                                                    編輯
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteEvent(ev)}
+                                                    className="rounded-full bg-red-100 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-200 transition-colors"
+                                                >
+                                                    刪除
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
