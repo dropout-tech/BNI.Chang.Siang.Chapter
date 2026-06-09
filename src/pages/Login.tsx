@@ -26,6 +26,9 @@ const Login: React.FC = () => {
 
     const [claimName, setClaimName] = useState('');
     const [claimIndustry, setClaimIndustry] = useState('');
+    const [claimSearch, setClaimSearch] = useState('');
+    const [unclaimedMembers, setUnclaimedMembers] = useState<{ name: string; industry: string }[]>([]);
+    const [claimMembersLoading, setClaimMembersLoading] = useState(false);
 
     // Validation helpers
     const validateEmail = (email: string) => {
@@ -110,6 +113,7 @@ const Login: React.FC = () => {
 
         if (forceClaim) {
             setMode('claim');
+            void fetchUnclaimedMembers();
             return;
         }
 
@@ -130,10 +134,30 @@ const Login: React.FC = () => {
             }
 
             setMode('claim');
+            void fetchUnclaimedMembers();
         } catch (err) {
             console.error('Unexpected error checking profile:', err);
             // Safety fallback
             setMode('claim');
+            void fetchUnclaimedMembers();
+        }
+    };
+
+    const fetchUnclaimedMembers = async () => {
+        if (!isBackendConfigured) return;
+        setClaimMembersLoading(true);
+        try {
+            const { data } = await insforge.database
+                .from('members')
+                .select('name, industry')
+                .is('user_id', null)
+                .is('frozen_at', null)
+                .order('name', { ascending: true });
+            if (data) setUnclaimedMembers(data as { name: string; industry: string }[]);
+        } catch {
+            // ignore – user can still type manually
+        } finally {
+            setClaimMembersLoading(false);
         }
     };
 
@@ -550,12 +574,10 @@ const Login: React.FC = () => {
                             <AlertCircle className="mt-0.5 shrink-0 text-[#CF2030]" size={20} />
                             <div>
                                 <p className="font-bold text-[#CF2030]">
-                                    {forceClaim ? '重新認領會員檔案' : '歡迎！請輸入您的中文全名與行業別完成綁定。'}
+                                    {forceClaim ? '重新認領會員檔案' : '歡迎！請從下方名單中找到並點選您的名字。'}
                                 </p>
                                 <p className="mt-1 text-xs text-[#7A1320]/80">
-                                    {forceClaim
-                                        ? '輸入正確中文全名與行業別，即可把該會員資料改綁到目前登入帳號；累計次數會留存供管理員查核。'
-                                        : '認領可重複操作；每次成功認領都會累加統計次數，並將會員資料綁定到目前登入帳號。'}
+                                    點選後系統會將您的帳號與該會員資料綁定，每次認領都會記錄供管理員查核。
                                 </p>
                                 {user?.email && (
                                     <p className="mt-2 text-xs text-[#7A1320]/80">
@@ -565,47 +587,99 @@ const Login: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-gray-700 font-bold text-sm mb-2">中文全名</label>
+                        {/* Member picker */}
+                        {unclaimedMembers.length > 0 ? (
+                            <div className="space-y-3">
                                 <div className="relative">
-                                    <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
+                                    <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={16} />
                                     <input
                                         type="text"
-                                        value={claimName}
-                                        onChange={e => setClaimName(e.target.value)}
-                                        className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
-                                        placeholder="例如：王小明"
-                                        required
-                                        autoComplete="name"
+                                        value={claimSearch}
+                                        onChange={e => setClaimSearch(e.target.value)}
+                                        className="w-full rounded-2xl border border-red-100 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 outline-none focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
+                                        placeholder="輸入姓名快速搜尋…"
                                     />
                                 </div>
+                                <div className="max-h-64 overflow-y-auto rounded-2xl border border-red-100 bg-white">
+                                    {unclaimedMembers
+                                        .filter(m => !claimSearch.trim() || m.name.includes(claimSearch.trim()))
+                                        .map(m => (
+                                            <button
+                                                key={m.name}
+                                                type="button"
+                                                onClick={() => { setClaimName(m.name); setClaimIndustry(m.industry); }}
+                                                className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-red-50 border-b border-red-50 last:border-0 ${claimName === m.name ? 'bg-red-50 ring-1 ring-inset ring-[#CF2030]/30' : ''}`}
+                                            >
+                                                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#CF2030]/10 text-xs font-black text-[#CF2030]">
+                                                    {m.name[0]}
+                                                </div>
+                                                <div>
+                                                    <div className="font-bold text-gray-950 text-sm">{m.name}</div>
+                                                    <div className="text-xs text-gray-500">{m.industry}</div>
+                                                </div>
+                                                {claimName === m.name && (
+                                                    <span className="ml-auto text-xs font-black text-[#CF2030] shrink-0">已選擇 ✓</span>
+                                                )}
+                                            </button>
+                                        ))
+                                    }
+                                    {unclaimedMembers.filter(m => !claimSearch.trim() || m.name.includes(claimSearch.trim())).length === 0 && (
+                                        <p className="px-4 py-6 text-center text-sm text-gray-400">查無符合名字</p>
+                                    )}
+                                </div>
+                                {claimMembersLoading && (
+                                    <p className="text-center text-xs text-gray-400">名單載入中…</p>
+                                )}
                             </div>
-                            <div>
-                                <label className="block text-gray-700 font-bold text-sm mb-2">行業別</label>
-                                <div className="relative">
-                                    <BriefcaseBusiness className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
-                                    <input
-                                        type="text"
-                                        value={claimIndustry}
-                                        onChange={e => setClaimIndustry(e.target.value)}
-                                        className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
-                                        placeholder="請依會員名單上的行業別輸入"
-                                        required
-                                        autoComplete="organization-title"
-                                    />
+                        ) : claimMembersLoading ? (
+                            <p className="text-center text-sm text-gray-400 py-4">名單載入中…</p>
+                        ) : (
+                            /* fallback: manual input if member list unavailable */
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="block text-gray-700 font-bold text-sm mb-2">中文全名</label>
+                                    <div className="relative">
+                                        <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
+                                        <input
+                                            type="text"
+                                            value={claimName}
+                                            onChange={e => setClaimName(e.target.value)}
+                                            className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
+                                            placeholder="例如：王小明"
+                                            autoComplete="name"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-gray-700 font-bold text-sm mb-2">行業別</label>
+                                    <div className="relative">
+                                        <BriefcaseBusiness className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
+                                        <input
+                                            type="text"
+                                            value={claimIndustry}
+                                            onChange={e => setClaimIndustry(e.target.value)}
+                                            className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
+                                            placeholder="請依會員名單上的行業別輸入"
+                                            autoComplete="organization-title"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                            <p className="text-[10px] text-[#A01828]/70">
-                                * 系統會自動忽略前後空白與文字中間空白；若無法認領，請洽分會管理員確認姓名或行業別。
-                            </p>
-                        </div>
+                        )}
+
+                        {claimName && (
+                            <div className="rounded-2xl border border-[#CF2030]/20 bg-red-50/60 px-4 py-3 text-sm">
+                                <span className="font-bold text-[#CF2030]">即將認領：</span>
+                                <span className="text-gray-800 ml-1">{claimName}</span>
+                                {claimIndustry && <span className="text-gray-500 ml-2 text-xs">（{claimIndustry}）</span>}
+                            </div>
+                        )}
 
                         <button
                             type="button"
                             onClick={handleClaim}
                             disabled={!claimName.trim() || !claimIndustry.trim() || loading}
-                            className={`mt-4 w-full rounded-2xl py-3.5 text-sm font-black transition-all ${(!claimName.trim() || !claimIndustry.trim())
+                            className={`mt-2 w-full rounded-2xl py-3.5 text-sm font-black transition-all ${(!claimName.trim() || !claimIndustry.trim())
                                 ? 'cursor-not-allowed bg-red-100 text-[#CF2030]/40'
                                 : 'bg-gradient-to-r from-[#CF2030] to-[#E8394A] text-white shadow-[0_16px_34px_rgba(207,32,48,0.24)] hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(207,32,48,0.32)]'
                                 }`}
