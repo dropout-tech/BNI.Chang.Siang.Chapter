@@ -561,6 +561,20 @@ const MemberEdit: React.FC = () => {
                                     </div>
                                 </div>
 
+                                <div>
+                                    <label className="block text-gray-700 mb-2 font-medium">
+                                        行業別 <span className="text-[#CF2030] text-sm">*</span>
+                                        <span className="text-gray-400 text-xs font-normal ml-2">（用於帳號認領，須填寫正確）</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={industry}
+                                        onChange={(e) => updateField(setIndustry, e.target.value)}
+                                        placeholder="例：健身教練、室內設計、法律顧問…"
+                                        className="w-full bg-white border border-gray-200 rounded-lg p-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
+                                    />
+                                </div>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-gray-700 mb-2 font-medium">聯絡電話</label>

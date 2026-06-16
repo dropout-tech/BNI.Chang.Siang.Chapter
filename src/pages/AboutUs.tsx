@@ -55,7 +55,7 @@ const AboutUs: React.FC = () => (
             </div>
         </SectionWrapper>
 
-        <SectionWrapper title="產業鏈介紹" subtitle="涵蓋多元領域的專業團隊">
+        <SectionWrapper title="產業鏈介紹" subtitle="涵蓋多元領域的專業團隊" className="py-14 md:py-20">
             <motion.div {...f} className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
                 {siteConfig.industries.map((ind) => (
                     <span
@@ -69,7 +69,7 @@ const AboutUs: React.FC = () => (
             </motion.div>
         </SectionWrapper>
 
-        <SectionWrapper className="text-center py-24">
+        <SectionWrapper className="text-center py-14 md:py-20">
             <motion.div {...f}>
                 <h2 className="text-3xl font-black text-[#333] mb-6">成為長翔的一員</h2>
                 <p className="text-gray-500 text-lg mb-8">如果您渴望找到一群真心互助的事業夥伴，歡迎親自來體驗</p>

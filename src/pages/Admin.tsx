@@ -86,6 +86,11 @@ const Admin: React.FC = () => {
         socialClicks: 0
     });
 
+    // New Member Form
+    const [showAddMemberForm, setShowAddMemberForm] = useState(false);
+    const [newMemberForm, setNewMemberForm] = useState({ name: '', industry: '', category: '', company: '', position: '' });
+    const [addMemberLoading, setAddMemberLoading] = useState(false);
+
     // Events
     const [events, setEvents] = useState<EventEntry[]>([]);
     const [editingEvent, setEditingEvent] = useState<EventEntry | null>(null);
@@ -340,26 +345,38 @@ const Admin: React.FC = () => {
         }
     };
 
-    const handleAddMember = async () => {
-        const rawName = prompt('請輸入新會員姓名:');
-        if (!rawName) return;
-        const name = sanitizeText(rawName, 50);
-        if (!name) { alert('名稱無效'); return; }
+    const handleAddMember = () => {
+        setNewMemberForm({ name: '', industry: '', category: '', company: '', position: '' });
+        setShowAddMemberForm(true);
+    };
 
+    const handleCreateMember = async () => {
+        const name = sanitizeText(newMemberForm.name, 50);
+        const industry = sanitizeText(newMemberForm.industry, 50);
+        if (!name) { alert('請填寫姓名'); return; }
+        if (!industry) { alert('請填寫行業別（用於帳號認領）'); return; }
+
+        setAddMemberLoading(true);
         try {
-            const { error } = await insforge.database.from('members').insert([{
+            const payload: Record<string, string> = {
                 name,
-                industry: '新產業',
-                company: '新公司',
-                photo: siteConfig.defaultPhoto,
-                createdAt: new Date().toISOString()
-            }]).select().single();
+                industry,
+                status: 'active',
+            };
+            if (newMemberForm.category) payload.category = sanitizeText(newMemberForm.category, 30);
+            if (newMemberForm.company) payload.company = sanitizeText(newMemberForm.company, 100);
+            if (newMemberForm.position) payload.position = sanitizeText(newMemberForm.position, 50);
 
+            const { error } = await insforge.database.from('members').insert([payload]);
             if (error) throw error;
-            alert(`已新增會員 ${name}，請點擊編輯按鈕完善資料。`);
+
+            alert(`已成功新增會員「${name}」，該會員可使用行業別「${industry}」認領帳號。`);
+            setShowAddMemberForm(false);
             fetchDashboardData();
         } catch (e: any) {
             alert('新增失敗: ' + e.message);
+        } finally {
+            setAddMemberLoading(false);
         }
     };
 
@@ -836,6 +853,81 @@ const Admin: React.FC = () => {
                                 <Plus size={18} /> 新增會員
                             </button>
                         </div>
+
+                        {/* 新增會員表單 */}
+                        {showAddMemberForm && (
+                            <div className="rounded-2xl border border-red-200 bg-red-50/30 p-5 shadow-sm space-y-4">
+                                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                                    <Plus size={18} className="text-[#CF2030]" /> 新增會員資料
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                            姓名 <span className="text-[#CF2030]">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={newMemberForm.name}
+                                            onChange={e => setNewMemberForm(p => ({ ...p, name: e.target.value }))}
+                                            placeholder="例：王小明"
+                                            className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                            行業別 <span className="text-[#CF2030]">*</span>
+                                            <span className="text-gray-400 font-normal ml-1 text-xs">（用於帳號認領，務必正確）</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={newMemberForm.industry}
+                                            onChange={e => setNewMemberForm(p => ({ ...p, industry: e.target.value }))}
+                                            placeholder="例：健身教練、法律顧問、室內設計"
+                                            className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1">產業類別</label>
+                                        <select
+                                            value={newMemberForm.category}
+                                            onChange={e => setNewMemberForm(p => ({ ...p, category: e.target.value }))}
+                                            className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
+                                        >
+                                            <option value="">請選擇</option>
+                                            {siteConfig.industries.map(ind => (
+                                                <option key={ind} value={ind}>{ind}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1">公司名稱</label>
+                                        <input
+                                            type="text"
+                                            value={newMemberForm.company}
+                                            onChange={e => setNewMemberForm(p => ({ ...p, company: e.target.value }))}
+                                            placeholder="選填"
+                                            className="w-full rounded-lg border border-gray-200 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-[#CF2030] focus:outline-none focus:ring-2 focus:ring-red-100"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 justify-end pt-2">
+                                    <button
+                                        onClick={() => setShowAddMemberForm(false)}
+                                        className="px-5 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm"
+                                    >
+                                        取消
+                                    </button>
+                                    <button
+                                        onClick={handleCreateMember}
+                                        disabled={addMemberLoading}
+                                        className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#CF2030] text-white font-bold text-sm hover:bg-[#CF2030]/90 disabled:opacity-50"
+                                    >
+                                        {addMemberLoading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Plus size={16} />}
+                                        確認新增
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         <MemberList
                             members={filteredMembers}
