@@ -500,6 +500,7 @@ const Admin: React.FC = () => {
     };
 
     const handleToggleFrozen = async (member: any) => {
+        const memberIdx = member.idx ?? member.id;
         const isFrozen = !!member.frozen_at;
         const reason = isFrozen ? null : sanitizeText(prompt('請輸入冷凍原因（例如：離開分會、開信用狀）') || '', 120);
         if (!isFrozen && !reason) return;
@@ -513,7 +514,7 @@ const Admin: React.FC = () => {
                     frozen_reason: isFrozen ? null : reason,
                     updatedAt: new Date().toISOString(),
                 })
-                .eq('id', member.id);
+                .eq('idx', memberIdx);
             if (error) throw error;
             alert(isFrozen ? '已解凍會員' : '已冷凍會員');
             fetchDashboardData();
@@ -523,13 +524,14 @@ const Admin: React.FC = () => {
     };
 
     const handleToggleGold = async (member: any, checked: boolean) => {
+        const memberIdx = member.idx ?? member.id;
         try {
             const { error } = await insforge.database
                 .from('members')
                 .update({ is_gold_badge: checked, updatedAt: new Date().toISOString() })
-                .eq('id', member.id);
+                .eq('idx', memberIdx);
             if (error) throw error;
-            setMembers(prev => prev.map(item => item.id === member.id ? { ...item, is_gold_badge: checked } : item));
+            setMembers(prev => prev.map(item => (item.idx ?? item.id) === memberIdx ? { ...item, is_gold_badge: checked } : item));
         } catch (err: any) {
             alert('金質獎章更新失敗: ' + err.message);
         }
@@ -538,13 +540,14 @@ const Admin: React.FC = () => {
     const handleToggleAdmin = async (member: any, checked: boolean) => {
         if (checked && !confirm(`確定要授予「${member.name}」管理員權限嗎？`)) return;
         if (!checked && !confirm(`確定要移除「${member.name}」的管理員權限嗎？`)) return;
+        const memberIdx = member.idx ?? member.id;
         try {
             const { error } = await insforge.database
                 .from('members')
                 .update({ is_admin: checked, updatedAt: new Date().toISOString() })
-                .eq('id', member.id);
+                .eq('idx', memberIdx);
             if (error) throw error;
-            setMembers(prev => prev.map(item => item.id === member.id ? { ...item, is_admin: checked } : item));
+            setMembers(prev => prev.map(item => (item.idx ?? item.id) === memberIdx ? { ...item, is_admin: checked } : item));
             alert(checked ? `已授予 ${member.name} 管理員權限` : `已移除 ${member.name} 的管理員權限`);
         } catch (err: any) {
             alert('管理員權限更新失敗: ' + err.message);
@@ -562,7 +565,7 @@ const Admin: React.FC = () => {
             const { error } = await insforge.database
                 .from('member_traffic_scores')
                 .upsert({
-                    member_id: Number(member.id),
+                    member_id: Number(member.idx ?? member.id),
                     month: trafficMonth,
                     score: Math.max(0, Number(score) || 0),
                     level: getTrafficLevel(Number(score) || 0),
