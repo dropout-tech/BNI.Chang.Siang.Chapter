@@ -60,7 +60,14 @@ const Admin: React.FC = () => {
     });
 
     // Tab State
-    const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'referrals' | 'events' | 'faq' | 'audit' | 'settings'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'referrals' | 'events' | 'faq' | 'audit' | 'settings' | 'roles'>('overview');
+
+    // Chapter Roles
+    const [chapterRoles, setChapterRoles] = useState<any[]>([]);
+    const [rolesSaving, setRolesSaving] = useState<Record<number, boolean>>({});
+
+    const [showAddRoleForm, setShowAddRoleForm] = useState(false);
+    const [newRoleForm, setNewRoleForm] = useState({ role_name: '', role_group: '協調員', group_cols: 3, sort_order: 0 });
 
     // Members Data
     const [members, setMembers] = useState<any[]>([]);
@@ -168,7 +175,8 @@ const Admin: React.FC = () => {
                 trafficScoresRes,
                 faqsRes,
                 auditLogsRes,
-                eventsRes
+                eventsRes,
+                rolesRes
             ] = await Promise.all([
                 // 1. Members - Resilient Fetching
                 (async () => {
@@ -234,6 +242,11 @@ const Admin: React.FC = () => {
                 })(),
                 (async () => {
                     try { return await insforge.database.from('events').select('*').order('sort_order', { ascending: true }); }
+                    catch { return { data: [], error: null }; }
+                })(),
+                // 10. Chapter Roles
+                (async () => {
+                    try { return await insforge.database.from('chapter_roles').select('*, members(idx, name, industry, photo, slug)').order('sort_order', { ascending: true }); }
                     catch { return { data: [], error: null }; }
                 })()
             ]);
@@ -338,10 +351,57 @@ const Admin: React.FC = () => {
 
             setMarketingStats({ socialClicks: socialClicksCount });
 
+            // Process Chapter Roles
+            setChapterRoles(rolesRes.data || []);
+
         } catch (error) {
             console.error('Dashboard fetch error:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // ── Chapter Role Handlers ────────────────────────────────────────
+    const handleRoleMemberChange = async (roleId: number, memberIdx: number | null) => {
+        setRolesSaving(prev => ({ ...prev, [roleId]: true }));
+        try {
+            const { error } = await insforge.database
+                .from('chapter_roles')
+                .update({ member_idx: memberIdx, updated_at: new Date().toISOString() })
+                .eq('id', roleId);
+            if (error) throw error;
+            setChapterRoles(prev => prev.map(r => r.id === roleId ? { ...r, member_idx: memberIdx, members: members.find(m => m.idx === memberIdx) || null } : r));
+        } catch (e: any) {
+            alert('儲存失敗: ' + e.message);
+        } finally {
+            setRolesSaving(prev => ({ ...prev, [roleId]: false }));
+        }
+    };
+
+    const handleDeleteRole = async (roleId: number) => {
+        if (!window.confirm('確定要刪除這個職務嗎？')) return;
+        try {
+            const { error } = await insforge.database.from('chapter_roles').delete().eq('id', roleId);
+            if (error) throw error;
+            setChapterRoles(prev => prev.filter(r => r.id !== roleId));
+        } catch (e: any) {
+            alert('刪除失敗: ' + e.message);
+        }
+    };
+
+    const handleAddRole = async () => {
+        if (!newRoleForm.role_name.trim()) { alert('請填寫職務名稱'); return; }
+        try {
+            const { data, error } = await insforge.database
+                .from('chapter_roles')
+                .insert({ ...newRoleForm, role_name: newRoleForm.role_name.trim() })
+                .select();
+            if (error) throw error;
+            if (data?.[0]) setChapterRoles(prev => [...prev, { ...data[0], members: null }]);
+            setShowAddRoleForm(false);
+            setNewRoleForm({ role_name: '', role_group: '協調員', group_cols: 3, sort_order: 0 });
+        } catch (e: any) {
+            alert('新增失敗: ' + e.message);
         }
     };
 
@@ -661,6 +721,7 @@ const Admin: React.FC = () => {
                         {[
                             { id: 'overview', label: '總覽' },
                             { id: 'members', label: '會員' },
+                            { id: 'roles', label: '本期職務' },
                             { id: 'referrals', label: '引薦' },
                             { id: 'events', label: '活動紀錄' },
                             { id: 'faq', label: 'Q&A' },
@@ -1337,6 +1398,167 @@ const Admin: React.FC = () => {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ROLES TAB — 本期職務管理 */}
+                {activeTab === 'roles' && (
+                    <div className="space-y-6">
+                        <div className="rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
+                            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <h3 className="text-xl font-bold text-gray-950 flex items-center gap-2">
+                                    <Users size={20} className="text-[#CF2030]" /> 本會期幹部職務
+                                    <span className="text-xs font-normal text-gray-400 ml-1">修改後前台「領導團隊」自動更新</span>
+                                </h3>
+                                <button
+                                    onClick={() => { setShowAddRoleForm(true); setNewRoleForm({ role_name: '', role_group: '協調員', group_cols: 3, sort_order: chapterRoles.length }); }}
+                                    className="flex items-center gap-2 rounded-lg bg-[#CF2030] px-4 py-2 text-sm font-bold text-white hover:bg-[#A51926] transition-colors"
+                                >
+                                    <Plus size={16} /> 新增職務
+                                </button>
+                            </div>
+
+                            {/* Add Role Form */}
+                            {showAddRoleForm && (
+                                <div className="mb-6 rounded-xl border border-red-200 bg-red-50/60 p-5">
+                                    <h4 className="font-bold text-gray-800 mb-4">新增職務</h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">職務名稱 *</label>
+                                            <input
+                                                type="text"
+                                                value={newRoleForm.role_name}
+                                                onChange={e => setNewRoleForm(f => ({ ...f, role_name: e.target.value }))}
+                                                placeholder="例：成長協調員"
+                                                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-red-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">所屬分組 *</label>
+                                            <select
+                                                value={newRoleForm.role_group}
+                                                onChange={e => setNewRoleForm(f => ({ ...f, role_group: e.target.value }))}
+                                                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#CF2030] focus:outline-none"
+                                            >
+                                                <option>顧問 & 大使</option>
+                                                <option>執行主席團</option>
+                                                <option>協調員</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">每列欄數</label>
+                                            <select
+                                                value={newRoleForm.group_cols}
+                                                onChange={e => setNewRoleForm(f => ({ ...f, group_cols: Number(e.target.value) }))}
+                                                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#CF2030] focus:outline-none"
+                                            >
+                                                <option value={3}>3 欄</option>
+                                                <option value={4}>4 欄</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">排序</label>
+                                            <input
+                                                type="number"
+                                                value={newRoleForm.sort_order}
+                                                onChange={e => setNewRoleForm(f => ({ ...f, sort_order: Number(e.target.value) }))}
+                                                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#CF2030] focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 flex gap-2 justify-end">
+                                        <button onClick={() => setShowAddRoleForm(false)} className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">取消</button>
+                                        <button onClick={handleAddRole} className="rounded-lg bg-[#CF2030] px-4 py-2 text-sm font-bold text-white hover:bg-[#A51926]">確定新增</button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Role Groups */}
+                            {(() => {
+                                const grouped: Record<string, any[]> = {};
+                                chapterRoles.forEach(r => {
+                                    if (!grouped[r.role_group]) grouped[r.role_group] = [];
+                                    grouped[r.role_group].push(r);
+                                });
+                                const groupOrder = Object.keys(grouped);
+                                return groupOrder.length === 0 ? (
+                                    <div className="py-12 text-center text-gray-400">尚無職務資料</div>
+                                ) : groupOrder.map(groupLabel => (
+                                    <div key={groupLabel} className="mb-8">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <span className="text-xs font-bold text-[#CF2030] uppercase tracking-widest bg-red-50 px-3 py-1 rounded-full">
+                                                {groupLabel}
+                                            </span>
+                                            <div className="flex-1 h-px bg-red-100" />
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            {grouped[groupLabel].map((role: any) => {
+                                                const assignedMember = role.members ?? members.find((m: any) => m.idx === role.member_idx);
+                                                return (
+                                                    <div key={role.id} className="rounded-xl border border-gray-100 bg-gray-50/60 p-4 flex flex-col gap-3 hover:border-red-200 transition-colors">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="inline-block px-2.5 py-0.5 bg-[#CF2030] text-white text-xs font-bold rounded-full">
+                                                                {role.role_name}
+                                                            </span>
+                                                            <button
+                                                                onClick={() => handleDeleteRole(role.id)}
+                                                                className="text-gray-300 hover:text-red-500 transition-colors"
+                                                                title="刪除此職務"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </div>
+                                                        {assignedMember && (
+                                                            <div className="flex items-center gap-2 text-sm text-gray-700">
+                                                                <img
+                                                                    src={assignedMember.photo || '/images/bni-logo.png'}
+                                                                    alt={assignedMember.name}
+                                                                    className="w-8 h-8 rounded-full object-cover border border-gray-200 bg-white"
+                                                                    onError={e => { (e.target as HTMLImageElement).src = '/images/bni-logo.png'; }}
+                                                                />
+                                                                <span className="font-semibold">{assignedMember.name}</span>
+                                                                <span className="text-gray-400 text-xs">{assignedMember.industry}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <select
+                                                                value={role.member_idx ?? ''}
+                                                                onChange={e => handleRoleMemberChange(role.id, e.target.value ? Number(e.target.value) : null)}
+                                                                disabled={rolesSaving[role.id]}
+                                                                className="flex-1 rounded-lg border border-gray-200 bg-white p-2 text-sm focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-red-100 disabled:opacity-50"
+                                                            >
+                                                                <option value="">— 待公告 —</option>
+                                                                {members
+                                                                    .filter((m: any) => !m.frozen_at)
+                                                                    .sort((a: any, b: any) => String(a.name).localeCompare(String(b.name), 'zh-Hant'))
+                                                                    .map((m: any) => (
+                                                                        <option key={m.idx} value={m.idx}>{m.name}（{m.industry}）</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            {rolesSaving[role.id] && (
+                                                                <span className="text-xs text-[#CF2030] font-semibold animate-pulse">儲存中…</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ));
+                            })()}
+                        </div>
+
+                        {/* Info card */}
+                        <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-5 text-sm text-blue-700">
+                            <p className="font-semibold mb-1">📌 使用說明</p>
+                            <ul className="list-disc list-inside space-y-1 text-blue-600">
+                                <li>從下拉選單選擇夥伴，系統立即儲存，前台「關於長翔」頁面的領導團隊將自動更新。</li>
+                                <li>若某職務「待公告」，前台會顯示灰色佔位卡片。</li>
+                                <li>可新增或刪除職務，調整排序欄位控制顯示順序。</li>
+                                <li>每半年換屆時，只需重新選人，無需改程式碼。</li>
+                            </ul>
                         </div>
                     </div>
                 )}
