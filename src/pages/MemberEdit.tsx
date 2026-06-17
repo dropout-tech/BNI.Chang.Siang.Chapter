@@ -116,7 +116,10 @@ const MemberEdit: React.FC = () => {
         setLoading(true);
         try {
             const searchParams = new URLSearchParams(window.location.search);
+            // Prefer ?idx= (real PK) over legacy ?id= param
+            const targetIdx = searchParams.get('idx');
             const targetId = searchParams.get('id');
+            const hasTarget = !!(targetIdx || targetId);
             const linkedMember = await getLinkedMemberAccount(user);
             const adminAccess = hasAdminAccess(user, linkedMember);
             setIsAdmin(adminAccess);
@@ -126,16 +129,20 @@ const MemberEdit: React.FC = () => {
                 return;
             }
 
-            if (!linkedMember && isBypassClaimAdminEmail(user.email) && !targetId) {
+            if (!linkedMember && isBypassClaimAdminEmail(user.email) && !hasTarget) {
                 navigate('/admin');
                 return;
             }
 
             let query = insforge.database.from('members').select('*');
 
-            if (targetId && adminAccess) {
-                // Admin editing another member by ID
-                query = query.eq('id', targetId);
+            if (hasTarget && adminAccess) {
+                // Admin editing another member — prefer idx (real PK), fallback to id
+                if (targetIdx) {
+                    query = query.eq('idx', Number(targetIdx));
+                } else {
+                    query = query.eq('id', targetId);
+                }
             } else if (linkedMember) {
                 // Normal user editing self
                 query = query.eq('user_id', user.id);
@@ -148,8 +155,9 @@ const MemberEdit: React.FC = () => {
 
             if (error) throw error;
             if (data) {
-                const m = data as Member;
-                setMemberId(m.id.toString());
+                const m = data as Member & { idx?: number };
+                // Use idx (real PK) as memberId for all subsequent updates
+                setMemberId(String(m.idx ?? m.id));
                 setName(m.name);
                 setCompany(m.company || '');
                 setPosition(m.position || m.title || '');
@@ -167,7 +175,7 @@ const MemberEdit: React.FC = () => {
                     const { data: scoreData } = await insforge.database
                         .from('member_traffic_scores')
                         .select('*')
-                        .eq('member_id', Number(m.id))
+                        .eq('member_id', Number((m as any).idx ?? m.id))
                         .order('month', { ascending: false })
                         .limit(1)
                         .maybeSingle();
@@ -327,10 +335,13 @@ const MemberEdit: React.FC = () => {
                 (updates as any).is_gold_badge = isGoldBadge;
             }
 
+            const memberIdxNum = Number(memberId);
+            if (!memberIdxNum) throw new Error('無法識別會員 ID，請重新整理後再試');
+
             const { error } = await insforge.database
                 .from('members')
                 .update(updates)
-                .eq('id', memberId);
+                .eq('idx', memberIdxNum);
 
             if (error) throw error;
 
@@ -340,7 +351,7 @@ const MemberEdit: React.FC = () => {
                 const { error: scoreError } = await insforge.database
                     .from('member_traffic_scores')
                     .upsert({
-                        member_id: Number(memberId),
+                        member_id: memberIdxNum,
                         month: trafficMonth,
                         score,
                         level,

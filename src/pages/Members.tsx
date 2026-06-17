@@ -178,7 +178,7 @@ const Members: React.FC = () => {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate(`/member-edit?id=${member.id}`);
+                                            navigate(`/member-edit?idx=${(member as any).idx ?? member.id}`);
                                         }}
                                         className="absolute top-2 right-2 z-20 p-2 bg-black/60 hover:bg-[#CF2030] text-white hover:text-white rounded-full backdrop-blur-sm transition-all shadow-lg opacity-0 group-hover:opacity-100 placeholder-admin-edit"
                                         title="管理員編輯"

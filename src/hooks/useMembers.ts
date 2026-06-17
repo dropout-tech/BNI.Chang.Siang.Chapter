@@ -4,7 +4,8 @@ import { assetUrl } from '../lib/assets';
 import { makeMemberSlug } from '../lib/memberSlug';
 
 export interface Member {
-    id: number;
+    idx?: number;   // real PK (SERIAL) — always present from DB
+    id: number;     // legacy integer field — may be null for new members
     name: string;
     industry: string;
     photo: string;
@@ -48,11 +49,16 @@ type TrafficScoreRow = {
 function normalizeMembers(rows: Member[]): Member[] {
     return rows
         .filter((member) => !member.frozen_at)
-        .map((member, index) => ({
-            ...member,
-            id: Number(member.id) || index + 1,
-            slug: member.slug || makeMemberSlug(member.name, member.id || index + 1),
-        }));
+        .map((member, index) => {
+            const realIdx = Number((member as any).idx) || index + 1;
+            return {
+                ...member,
+                idx: realIdx,
+                // id may be null for new members; fall back to idx so slug generation is stable
+                id: Number(member.id) || realIdx,
+                slug: member.slug || makeMemberSlug(member.name, Number(member.id) || realIdx),
+            };
+        });
 }
 
 function attachTrafficScores(rows: Member[], scores: TrafficScoreRow[]): Member[] {
@@ -66,7 +72,7 @@ function attachTrafficScores(rows: Member[], scores: TrafficScoreRow[]): Member[
         });
 
     return rows.map((member) => {
-        const latest = latestByMember.get(Number(member.id));
+        const latest = latestByMember.get(Number(member.idx ?? member.id));
         return latest
             ? {
                 ...member,

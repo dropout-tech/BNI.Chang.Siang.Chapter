@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { insforge, isBackendConfigured } from '../../lib/insforge';
 
 interface Member {
+    idx?: number;
     id: string;
     name: string;
     industry?: string;
@@ -65,19 +66,19 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
     const displayed = members.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
     const handleDelete = async (id: string) => {
-        if (!confirm('確定要刪除這位會員嗎？此動作無法復原。')) return;
+        if (!confirm('??????????????????')) return;
         if (!isBackendConfigured) return;
         const { error } = await insforge.database.from('members').delete().eq('id', id);
         if (error) {
-            alert('刪除失敗: ' + error.message);
+            alert('????: ' + error.message);
         } else {
-            alert('已刪除');
+            alert('???');
             onRefresh();
         }
     };
 
     if (displayed.length === 0) {
-        return <div className="text-center text-gray-500 py-8">尚無會員資料</div>;
+        return <div className="text-center text-gray-500 py-8">????????</div>;
     }
 
     return (
@@ -95,12 +96,12 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                     {member.name}
                                     {member.frozen_at && (
                                         <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-500 shrink-0">
-                                            <Snowflake size={10} /> 冷凍
+                                            <Snowflake size={10} /> ??
                                         </span>
                                     )}
                                 </div>
                                 <div className="text-sm text-[#CF2030] truncate">{member.industry}</div>
-                                <div className="text-xs text-gray-500 truncate">{member.company} {member.position || member.title ? `· ${member.position || member.title}` : ''}</div>
+                                <div className="text-xs text-gray-500 truncate">{member.company} {member.position || member.title ? `� ${member.position || member.title}` : ''}</div>
                             </div>
                             {member.is_gold_badge && <Crown size={18} className="text-yellow-500" />}
                         </div>
@@ -111,7 +112,7 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                     checked={member.is_gold_badge === true}
                                     onChange={(event) => onToggleGold?.(member, event.target.checked)}
                                 />
-                                金質獎章
+                                <Crown size={12} className="text-yellow-500" /> ????
                             </label>
                             <label className={`flex items-center gap-2 rounded-lg px-3 py-2 ${member.is_admin ? 'bg-red-50 text-[#CF2030] font-bold' : 'bg-white text-gray-600'}`}>
                                 <input
@@ -119,31 +120,29 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                     checked={member.is_admin === true}
                                     onChange={(event) => onToggleAdmin?.(member, event.target.checked)}
                                 />
-                                <Shield size={12} /> 管理員
+                                <Shield size={12} /> ???
                             </label>
                             <div className={`rounded-lg border px-3 py-2 text-center font-bold ${levelClassName[member.traffic_level || getTrafficLevel(scoreDrafts[member.id] ?? 0)]}`}>
-                                紅綠燈 {scoreDrafts[member.id] ?? 0}
+                                ??? {scoreDrafts[member.id] ?? 0}
                             </div>
                         </div>
                         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-                            <span
-                                className="rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700"
-                            >
-                                認領 {member.claim_count ?? 0} 次
+                            <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
+                                ?? {member.claim_count ?? 0} ?
                             </span>
-                            {member.claim_last_at && <span className="text-[#A01828]">最近：{new Date(member.claim_last_at).toLocaleDateString('zh-TW')}</span>}
+                            {member.claim_last_at && <span className="text-[#A01828]">?????{new Date(member.claim_last_at).toLocaleDateString('zh-TW')}</span>}
                             {member.claim_last_user_id && (
                                 <span className="font-mono text-[10px] text-[#CF2030]/70" title={member.claim_last_user_id}>
-                                    by {member.claim_last_user_id.slice(0, 8)}…
+                                    by {member.claim_last_user_id.slice(0, 8)}?
                                 </span>
                             )}
                         </div>
                         <div className="flex gap-2">
                             <button
-                                onClick={() => navigate(`/member-edit?id=${member.id}`)}
+                                onClick={() => navigate(`/member-edit?idx=${member.idx ?? member.id}`)}
                                 className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-50 hover:bg-[#CF2030]/20 text-[#CF2030] rounded-lg transition-colors text-sm font-medium"
                             >
-                                <Edit size={14} /> 編輯
+                                <Edit size={14} /> ??
                             </button>
                             <button
                                 onClick={() => handleDelete(member.id)}
@@ -167,14 +166,14 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="text-sm text-gray-500 border-b border-red-100">
-                            <th className="p-4">會員</th>
-                            <th className="p-4">產業/公司</th>
-                            <th className="p-4">職稱</th>
-                            <th className="p-4">金質</th>
-                            <th className="p-4">管理員</th>
-                            <th className="p-4">紅綠燈</th>
-                            <th className="p-4">認領</th>
-                            <th className="p-4 text-right">操作</th>
+                            <th className="p-4">??</th>
+                            <th className="p-4">?????</th>
+                            <th className="p-4">??</th>
+                            <th className="p-4">??</th>
+                            <th className="p-4">???</th>
+                            <th className="p-4">?????</th>
+                            <th className="p-4">????</th>
+                            <th className="p-4 text-right">??</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -188,7 +187,7 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                         <span className="font-medium text-gray-950">{member.name}</span>
                                         {member.frozen_at && (
                                             <div className="inline-flex items-center gap-1 ml-2 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-500">
-                                                <Snowflake size={10} /> 冷凍
+                                                <Snowflake size={10} /> ??
                                             </div>
                                         )}
                                     </div>
@@ -237,7 +236,7 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                         <button
                                             onClick={() => onSaveTrafficScore?.(member, scoreDrafts[member.id] ?? 0)}
                                             className="rounded-full bg-[#CF2030] p-1.5 text-white"
-                                            title="儲存紅綠燈分數"
+                                            title="???????"
                                         >
                                             <Save size={14} />
                                         </button>
@@ -248,14 +247,12 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                 </td>
                                 <td className="p-4">
                                     <div className="flex flex-col gap-2">
-                                        <span
-                                            className="inline-flex w-fit rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700"
-                                        >
-                                            認領 {member.claim_count ?? 0} 次
+                                        <span className="inline-flex w-fit rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                                            ?? {member.claim_count ?? 0} ?
                                         </span>
                                         {member.claim_last_at && (
                                             <span className="text-xs text-[#A01828]">
-                                                最近 {new Date(member.claim_last_at).toLocaleDateString('zh-TW')}
+                                                ???{new Date(member.claim_last_at).toLocaleDateString('zh-TW')}
                                             </span>
                                         )}
                                         {member.claim_last_user_id && (
@@ -263,7 +260,7 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                                 className="font-mono text-[10px] text-[#CF2030]/70"
                                                 title={member.claim_last_user_id}
                                             >
-                                                by {member.claim_last_user_id.slice(0, 8)}…
+                                                by {member.claim_last_user_id.slice(0, 8)}?
                                             </span>
                                         )}
                                     </div>
@@ -271,23 +268,23 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                 <td className="p-4 text-right">
                                     <div className="flex gap-2 justify-end">
                                         <button
-                                            onClick={() => navigate(`/member-edit?id=${member.id}`)}
+                                            onClick={() => navigate(`/member-edit?idx=${member.idx ?? member.id}`)}
                                             className="px-3 py-1 bg-red-50 hover:bg-[#CF2030]/20 text-[#CF2030] rounded-full transition-colors text-sm flex items-center gap-1"
                                         >
-                                            <Edit size={14} /> 編輯
+                                            <Edit size={14} /> ??
                                         </button>
                                         <button
                                             onClick={() => handleDelete(member.id)}
                                             className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-full transition-colors text-sm flex items-center gap-1"
                                         >
-                                            <Trash2 size={14} /> 刪除
+                                            <Trash2 size={14} /> ??
                                         </button>
                                         <button
                                             onClick={() => onToggleFrozen?.(member)}
                                             className="px-3 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-full transition-colors text-sm flex items-center gap-1"
                                         >
                                             {member.frozen_at ? <RotateCcw size={14} /> : <Snowflake size={14} />}
-                                            {member.frozen_at ? '解凍' : '冷凍'}
+                                            {member.frozen_at ? '??' : '????'}
                                         </button>
                                     </div>
                                 </td>
@@ -299,21 +296,21 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
 
             {/* Pagination */}
             <div className="flex justify-between items-center mt-4 pt-4 border-t border-red-100 text-sm text-gray-500">
-                <span>第 {page} / {totalPages} 頁 · 共 {members.length} 筆</span>
+                <span>? {page} / {totalPages} ??? {members.length} ?</span>
                 <div className="flex gap-2">
                     <button
                         onClick={() => setPage(p => Math.max(p - 1, 1))}
                         disabled={page === 1}
                         className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-gray-700 border border-gray-200 disabled:opacity-30 hover:bg-red-50 transition-colors"
                     >
-                        <ChevronLeft size={14} /> 上一頁
+                        <ChevronLeft size={14} /> ???
                     </button>
                     <button
                         onClick={() => setPage(p => Math.min(p + 1, totalPages))}
                         disabled={page === totalPages}
                         className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-gray-700 border border-gray-200 disabled:opacity-30 hover:bg-red-50 transition-colors"
                     >
-                        下一頁 <ChevronRight size={14} />
+                        ??? <ChevronRight size={14} />
                     </button>
                 </div>
             </div>
