@@ -7,7 +7,46 @@ import SectionWrapper from '../components/common/SectionWrapper';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
 
+const BASE = import.meta.env.BASE_URL;
+
 const f = { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-80px" }, transition: { duration: 0.6 } };
+const fCard = { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.5 } };
+
+interface LeaderEntry { role: string; name: string | null; industry?: string; photo?: string; slug?: string; }
+
+const leadershipGroups: { label: string; cols: number; members: LeaderEntry[] }[] = [
+    {
+        label: '顧問 & 大使',
+        cols: 4,
+        members: [
+            { role: '董事顧問', name: '詹鴻鵠', industry: '自媒體商業教育', photo: `${BASE}images/members/詹鴻鵠.png`, slug: '詹鴻鵠-e678a9' },
+            { role: '大使', name: '葉炘然', industry: '中式餐廳', photo: `${BASE}images/members/葉炘然.png`, slug: '葉炘然-3c227b' },
+            { role: '助理大使', name: '楊政龍', industry: '健身教練', photo: `${BASE}images/members/楊政龍.png`, slug: '楊政龍-445174' },
+            { role: '助理大使', name: '郭亭君', industry: '社群行銷代操', photo: `${BASE}images/members/郭亭君.png`, slug: '郭亭君-aaccd1' },
+        ],
+    },
+    {
+        label: '執行主席團',
+        cols: 3,
+        members: [
+            { role: '主席', name: '吳庭彰', industry: '活動體驗企劃', photo: 'https://5pg4mz5n.us-east.insforge.app/api/storage/buckets/member-photos/objects/a229f332-ec91-45d6-bcf7-230ffb2ab6a1-1778669228366.jpg', slug: '吳庭彰' },
+            { role: '副主席', name: '汪哲宇', industry: '氣球佈置', photo: 'https://5pg4mz5n.us-east.insforge.app/api/storage/buckets/member-photos/objects/c07ab7c9-bcdf-40e4-8228-f5ad2e84a742-1778756043385.png', slug: '汪哲宇' },
+            { role: '秘書財務', name: '劉書華', industry: '移民顧問', photo: 'https://5pg4mz5n.us-east.insforge.app/api/storage/buckets/member-photos/objects/7385cd14-cda5-46c9-af7e-378f7c8512f9-1779116962613.png', slug: '劉書華' },
+        ],
+    },
+    {
+        label: '協調員',
+        cols: 3,
+        members: [
+            { role: '教育協調員', name: null },
+            { role: '活動協調員', name: null },
+            { role: '導師協調員', name: null },
+            { role: '成長協調員', name: null },
+            { role: '來賓接待組', name: null },
+            { role: '數位資訊組', name: null },
+        ],
+    },
+];
 
 const advantages = [
     { icon: Star, title: '白金等級實力', desc: '引薦品質、出席率、會員滿意度等各項指標均名列前茅。' },
@@ -67,6 +106,71 @@ const AboutUs: React.FC = () => (
                     </span>
                 ))}
             </motion.div>
+        </SectionWrapper>
+
+        {/* === 領導團隊 === */}
+        <SectionWrapper title="領導團隊" subtitle="攜手帶領長翔持續精進、共創佳績" dark className="py-14 md:py-20">
+            <div className="max-w-5xl mx-auto space-y-12">
+                {leadershipGroups.map((group) => (
+                    <div key={group.label}>
+                        <p className="text-center text-xs font-bold text-[#CF2030] uppercase tracking-widest mb-6 opacity-70">
+                            {group.label}
+                        </p>
+                        <div className={`grid gap-5 ${group.cols === 4
+                            ? 'grid-cols-2 md:grid-cols-4'
+                            : 'grid-cols-1 sm:grid-cols-3'}`}>
+                            {group.members.map((m, i) => (
+                                <motion.div
+                                    key={`${group.label}-${i}`}
+                                    {...fCard}
+                                    transition={{ ...fCard.transition, delay: i * 0.08 }}
+                                >
+                                    {m.name && m.slug ? (
+                                        <Link to={`/member/${m.slug}`} className="group block text-center">
+                                            <div className="relative mx-auto mb-3 overflow-hidden rounded-2xl shadow-sm bg-white group-hover:shadow-md transition-shadow" style={{ aspectRatio: '3/4' }}>
+                                                <img
+                                                    src={m.photo || siteConfig.defaultPhoto}
+                                                    alt={m.name}
+                                                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                                                    onError={e => { (e.target as HTMLImageElement).src = siteConfig.defaultPhoto; }}
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            </div>
+                                            <div className="inline-block px-2.5 py-0.5 bg-[#CF2030] text-white text-xs font-bold rounded-full mb-1.5">
+                                                {m.role}
+                                            </div>
+                                            <p className="font-bold text-gray-900 text-sm group-hover:text-[#CF2030] transition-colors">{m.name}</p>
+                                            {m.industry && <p className="text-gray-400 text-xs mt-0.5">{m.industry}</p>}
+                                        </Link>
+                                    ) : m.name ? (
+                                        <div className="text-center">
+                                            <div className="relative mx-auto mb-3 overflow-hidden rounded-2xl shadow-sm bg-white" style={{ aspectRatio: '3/4' }}>
+                                                <img
+                                                    src={m.photo || siteConfig.defaultPhoto}
+                                                    alt={m.name}
+                                                    className="w-full h-full object-cover object-top"
+                                                    onError={e => { (e.target as HTMLImageElement).src = siteConfig.defaultPhoto; }}
+                                                />
+                                            </div>
+                                            <div className="inline-block px-2.5 py-0.5 bg-[#CF2030] text-white text-xs font-bold rounded-full mb-1.5">{m.role}</div>
+                                            <p className="font-bold text-gray-900 text-sm">{m.name}</p>
+                                            {m.industry && <p className="text-gray-400 text-xs mt-0.5">{m.industry}</p>}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center opacity-50">
+                                            <div className="mx-auto mb-3 rounded-2xl bg-gray-100 border-2 border-dashed border-gray-200 flex items-center justify-center" style={{ aspectRatio: '3/4' }}>
+                                                <img src={siteConfig.defaultPhoto} alt="" className="w-10 h-10 object-contain opacity-30" />
+                                            </div>
+                                            <div className="inline-block px-2.5 py-0.5 bg-gray-300 text-white text-xs font-bold rounded-full mb-1.5">{m.role}</div>
+                                            <p className="text-gray-400 text-xs">待公告</p>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
         </SectionWrapper>
 
         <SectionWrapper className="text-center py-14 md:py-20">
