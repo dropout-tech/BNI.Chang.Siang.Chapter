@@ -835,26 +835,55 @@ const Admin: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* System Support Team */}
-                        <div className="col-span-2 lg:col-span-1 bg-white border border-red-100 rounded-2xl p-4 shadow-sm md:p-6 min-h-[280px] flex flex-col">
-                            <h3 className="text-xl font-bold text-gray-950 mb-6 flex items-center gap-2">
-                                <Shield size={20} className="text-[#CF2030]" /> 系統維運團隊
-                            </h3>
-                            <div className="space-y-4 flex-grow">
-                                {SYSTEM_SUPPORT_TEAM.map(({ name, role }) => (
-                                    <div key={name} className="flex items-center gap-3 p-3 bg-red-50/50 rounded-xl border border-red-100 hover:border-[#CF2030]/30 transition-colors">
-                                        <div className="w-10 h-10 rounded-full bg-[#CF2030]/20 flex items-center justify-center text-[#CF2030] text-sm font-bold border border-[#CF2030]/30">
-                                            {name[0]}
+                        {/* All Admins Panel */}
+                        <div className="col-span-2 lg:col-span-1 bg-white border border-red-100 rounded-2xl p-4 shadow-sm md:p-6 flex flex-col gap-6">
+                            {/* Member Admins — from DB */}
+                            <div>
+                                <h3 className="text-base font-bold text-gray-950 mb-3 flex items-center gap-2">
+                                    <Shield size={16} className="text-[#CF2030]" /> 會員管理員
+                                </h3>
+                                <div className="space-y-2">
+                                    {members.filter(m => m.is_admin).length === 0 ? (
+                                        <div className="text-xs text-gray-400 py-2">（載入中或尚無會員管理員）</div>
+                                    ) : members.filter(m => m.is_admin).map(m => (
+                                        <div key={m.idx ?? m.id} className="flex items-center gap-3 p-2.5 bg-red-50/50 rounded-xl border border-red-100 hover:border-[#CF2030]/30 transition-colors">
+                                            <div className="w-9 h-9 rounded-full overflow-hidden bg-[#CF2030]/10 border border-[#CF2030]/20 shrink-0">
+                                                {m.photo
+                                                    ? <img src={m.photo} alt={m.name} className="w-full h-full object-cover" />
+                                                    : <span className="w-full h-full flex items-center justify-center text-[#CF2030] text-sm font-bold">{m.name[0]}</span>
+                                                }
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="text-sm font-bold text-gray-950 truncate">{m.name}</div>
+                                                <div className="text-[10px] text-[#CF2030]/70 truncate">{m.position || m.title || m.industry || '管理員'}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="text-sm font-bold text-gray-950">{name}</div>
-                                            <div className="text-[10px] text-[#CF2030]/70 uppercase tracking-widest font-medium">{role}</div>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                            <div className="mt-6 pt-6 border-t border-gray-200">
-                                <div className="text-[10px] text-gray-500 text-center uppercase tracking-widest">
+
+                            {/* System Support — hardcoded tech team */}
+                            <div>
+                                <h3 className="text-base font-bold text-gray-950 mb-3 flex items-center gap-2">
+                                    <Shield size={16} className="text-[#CF2030]" /> 系統維運團隊
+                                </h3>
+                                <div className="space-y-2">
+                                    {SYSTEM_SUPPORT_TEAM.map(({ name, role }) => (
+                                        <div key={name} className="flex items-center gap-3 p-2.5 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
+                                            <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-bold border border-gray-300 shrink-0">
+                                                {name[0]}
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-bold text-gray-950">{name}</div>
+                                                <div className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">{role}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="pt-2 border-t border-gray-100">
+                                <div className="text-[10px] text-gray-400 text-center uppercase tracking-widest">
                                     ChangSiang Tech Support
                                 </div>
                             </div>
