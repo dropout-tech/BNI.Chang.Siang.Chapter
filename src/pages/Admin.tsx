@@ -1406,73 +1406,12 @@ const Admin: React.FC = () => {
                 {activeTab === 'roles' && (
                     <div className="space-y-6">
                         <div className="rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
-                            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="mb-6">
                                 <h3 className="text-xl font-bold text-gray-950 flex items-center gap-2">
                                     <Users size={20} className="text-[#CF2030]" /> 本會期幹部職務
-                                    <span className="text-xs font-normal text-gray-400 ml-1">修改後前台「領導團隊」自動更新</span>
+                                    <span className="text-xs font-normal text-gray-400 ml-1">選好夥伴後自動儲存，前台「領導團隊」即時更新</span>
                                 </h3>
-                                <button
-                                    onClick={() => { setShowAddRoleForm(true); setNewRoleForm({ role_name: '', role_group: '協調員', group_cols: 3, sort_order: chapterRoles.length }); }}
-                                    className="flex items-center gap-2 rounded-lg bg-[#CF2030] px-4 py-2 text-sm font-bold text-white hover:bg-[#A51926] transition-colors"
-                                >
-                                    <Plus size={16} /> 新增職務
-                                </button>
                             </div>
-
-                            {/* Add Role Form */}
-                            {showAddRoleForm && (
-                                <div className="mb-6 rounded-xl border border-red-200 bg-red-50/60 p-5">
-                                    <h4 className="font-bold text-gray-800 mb-4">新增職務</h4>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-semibold text-gray-600 mb-1">職務名稱 *</label>
-                                            <input
-                                                type="text"
-                                                value={newRoleForm.role_name}
-                                                onChange={e => setNewRoleForm(f => ({ ...f, role_name: e.target.value }))}
-                                                placeholder="例：成長協調員"
-                                                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#CF2030] focus:outline-none focus:ring-1 focus:ring-red-100"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-semibold text-gray-600 mb-1">所屬分組 *</label>
-                                            <select
-                                                value={newRoleForm.role_group}
-                                                onChange={e => setNewRoleForm(f => ({ ...f, role_group: e.target.value }))}
-                                                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#CF2030] focus:outline-none"
-                                            >
-                                                <option>顧問 & 大使</option>
-                                                <option>執行主席團</option>
-                                                <option>協調員</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-semibold text-gray-600 mb-1">每列欄數</label>
-                                            <select
-                                                value={newRoleForm.group_cols}
-                                                onChange={e => setNewRoleForm(f => ({ ...f, group_cols: Number(e.target.value) }))}
-                                                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#CF2030] focus:outline-none"
-                                            >
-                                                <option value={3}>3 欄</option>
-                                                <option value={4}>4 欄</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-semibold text-gray-600 mb-1">排序</label>
-                                            <input
-                                                type="number"
-                                                value={newRoleForm.sort_order}
-                                                onChange={e => setNewRoleForm(f => ({ ...f, sort_order: Number(e.target.value) }))}
-                                                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#CF2030] focus:outline-none"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="mt-4 flex gap-2 justify-end">
-                                        <button onClick={() => setShowAddRoleForm(false)} className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">取消</button>
-                                        <button onClick={handleAddRole} className="rounded-lg bg-[#CF2030] px-4 py-2 text-sm font-bold text-white hover:bg-[#A51926]">確定新增</button>
-                                    </div>
-                                </div>
-                            )}
 
                             {/* Role Groups */}
                             {(() => {
@@ -1497,17 +1436,10 @@ const Admin: React.FC = () => {
                                                 const assignedMember = role.members ?? members.find((m: any) => m.idx === role.member_idx);
                                                 return (
                                                     <div key={role.id} className="rounded-xl border border-gray-100 bg-gray-50/60 p-4 flex flex-col gap-3 hover:border-red-200 transition-colors">
-                                                        <div className="flex items-center justify-between">
+                                                        <div className="flex items-center">
                                                             <span className="inline-block px-2.5 py-0.5 bg-[#CF2030] text-white text-xs font-bold rounded-full">
                                                                 {role.role_name}
                                                             </span>
-                                                            <button
-                                                                onClick={() => handleDeleteRole(role.id)}
-                                                                className="text-gray-300 hover:text-red-500 transition-colors"
-                                                                title="刪除此職務"
-                                                            >
-                                                                <Trash2 size={14} />
-                                                            </button>
                                                         </div>
                                                         {assignedMember && (
                                                             <div className="flex items-center gap-2 text-sm text-gray-700">
