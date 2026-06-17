@@ -1,0 +1,1 @@
+function n(e,t){const r=(e||"member").trim().replace(/\s+/g,"-").replace(/[/?#%]+/g,"-").replace(/^-+|-+$/g,"")||"member";return t?r:`${r}-${Math.random().toString(36).slice(2,8)}`}function c(e){return`/member/${e.slug||n(e.name,e.id)}`}function a(e){if(!e)return"";try{return decodeURIComponent(e)}catch{return e}}export{a as d,c as g,n as m};

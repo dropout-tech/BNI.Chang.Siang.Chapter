@@ -5,44 +5,81 @@ import { Star, Shield, Zap, Users, TrendingUp, Award } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SectionWrapper from '../components/common/SectionWrapper';
 import SEO from '../components/common/SEO';
+import MemberCard from '../components/members/MemberCard';
 import { siteConfig } from '../config/site.config';
 import { insforge, isBackendConfigured } from '../lib/insforge';
+import { makeMemberSlug } from '../lib/memberSlug';
+import type { Member } from '../hooks/useMembers';
 
-const BASE = import.meta.env.BASE_URL;
+const f = { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-80px' }, transition: { duration: 0.6 } };
 
-const f     = { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-80px' }, transition: { duration: 0.6 } };
-const fCard = { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.5 } };
+interface RoleEntry {
+    id: number;
+    role_name: string;
+    role_group: string;
+    group_cols: number;
+    sort_order: number;
+    member: Member | null;
+}
 
-interface LeaderEntry { role: string; name: string | null; industry?: string; photo?: string; slug?: string; }
-interface LeaderGroup { label: string; cols: number; members: LeaderEntry[]; }
+interface LeaderGroup {
+    label: string;
+    cols: number;
+    roles: RoleEntry[];
+}
 
-/** Static fallback — used when DB is unavailable or empty */
-const STATIC_GROUPS: LeaderGroup[] = [
-    {
-        label: '顧問 & 大使', cols: 4,
-        members: [
-            { role: '董事顧問', name: '詹鴻鵠', industry: '自媒體商業教育', photo: `${BASE}images/members/詹鴻鵠.png`, slug: '詹鴻鵠-e678a9' },
-            { role: '大使',     name: '葉炘然', industry: '中式餐廳',       photo: `${BASE}images/members/葉炘然.png`, slug: '葉炘然-3c227b' },
-            { role: '助理大使', name: '楊政龍', industry: '健身教練',       photo: `${BASE}images/members/楊政龍.png`, slug: '楊政龍-445174' },
-            { role: '助理大使', name: '郭亭君', industry: '社群行銷代操',   photo: `${BASE}images/members/郭亭君.png`, slug: '郭亭君-aaccd1' },
-        ],
-    },
-    {
-        label: '執行主席團', cols: 3,
-        members: [
-            { role: '主席',   name: '吳庭彰', industry: '活動體驗企劃', photo: 'https://5pg4mz5n.us-east.insforge.app/api/storage/buckets/member-photos/objects/a229f332-ec91-45d6-bcf7-230ffb2ab6a1-1778669228366.jpg', slug: '吳庭彰' },
-            { role: '副主席', name: '汪哲宇', industry: '氣球佈置',     photo: 'https://5pg4mz5n.us-east.insforge.app/api/storage/buckets/member-photos/objects/c07ab7c9-bcdf-40e4-8228-f5ad2e84a742-1778756043385.png', slug: '汪哲宇' },
-            { role: '秘書財務', name: '劉書華', industry: '移民顧問',   photo: 'https://5pg4mz5n.us-east.insforge.app/api/storage/buckets/member-photos/objects/7385cd14-cda5-46c9-af7e-378f7c8512f9-1779116962613.png', slug: '劉書華' },
-        ],
-    },
-    {
-        label: '協調員', cols: 3,
-        members: [
-            { role: '教育協調員', name: null }, { role: '活動協調員', name: null }, { role: '導師協調員', name: null },
-            { role: '成長協調員', name: null }, { role: '來賓接待組', name: null }, { role: '數位資訊組', name: null },
-        ],
-    },
+/** Static fallback data */
+const STATIC_ROLES: RoleEntry[] = [
+    { id: 1, role_name: '董事顧問', role_group: '顧問 & 大使', group_cols: 4, sort_order: 1, member: { id: 43, name: '詹鴻鵠', industry: '自媒體商業教育', photo: `${import.meta.env.BASE_URL}images/members/詹鴻鵠.png`, category: '董事顧問', title: '', company: '', shortIntro: '', fullIntro: '', links: [], services: [], hashtags: [], slug: '詹鴻鵠-e678a9' } },
+    { id: 2, role_name: '大使',     role_group: '顧問 & 大使', group_cols: 4, sort_order: 2, member: { id: 44, name: '葉炘然', industry: '中式餐廳',       photo: `${import.meta.env.BASE_URL}images/members/葉炘然.png`, category: '大使', title: '', company: '', shortIntro: '', fullIntro: '', links: [], services: [], hashtags: [], slug: '葉炘然-3c227b' } },
+    { id: 3, role_name: '助理大使', role_group: '顧問 & 大使', group_cols: 4, sort_order: 3, member: { id: 45, name: '楊政龍', industry: '健身教練',       photo: `${import.meta.env.BASE_URL}images/members/楊政龍.png`, category: '助理大使', title: '', company: '', shortIntro: '', fullIntro: '', links: [], services: [], hashtags: [], slug: '楊政龍-445174' } },
+    { id: 4, role_name: '助理大使', role_group: '顧問 & 大使', group_cols: 4, sort_order: 4, member: { id: 46, name: '郭亭君', industry: '社群行銷代操',   photo: `${import.meta.env.BASE_URL}images/members/郭亭君.png`, category: '助理大使', title: '', company: '', shortIntro: '', fullIntro: '', links: [], services: [], hashtags: [], slug: '郭亭君-aaccd1' } },
+    { id: 5, role_name: '主席',     role_group: '執行主席團',  group_cols: 3, sort_order: 1, member: { id: 30, name: '吳庭彰', industry: '活動體驗企劃',   photo: 'https://5pg4mz5n.us-east.insforge.app/api/storage/buckets/member-photos/objects/a229f332-ec91-45d6-bcf7-230ffb2ab6a1-1778669228366.jpg', category: '主席', title: '', company: '', shortIntro: '', fullIntro: '', links: [], services: [], hashtags: [], slug: '吳庭彰' } },
+    { id: 6, role_name: '副主席',   role_group: '執行主席團',  group_cols: 3, sort_order: 2, member: { id: 29, name: '汪哲宇', industry: '氣球佈置',       photo: 'https://5pg4mz5n.us-east.insforge.app/api/storage/buckets/member-photos/objects/c07ab7c9-bcdf-40e4-8228-f5ad2e84a742-1778756043385.png', category: '副主席', title: '', company: '', shortIntro: '', fullIntro: '', links: [], services: [], hashtags: [], slug: '汪哲宇' } },
+    { id: 7, role_name: '秘書財務', role_group: '執行主席團',  group_cols: 3, sort_order: 3, member: { id: 38, name: '劉書華', industry: '移民顧問',       photo: 'https://5pg4mz5n.us-east.insforge.app/api/storage/buckets/member-photos/objects/7385cd14-cda5-46c9-af7e-378f7c8512f9-1779116962613.png', category: '秘書財務', title: '', company: '', shortIntro: '', fullIntro: '', links: [], services: [], hashtags: [], slug: '劉書華' } },
+    { id: 8,  role_name: '教育協調員', role_group: '協調員', group_cols: 3, sort_order: 1, member: null },
+    { id: 9,  role_name: '活動協調員', role_group: '協調員', group_cols: 3, sort_order: 2, member: null },
+    { id: 10, role_name: '導師協調員', role_group: '協調員', group_cols: 3, sort_order: 3, member: null },
+    { id: 11, role_name: '成長協調員', role_group: '協調員', group_cols: 3, sort_order: 4, member: null },
+    { id: 12, role_name: '來賓接待組', role_group: '協調員', group_cols: 3, sort_order: 5, member: null },
+    { id: 13, role_name: '數位資訊組', role_group: '協調員', group_cols: 3, sort_order: 6, member: null },
 ];
+
+function groupRoles(roles: RoleEntry[]): LeaderGroup[] {
+    const map: Record<string, LeaderGroup> = {};
+    const order: string[] = [];
+    for (const r of roles) {
+        if (!map[r.role_group]) {
+            map[r.role_group] = { label: r.role_group, cols: r.group_cols ?? 3, roles: [] };
+            order.push(r.role_group);
+        }
+        map[r.role_group].roles.push(r);
+    }
+    return order.map(g => map[g]);
+}
+
+/** Placeholder card for an unassigned role */
+const VacantCard: React.FC<{ roleName: string }> = ({ roleName }) => (
+    <div className="flex flex-col h-full">
+        <article className="relative flex h-full flex-col overflow-hidden rounded-[28px] border border-dashed border-red-100 bg-white/60 shadow-sm">
+            <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200" />
+            <div className="absolute left-5 top-5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[11px] font-bold tracking-[0.18em] text-gray-400">
+                {roleName}
+            </div>
+            <div className="flex flex-grow flex-col items-center px-6 pb-6 pt-12 text-center">
+                <div className="relative mb-5">
+                    <div className="h-32 w-32 rounded-full border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center">
+                        <img src={siteConfig.defaultPhoto} alt="" className="w-14 h-14 object-contain opacity-20" />
+                    </div>
+                </div>
+                <h3 className="mb-2 text-xl font-black tracking-tight text-gray-300">待公告</h3>
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-xs font-bold text-gray-300">
+                    {roleName}
+                </div>
+            </div>
+        </article>
+    </div>
+);
 
 const advantages = [
     { icon: Star,       title: '白金等級實力', desc: '引薦品質、出席率、會員滿意度等各項指標均名列前茅。' },
@@ -54,91 +91,54 @@ const advantages = [
 ];
 
 // ─────────────────────────────────────────────────────────────────
-// Leadership Card — shared rendering logic
-// ─────────────────────────────────────────────────────────────────
-const LeaderCard: React.FC<{ m: LeaderEntry; groupLabel: string; i: number }> = ({ m, groupLabel, i }) => (
-    <motion.div key={`${groupLabel}-${i}`} {...fCard} transition={{ ...fCard.transition, delay: i * 0.08 }}>
-        {m.name && m.slug ? (
-            <Link to={`/member/${m.slug}`} className="group block text-center">
-                <div className="relative mx-auto mb-3 overflow-hidden rounded-2xl shadow-sm bg-white group-hover:shadow-md transition-shadow" style={{ aspectRatio: '3/4' }}>
-                    <img src={m.photo || siteConfig.defaultPhoto} alt={m.name}
-                        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                        onError={e => { (e.target as HTMLImageElement).src = siteConfig.defaultPhoto; }} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <div className="inline-block px-2.5 py-0.5 bg-[#CF2030] text-white text-xs font-bold rounded-full mb-1.5">{m.role}</div>
-                <p className="font-bold text-gray-900 text-sm group-hover:text-[#CF2030] transition-colors">{m.name}</p>
-                {m.industry && <p className="text-gray-400 text-xs mt-0.5">{m.industry}</p>}
-            </Link>
-        ) : m.name ? (
-            <div className="text-center">
-                <div className="relative mx-auto mb-3 overflow-hidden rounded-2xl shadow-sm bg-white" style={{ aspectRatio: '3/4' }}>
-                    <img src={m.photo || siteConfig.defaultPhoto} alt={m.name}
-                        className="w-full h-full object-cover object-top"
-                        onError={e => { (e.target as HTMLImageElement).src = siteConfig.defaultPhoto; }} />
-                </div>
-                <div className="inline-block px-2.5 py-0.5 bg-[#CF2030] text-white text-xs font-bold rounded-full mb-1.5">{m.role}</div>
-                <p className="font-bold text-gray-900 text-sm">{m.name}</p>
-                {m.industry && <p className="text-gray-400 text-xs mt-0.5">{m.industry}</p>}
-            </div>
-        ) : (
-            <div className="text-center opacity-50">
-                <div className="mx-auto mb-3 rounded-2xl bg-gray-100 border-2 border-dashed border-gray-200 flex items-center justify-center" style={{ aspectRatio: '3/4' }}>
-                    <img src={siteConfig.defaultPhoto} alt="" className="w-10 h-10 object-contain opacity-30" />
-                </div>
-                <div className="inline-block px-2.5 py-0.5 bg-gray-300 text-white text-xs font-bold rounded-full mb-1.5">{m.role}</div>
-                <p className="text-gray-400 text-xs">待公告</p>
-            </div>
-        )}
-    </motion.div>
-);
-
-// ─────────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────────
 const AboutUs: React.FC = () => {
-    const [groups, setGroups] = useState<LeaderGroup[]>(STATIC_GROUPS);
+    const [groups, setGroups] = useState<LeaderGroup[]>(groupRoles(STATIC_ROLES));
 
     useEffect(() => {
         if (!isBackendConfigured) return;
         const load = async () => {
             try {
-                // 1. Fetch roles ordered by sort_order
-                const { data: roles, error: rolesErr } = await insforge.database
+                const { data: roles, error } = await insforge.database
                     .from('chapter_roles')
                     .select('id, role_name, role_group, group_cols, sort_order, member_idx')
                     .order('sort_order', { ascending: true });
-                if (rolesErr || !roles?.length) return;
+                if (error || !roles?.length) return;
 
-                // 2. Fetch member info for all assigned members
                 const memberIdxs = roles.map((r: any) => r.member_idx).filter(Boolean);
                 let memberMap: Record<number, any> = {};
                 if (memberIdxs.length) {
                     const { data: mems } = await insforge.database
                         .from('members')
-                        .select('idx, name, industry, photo, slug')
+                        .select('id, idx, name, industry, photo, photoPosition, category, title, company, shortIntro, fullIntro, links, services, hashtags, slug, is_gold_badge')
                         .in('idx', memberIdxs);
-                    (mems || []).forEach((m: any) => { memberMap[m.idx] = m; });
+                    (mems || []).forEach((m: any) => { memberMap[m.idx ?? m.id] = m; });
                 }
 
-                // 3. Group by role_group, preserving group_cols
-                const grouped: Record<string, LeaderGroup> = {};
-                const groupOrder: string[] = [];
-                for (const r of roles) {
-                    if (!grouped[r.role_group]) {
-                        grouped[r.role_group] = { label: r.role_group, cols: r.group_cols ?? 3, members: [] };
-                        groupOrder.push(r.role_group);
-                    }
-                    const mem = r.member_idx ? memberMap[r.member_idx] : null;
-                    grouped[r.role_group].members.push({
-                        role: r.role_name,
-                        name: mem?.name ?? null,
-                        industry: mem?.industry,
-                        photo: mem?.photo,
-                        slug: mem?.slug,
-                    });
-                }
-                const result = groupOrder.map(g => grouped[g]);
+                const entries: RoleEntry[] = roles.map((r: any) => {
+                    const raw = r.member_idx ? memberMap[r.member_idx] : null;
+                    const member: Member | null = raw ? {
+                        id: Number(raw.idx ?? raw.id),
+                        name: raw.name ?? '',
+                        industry: raw.industry ?? '',
+                        photo: raw.photo ?? '',
+                        photoPosition: raw.photoPosition,
+                        category: r.role_name,          // ← 職稱顯示在卡片左上角
+                        title: raw.title ?? '',
+                        company: raw.company ?? '',
+                        shortIntro: raw.shortIntro ?? raw.short_intro ?? '',
+                        fullIntro: raw.fullIntro ?? raw.full_intro ?? '',
+                        links: raw.links ?? [],
+                        services: raw.services ?? [],
+                        hashtags: raw.hashtags ?? [],
+                        slug: raw.slug || makeMemberSlug(raw.name, raw.idx ?? raw.id),
+                        is_gold_badge: raw.is_gold_badge,
+                    } : null;
+                    return { id: r.id, role_name: r.role_name, role_group: r.role_group, group_cols: r.group_cols ?? 3, sort_order: r.sort_order, member };
+                });
+
+                const result = groupRoles(entries);
                 if (result.length) setGroups(result);
             } catch (e) {
                 console.warn('[AboutUs] Failed to load chapter_roles, using static fallback', e);
@@ -196,18 +196,30 @@ const AboutUs: React.FC = () => {
                 </motion.div>
             </SectionWrapper>
 
-            {/* === 領導團隊（動態載入） === */}
+            {/* === 領導團隊 — 使用 MemberCard === */}
             <SectionWrapper title="領導團隊" subtitle="攜手帶領長翔持續精進、共創佳績" dark className="py-14 md:py-20">
-                <div className="max-w-5xl mx-auto space-y-12">
+                <div className="max-w-6xl mx-auto space-y-14">
                     {groups.map((group) => (
                         <div key={group.label}>
-                            <p className="text-center text-xs font-bold text-[#CF2030] uppercase tracking-widest mb-6 opacity-70">
-                                {group.label}
-                            </p>
-                            <div className={`grid gap-5 ${group.cols === 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'}`}>
-                                {group.members.map((m, i) => (
-                                    <LeaderCard key={`${group.label}-${i}`} m={m} groupLabel={group.label} i={i} />
-                                ))}
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="flex-1 h-px bg-red-100" />
+                                <span className="text-xs font-bold text-[#CF2030] uppercase tracking-widest bg-red-50 px-4 py-1.5 rounded-full border border-red-100">
+                                    {group.label}
+                                </span>
+                                <div className="flex-1 h-px bg-red-100" />
+                            </div>
+                            <div className={`grid gap-6 ${
+                                group.cols === 4
+                                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+                                    : group.roles.length <= 3
+                                        ? 'grid-cols-1 sm:grid-cols-3'
+                                        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                            }`}>
+                                {group.roles.map((r) =>
+                                    r.member
+                                        ? <MemberCard key={r.id} member={r.member} />
+                                        : <VacantCard key={r.id} roleName={r.role_name} />
+                                )}
                             </div>
                         </div>
                     ))}
