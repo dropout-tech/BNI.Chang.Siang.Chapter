@@ -2,42 +2,10 @@ import { useState, useEffect } from 'react';
 import { insforge, isBackendConfigured } from '../lib/insforge';
 import { assetUrl } from '../lib/assets';
 import { makeMemberSlug } from '../lib/memberSlug';
+import type { Member, ReferralTargets } from '../types';
 
-export interface Member {
-    idx?: number;   // real PK (SERIAL) — always present from DB
-    id: number;     // legacy integer field — may be null for new members
-    name: string;
-    industry: string;
-    photo: string;
-    photoPosition?: string;
-    category: string;
-    title: string;
-    company: string;
-    shortIntro: string;
-    fullIntro: string;
-    referral_targets?: ReferralTargets | null;
-    services: string[];
-    hashtags: string[];
-    links: { [key: string]: string } | { type: string; url: string; icon?: string }[];
-    editCount?: number;
-    updatedAt?: string;
-    phone?: string;
-    email?: string;
-    slug?: string;
-    is_gold_badge?: boolean;
-    frozen_at?: string | null;
-    frozen_by?: string | null;
-    frozen_reason?: string | null;
-    traffic_score?: number | null;
-    traffic_level?: 'green' | 'yellow' | 'red' | null;
-    latest_traffic_month?: string | null;
-}
-
-export type ReferralTargets = {
-    good?: string;
-    ideal?: string;
-    dream?: string;
-};
+// Re-export so existing callers don't break
+export type { Member, ReferralTargets };
 
 type TrafficScoreRow = {
     member_id: number;
@@ -45,6 +13,14 @@ type TrafficScoreRow = {
     score: number;
     level: 'green' | 'yellow' | 'red';
 };
+
+// Only public-safe fields — phone/email/user_id excluded from unauthenticated reads
+const PUBLIC_FIELDS = [
+    'idx', 'id', 'name', 'company', 'position', 'title', 'industry', 'category',
+    '"shortIntro"', '"fullIntro"', 'photo', '"photoPosition"',
+    'services', 'hashtags', 'links', '"editCount"', '"updatedAt"',
+    'slug', 'is_gold_badge', 'is_admin', 'frozen_at', 'referral_targets',
+].join(',');
 
 function normalizeMembers(rows: Member[]): Member[] {
     return rows
@@ -54,7 +30,6 @@ function normalizeMembers(rows: Member[]): Member[] {
             return {
                 ...member,
                 idx: realIdx,
-                // id may be null for new members; fall back to idx so slug generation is stable
                 id: Number(member.id) || realIdx,
                 slug: member.slug || makeMemberSlug(member.name, Number(member.id) || realIdx),
             };
@@ -74,12 +49,7 @@ function attachTrafficScores(rows: Member[], scores: TrafficScoreRow[]): Member[
     return rows.map((member) => {
         const latest = latestByMember.get(Number(member.idx ?? member.id));
         return latest
-            ? {
-                ...member,
-                traffic_score: latest.score,
-                traffic_level: latest.level,
-                latest_traffic_month: latest.month,
-            }
+            ? { ...member, traffic_score: latest.score, traffic_level: latest.level, latest_traffic_month: latest.month }
             : member;
     });
 }
@@ -114,7 +84,7 @@ export const useMembers = () => {
                 setLoading(true);
                 const { data, error } = await insforge.database
                     .from('members')
-                    .select('*')
+                    .select(PUBLIC_FIELDS)
                     .order('id', { ascending: true });
 
                 if (error) throw error;

@@ -2,27 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Crown, Edit, RotateCcw, Save, Shield, Snowflake, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { insforge, isBackendConfigured } from '../../lib/insforge';
-
-interface Member {
-    idx?: number;
-    id: string;
-    name: string;
-    industry?: string;
-    company?: string;
-    position?: string;
-    title?: string;
-    photo?: string;
-    is_gold_badge?: boolean;
-    is_admin?: boolean;
-    frozen_at?: string | null;
-    frozen_reason?: string | null;
-    traffic_score?: number | null;
-    traffic_level?: 'green' | 'yellow' | 'red' | null;
-    latest_traffic_month?: string | null;
-    claim_count?: number | null;
-    claim_last_at?: string | null;
-    claim_last_user_id?: string | null;
-}
+import type { Member } from '../../types';
 
 interface Props {
     members: Member[];
@@ -101,7 +81,7 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                                     )}
                                 </div>
                                 <div className="text-sm text-[#CF2030] truncate">{member.industry}</div>
-                                <div className="text-xs text-gray-500 truncate">{member.company} {member.position || member.title ? `· ${member.position || member.title}` : ''}</div>
+                                <div className="text-xs text-gray-500 truncate">{member.company} {member.position || member.title ? `? ${member.position || member.title}` : ''}</div>
                             </div>
                             {member.is_gold_badge && <Crown size={18} className="text-yellow-500" />}
                         </div>

@@ -17,7 +17,7 @@ import { DEFAULT_FAQS } from '../hooks/useFaqs';
 import { getAdminAccessSource, getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 import { SYSTEM_SUPPORT_TEAM } from '../lib/adminAccess';
 import { createReferralId } from '../lib/referralId';
-import type { AuditLog, EventEntry, FAQEntry, HomepageStat } from '../types';
+import type { AuditLog, EventEntry, FAQEntry, HomepageStat, Member } from '../types';
 
 function formatStatMonth(month: string): string {
     const [year, mon] = month.split('-');
@@ -70,7 +70,7 @@ const Admin: React.FC = () => {
     const [newRoleForm, setNewRoleForm] = useState({ role_name: '', role_group: '協調員', group_cols: 3, sort_order: 0 });
 
     // Members Data
-    const [members, setMembers] = useState<any[]>([]);
+    const [members, setMembers] = useState<Member[]>([]);
     const [memberSearch, setMemberSearch] = useState('');
     const [showFrozenMembers, setShowFrozenMembers] = useState(false);
     const [sortMembersByTraffic, setSortMembersByTraffic] = useState(false);
@@ -499,7 +499,7 @@ const Admin: React.FC = () => {
         }
     };
 
-    const handleToggleFrozen = async (member: any) => {
+    const handleToggleFrozen = async (member: Member) => {
         const memberIdx = member.idx ?? member.id;
         const isFrozen = !!member.frozen_at;
         const reason = isFrozen ? null : sanitizeText(prompt('請輸入冷凍原因（例如：離開分會、開信用狀）') || '', 120);
@@ -523,7 +523,7 @@ const Admin: React.FC = () => {
         }
     };
 
-    const handleToggleGold = async (member: any, checked: boolean) => {
+    const handleToggleGold = async (member: Member, checked: boolean) => {
         const memberIdx = member.idx ?? member.id;
         try {
             const { error } = await insforge.database
@@ -537,7 +537,7 @@ const Admin: React.FC = () => {
         }
     };
 
-    const handleToggleAdmin = async (member: any, checked: boolean) => {
+    const handleToggleAdmin = async (member: Member, checked: boolean) => {
         if (checked && !confirm(`確定要授予「${member.name}」管理員權限嗎？`)) return;
         if (!checked && !confirm(`確定要移除「${member.name}」的管理員權限嗎？`)) return;
         const memberIdx = member.idx ?? member.id;
@@ -560,7 +560,7 @@ const Admin: React.FC = () => {
         return 'red';
     };
 
-    const handleSaveTrafficScore = async (member: any, score: number) => {
+    const handleSaveTrafficScore = async (member: Member, score: number) => {
         try {
             const { error } = await insforge.database
                 .from('member_traffic_scores')

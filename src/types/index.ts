@@ -1,5 +1,6 @@
 export interface Member {
-    id: number;
+    idx?: number;               // real PK (SERIAL) — always present from DB
+    id: number;                 // legacy integer field — may be null for new members
     name: string;
     photo: string;
     industry: string;
@@ -14,18 +15,24 @@ export interface Member {
     services: string[];
     hashtags: string[];
     editCount?: number;
+    updatedAt?: string;
     photoPosition?: string;
     user_id?: string;
     email?: string;
     phone?: string;
     slug?: string;
+    is_admin?: boolean;
     is_gold_badge?: boolean;
     frozen_at?: string | null;
     frozen_by?: string | null;
     frozen_reason?: string | null;
+    frozen_reason_input?: string | null;
     traffic_score?: number | null;
     traffic_level?: 'green' | 'yellow' | 'red' | null;
     latest_traffic_month?: string | null;
+    claim_count?: number | null;
+    claim_last_at?: string | null;
+    claim_last_user_id?: string | null;
 }
 
 export interface ReferralTargets {
