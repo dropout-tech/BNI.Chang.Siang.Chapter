@@ -58,6 +58,10 @@ npm start
 
 資料庫需先執行 `scripts/member-name-industry-claim.sql`。
 
+## 忘記密碼
+
+若 InsForge 寄出六碼「Reset Password Code」，請在登入頁「忘記密碼」→「輸入驗證碼」完成重設。完整步驟見 [`PASSWORD_RESET_GUIDE.md`](./PASSWORD_RESET_GUIDE.md)。
+
 ## 品牌配置
 
 核心配置檔位於 `src/config/site.config.ts`。

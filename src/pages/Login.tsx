@@ -5,24 +5,28 @@ import { motion } from 'framer-motion';
 import { insforge, isBackendConfigured } from '../lib/insforge';
 import { getAuthRedirectUrl } from '../lib/authRedirect';
 import { useAuth } from '../contexts/auth-context';
-import { BriefcaseBusiness, Lock, Mail, AlertCircle, UserRound } from 'lucide-react';
+import { BriefcaseBusiness, KeyRound, Lock, Mail, AlertCircle, UserRound } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 import { isBypassClaimAdminEmail } from '../lib/adminAccess';
+
+type AuthMode = 'login' | 'signup' | 'forgot' | 'enter_reset_code' | 'claim' | 'reset_password';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const forceClaim = searchParams.get('claim') === 'true';
     const { user, refreshUser } = useAuth();
-    const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'claim' | 'reset_password'>('login');
+    const [mode, setMode] = useState<AuthMode>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
-    /** InsForge 信件連結回跳的 reset token（otp） */
+    /** InsForge 信件連結回跳／六碼驗證後換到的 reset token（otp） */
     const [resetOtp, setResetOtp] = useState('');
+    /** 忘記密碼信中的六碼驗證碼（resetPasswordMethod = code） */
+    const [resetCode, setResetCode] = useState('');
 
     const [claimName, setClaimName] = useState('');
     const [claimIndustry, setClaimIndustry] = useState('');
@@ -234,7 +238,7 @@ const Login: React.FC = () => {
                     throw new Error('兩次輸入的密碼不一致');
                 }
                 if (!resetOtp.trim()) {
-                    throw new Error('重設連結無效或已過期，請回到「忘記密碼」重新寄送信件。');
+                    throw new Error('重設驗證無效或已過期，請回到「忘記密碼」重新申請。');
                 }
                 const { error } = await insforge.auth.resetPassword({
                     newPassword: password,
@@ -242,17 +246,49 @@ const Login: React.FC = () => {
                 });
                 if (error) throw error;
                 setResetOtp('');
+                setResetCode('');
                 setPassword('');
                 setConfirmPassword('');
                 setMessage({ text: '密碼已更新，請使用新密碼登入。', type: 'success' });
                 setMode('login');
             } else if (mode === 'forgot') {
+                if (!validateEmail(email)) {
+                    throw new Error('請輸入有效的 Email 格式');
+                }
                 const { error } = await insforge.auth.sendResetPasswordEmail({
                     email,
                     redirectTo: getAuthRedirectUrl('login'),
                 });
                 if (error) throw error;
-                setMessage({ text: '密碼重設信已發送，請檢查您的信箱。', type: 'success' });
+                setResetCode('');
+                setMode('enter_reset_code');
+                setMessage({
+                    text: '重設密碼信已發送。若信中是六碼驗證碼，請在下方輸入；若是連結，請直接點擊信中連結。',
+                    type: 'success',
+                });
+            } else if (mode === 'enter_reset_code') {
+                if (!validateEmail(email)) {
+                    throw new Error('請輸入有效的 Email 格式');
+                }
+                const code = resetCode.trim();
+                if (!/^\d{6}$/.test(code)) {
+                    throw new Error('請輸入信箱收到的六碼數字驗證碼');
+                }
+                const { data, error } = await insforge.auth.exchangeResetPasswordToken({
+                    email: email.trim(),
+                    code,
+                });
+                if (error) throw error;
+                const token = data?.token?.trim();
+                if (!token) {
+                    throw new Error('驗證碼無效或已過期，請重新申請「忘記密碼」。');
+                }
+                setResetOtp(token);
+                setResetCode('');
+                setPassword('');
+                setConfirmPassword('');
+                setMode('reset_password');
+                setMessage({ text: '驗證成功，請設定您的新密碼。', type: 'success' });
             }
         } catch (err: any) {
             setMessage({ text: err.message, type: 'error' });
@@ -354,12 +390,23 @@ const Login: React.FC = () => {
                         {mode === 'login' && '會員登入'}
                         {mode === 'signup' && '註冊新帳號'}
                         {mode === 'forgot' && '忘記密碼'}
+                        {mode === 'enter_reset_code' && '輸入驗證碼'}
                         {mode === 'reset_password' && '設定新密碼'}
                         {mode === 'claim' && '認領您的會員檔案'}
                     </h1>
                     {(mode === 'login' || mode === 'signup') && (
                         <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
                             建議使用 Google 登入，登入後即可認領或管理您的會員資料。
+                        </p>
+                    )}
+                    {mode === 'forgot' && (
+                        <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
+                            輸入註冊用 Email，我們會寄送重設密碼信（六碼驗證碼或重設連結）。
+                        </p>
+                    )}
+                    {mode === 'enter_reset_code' && (
+                        <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
+                            請輸入信箱中的六碼驗證碼。若信中是連結，請改點擊信中連結完成重設。
                         </p>
                     )}
                     {mode === 'reset_password' && (
@@ -420,10 +467,10 @@ const Login: React.FC = () => {
                     </div>
                 )}
 
-                {/* LOGIN / SIGNUP / FORGOT / RESET PASSWORD FORM */}
-                {['login', 'signup', 'forgot', 'reset_password'].includes(mode) && (
+                {/* LOGIN / SIGNUP / FORGOT / RESET CODE / RESET PASSWORD FORM */}
+                {['login', 'signup', 'forgot', 'enter_reset_code', 'reset_password'].includes(mode) && (
                     <form onSubmit={handleAuth} className="space-y-4">
-                        {(mode === 'login' || mode === 'signup' || mode === 'forgot') && (
+                        {(mode === 'login' || mode === 'signup' || mode === 'forgot' || mode === 'enter_reset_code') && (
                         <div>
                             <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
                             <div className="relative">
@@ -435,9 +482,33 @@ const Login: React.FC = () => {
                                     className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-400 focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
                                     placeholder="name@example.com"
                                     required
+                                    autoComplete="email"
                                 />
                             </div>
                         </div>
+                        )}
+
+                        {mode === 'enter_reset_code' && (
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2">六碼驗證碼</label>
+                                <div className="relative">
+                                    <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 text-[#CF2030]" size={18} />
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="\d{6}"
+                                        maxLength={6}
+                                        value={resetCode}
+                                        onChange={e => setResetCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        className="w-full rounded-2xl border border-red-100 bg-white py-3 pl-10 pr-4 text-center text-2xl font-black tracking-[0.35em] text-gray-900 shadow-inner outline-none transition-all placeholder:text-gray-300 placeholder:tracking-[0.35em] focus:border-[#CF2030] focus:ring-4 focus:ring-[#CF2030]/10"
+                                        placeholder="000000"
+                                        required
+                                        autoComplete="one-time-code"
+                                        aria-label="六碼驗證碼"
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">請輸入信箱「Reset Password Code」中的 6 位數字</p>
+                            </div>
                         )}
 
                         {(mode === 'login' || mode === 'signup' || mode === 'reset_password') && (
@@ -492,7 +563,8 @@ const Login: React.FC = () => {
                                 mode === 'login' ? '登入' :
                                     mode === 'signup' ? '註冊' :
                                         mode === 'forgot' ? '發送重設信' :
-                                            '更新密碼'}
+                                            mode === 'enter_reset_code' ? '驗證並繼續' :
+                                                '更新密碼'}
                         </button>
 
                         {(mode === 'login' || mode === 'signup') && (
@@ -540,12 +612,85 @@ const Login: React.FC = () => {
                                 </p>
                             )}
                             {mode === 'forgot' && (
-                                <p>
-                                    想起密碼了？
-                                    <button type="button" onClick={() => setMode('login')} className="text-[#CF2030] hover:underline ml-1">
-                                        返回登入
-                                    </button>
-                                </p>
+                                <>
+                                    <p>
+                                        已收到驗證碼？
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setMessage(null);
+                                                setMode('enter_reset_code');
+                                            }}
+                                            className="text-[#CF2030] hover:underline ml-1"
+                                        >
+                                            直接輸入六碼
+                                        </button>
+                                    </p>
+                                    <p>
+                                        想起密碼了？
+                                        <button type="button" onClick={() => setMode('login')} className="text-[#CF2030] hover:underline ml-1">
+                                            返回登入
+                                        </button>
+                                    </p>
+                                </>
+                            )}
+                            {mode === 'enter_reset_code' && (
+                                <>
+                                    <p>
+                                        <button
+                                            type="button"
+                                            disabled={loading || !validateEmail(email)}
+                                            onClick={async () => {
+                                                setLoading(true);
+                                                setMessage(null);
+                                                try {
+                                                    if (!validateEmail(email)) {
+                                                        throw new Error('請輸入有效的 Email 格式');
+                                                    }
+                                                    const { error } = await insforge.auth.sendResetPasswordEmail({
+                                                        email,
+                                                        redirectTo: getAuthRedirectUrl('login'),
+                                                    });
+                                                    if (error) throw error;
+                                                    setResetCode('');
+                                                    setMessage({ text: '已重新寄送重設密碼信，請檢查信箱。', type: 'success' });
+                                                } catch (err: any) {
+                                                    setMessage({ text: err.message, type: 'error' });
+                                                } finally {
+                                                    setLoading(false);
+                                                }
+                                            }}
+                                            className="text-[#CF2030] hover:underline disabled:opacity-50"
+                                        >
+                                            重新寄送驗證碼
+                                        </button>
+                                    </p>
+                                    <p>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setResetCode('');
+                                                setMode('forgot');
+                                                setMessage(null);
+                                            }}
+                                            className="text-gray-500 hover:text-[#CF2030] text-xs"
+                                        >
+                                            返回忘記密碼
+                                        </button>
+                                        <span className="mx-2 text-gray-300">|</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setResetCode('');
+                                                setMode('login');
+                                                setMessage(null);
+                                            }}
+                                            className="text-[#CF2030] hover:underline"
+                                        >
+                                            返回登入
+                                        </button>
+                                    </p>
+                                </>
                             )}
                             {mode === 'reset_password' && (
                                 <p>
@@ -553,6 +698,7 @@ const Login: React.FC = () => {
                                         type="button"
                                         onClick={() => {
                                             setResetOtp('');
+                                            setResetCode('');
                                             setPassword('');
                                             setConfirmPassword('');
                                             setMode('login');
