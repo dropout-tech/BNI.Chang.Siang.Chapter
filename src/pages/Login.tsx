@@ -23,7 +23,15 @@ function toResetFlowErrorMessage(err: unknown): string {
     ) {
         return '驗證碼無效或已過期，請重新申請「忘記密碼」或點「重新寄送驗證碼」。';
     }
-    if (lower.includes('too many') || lower.includes('rate limit')) {
+    const waitMatch = lower.match(/please wait\s+(\d+)\s+seconds?/);
+    if (waitMatch) {
+        return `操作過於頻繁，請約 ${waitMatch[1]} 秒後再重新寄送驗證碼。`;
+    }
+    if (
+        lower.includes('too many')
+        || lower.includes('rate limit')
+        || lower.includes('before requesting another')
+    ) {
         return '操作過於頻繁，請稍後再試。';
     }
     return raw;
