@@ -12,6 +12,19 @@ import { isBypassClaimAdminEmail } from '../lib/adminAccess';
 
 type AuthMode = 'login' | 'signup' | 'forgot' | 'enter_reset_code' | 'claim' | 'reset_password';
 
+/** 將 InsForge 常見英文錯誤轉成會員看得懂的中文 */
+function toAuthErrorMessage(err: unknown): string {
+    const raw = err instanceof Error ? err.message : String(err ?? '發生未知錯誤');
+    const lower = raw.toLowerCase();
+    if (lower.includes('invalid or expired verification code') || lower.includes('invalid or expired')) {
+        return '驗證碼無效或已過期，請重新申請「忘記密碼」或點「重新寄送驗證碼」。';
+    }
+    if (lower.includes('too many') || lower.includes('rate limit')) {
+        return '操作過於頻繁，請稍後再試。';
+    }
+    return raw;
+}
+
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -290,8 +303,8 @@ const Login: React.FC = () => {
                 setMode('reset_password');
                 setMessage({ text: '驗證成功，請設定您的新密碼。', type: 'success' });
             }
-        } catch (err: any) {
-            setMessage({ text: err.message, type: 'error' });
+        } catch (err: unknown) {
+            setMessage({ text: toAuthErrorMessage(err), type: 'error' });
         } finally {
             setLoading(false);
         }
