@@ -12,11 +12,15 @@ import { isBypassClaimAdminEmail } from '../lib/adminAccess';
 
 type AuthMode = 'login' | 'signup' | 'forgot' | 'enter_reset_code' | 'claim' | 'reset_password';
 
-/** 將 InsForge 常見英文錯誤轉成會員看得懂的中文 */
-function toAuthErrorMessage(err: unknown): string {
+/** 將重設密碼流程中 InsForge 常見英文錯誤轉成中文（僅用於驗證碼／重設相關步驟） */
+function toResetFlowErrorMessage(err: unknown): string {
     const raw = err instanceof Error ? err.message : String(err ?? '發生未知錯誤');
     const lower = raw.toLowerCase();
-    if (lower.includes('invalid or expired verification code') || lower.includes('invalid or expired')) {
+    if (
+        lower.includes('invalid or expired verification code')
+        || lower.includes('invalid verification code')
+        || (lower.includes('verification code') && (lower.includes('invalid') || lower.includes('expired')))
+    ) {
         return '驗證碼無效或已過期，請重新申請「忘記密碼」或點「重新寄送驗證碼」。';
     }
     if (lower.includes('too many') || lower.includes('rate limit')) {
@@ -304,7 +308,13 @@ const Login: React.FC = () => {
                 setMessage({ text: '驗證成功，請設定您的新密碼。', type: 'success' });
             }
         } catch (err: unknown) {
-            setMessage({ text: toAuthErrorMessage(err), type: 'error' });
+            const isResetFlow = mode === 'forgot' || mode === 'enter_reset_code' || mode === 'reset_password';
+            setMessage({
+                text: isResetFlow
+                    ? toResetFlowErrorMessage(err)
+                    : (err instanceof Error ? err.message : String(err ?? '發生未知錯誤')),
+                type: 'error',
+            });
         } finally {
             setLoading(false);
         }
@@ -668,7 +678,7 @@ const Login: React.FC = () => {
                                                     setResetCode('');
                                                     setMessage({ text: '已重新寄送重設密碼信，請檢查信箱。', type: 'success' });
                                                 } catch (err: unknown) {
-                                                    setMessage({ text: toAuthErrorMessage(err), type: 'error' });
+                                                    setMessage({ text: toResetFlowErrorMessage(err), type: 'error' });
                                                 } finally {
                                                     setLoading(false);
                                                 }
