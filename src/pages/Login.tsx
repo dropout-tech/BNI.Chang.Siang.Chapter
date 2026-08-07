@@ -667,8 +667,8 @@ const Login: React.FC = () => {
                                                     if (error) throw error;
                                                     setResetCode('');
                                                     setMessage({ text: '已重新寄送重設密碼信，請檢查信箱。', type: 'success' });
-                                                } catch (err: any) {
-                                                    setMessage({ text: err.message, type: 'error' });
+                                                } catch (err: unknown) {
+                                                    setMessage({ text: toAuthErrorMessage(err), type: 'error' });
                                                 } finally {
                                                     setLoading(false);
                                                 }
