@@ -267,7 +267,7 @@ const Admin: React.FC = () => {
                     }
                 });
             const membersData = (membersRes.data || []).map((member: any) => {
-                const score = latestScoreByMember.get(Number(member.id));
+                const score = latestScoreByMember.get(Number(member.idx ?? member.id));
                 return score
                     ? {
                         ...member,

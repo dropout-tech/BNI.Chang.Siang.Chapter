@@ -51,9 +51,9 @@ const MemberWall: React.FC = () => {
                 <p className="text-gray-500">匯聚各行各業的頂尖代表</p>
             </div>
             <div className="w-full max-w-[1920px] mx-auto mask-linear-gradient">
-                <MarqueeRow speed={50}><div className="flex">{valid.slice(0, sz).map(m => <MemberThumbnail key={m.id} photo={m.photo} name={m.name} industry={m.industry} photoPosition={m.photoPosition} />)}</div></MarqueeRow>
-                <MarqueeRow direction="right" speed={55}><div className="flex">{valid.slice(sz, sz * 2).map(m => <MemberThumbnail key={m.id} photo={m.photo} name={m.name} industry={m.industry} photoPosition={m.photoPosition} />)}</div></MarqueeRow>
-                <MarqueeRow speed={60}><div className="flex">{valid.slice(sz * 2).map(m => <MemberThumbnail key={m.id} photo={m.photo} name={m.name} industry={m.industry} photoPosition={m.photoPosition} />)}</div></MarqueeRow>
+                <MarqueeRow speed={50}><div className="flex">{valid.slice(0, sz).map(m => <MemberThumbnail key={(m as any).idx ?? m.id ?? m.name} photo={m.photo} name={m.name} industry={m.industry} photoPosition={m.photoPosition} />)}</div></MarqueeRow>
+                <MarqueeRow direction="right" speed={55}><div className="flex">{valid.slice(sz, sz * 2).map(m => <MemberThumbnail key={(m as any).idx ?? m.id ?? m.name} photo={m.photo} name={m.name} industry={m.industry} photoPosition={m.photoPosition} />)}</div></MarqueeRow>
+                <MarqueeRow speed={60}><div className="flex">{valid.slice(sz * 2).map(m => <MemberThumbnail key={(m as any).idx ?? m.id ?? m.name} photo={m.photo} name={m.name} industry={m.industry} photoPosition={m.photoPosition} />)}</div></MarqueeRow>
             </div>
         </section>
     );

@@ -25,14 +25,17 @@ const PUBLIC_FIELDS = [
 function normalizeMembers(rows: Member[]): Member[] {
     return rows
         .filter((member) => !member.frozen_at)
-        .map((member, index) => {
-            const realIdx = Number((member as any).idx) || index + 1;
+        .map((member) => {
+            const rawIdx = Number((member as any).idx);
+            const rawId = Number(member.id);
+            const idx = Number.isFinite(rawIdx) && rawIdx > 0 ? rawIdx : undefined;
+            const id = Number.isFinite(rawId) && rawId > 0 ? rawId : undefined;
+            const stableKey = idx ?? id;
             return {
                 ...member,
-                idx: realIdx,
-                id: Number(member.id) || realIdx,
-                slug: member.slug || makeMemberSlug(member.name, Number(member.id) || realIdx),
-            };
+                ...(stableKey != null ? { idx: idx ?? id, id: id ?? idx } : {}),
+                slug: member.slug || makeMemberSlug(member.name, stableKey ?? 0),
+            } as Member;
         });
 }
 

@@ -109,66 +109,94 @@ const MemberEdit: React.FC = () => {
             navigate('/login');
             return;
         }
-        if (user) {
-            fetchMemberData();
-        }
-        // Re-fetch when admin switches ?idx= / ?id= between members (same route, no remount)
-    }, [user, authLoading, navigate, targetIdxParam, targetIdParam]);
+        if (!user) return;
 
-    const fetchMemberData = async () => {
-        if (!user || !isBackendConfigured) return;
-        setLoading(true);
-        setMessage(null);
-        setPhotoFile(null);
-        setPreviewUrl(null);
-        setHasChanges(false);
-        try {
-            // Prefer ?idx= (real PK) over legacy ?id= param
-            const targetIdx = targetIdxParam;
-            const targetId = targetIdParam;
-            const parsedIdx = targetIdx != null && targetIdx !== '' ? Number(targetIdx) : NaN;
-            const hasValidIdx = Number.isFinite(parsedIdx) && parsedIdx > 0;
-            const hasValidId = !!(targetId && targetId !== 'null' && targetId !== 'undefined');
-            const hasTarget = hasValidIdx || hasValidId;
-            const linkedMember = await getLinkedMemberAccount(user);
-            const adminAccess = hasAdminAccess(user, linkedMember);
-            setIsAdmin(adminAccess);
+        let cancelled = false;
+        const requestId = Date.now();
 
-            if (!linkedMember && !isBypassClaimAdminEmail(user.email)) {
-                navigate('/login');
-                return;
-            }
+        const emptyLinks = (): MemberLink[] => ([
+            { type: 'website', url: '', icon: 'website' },
+            { type: 'facebook', url: '', icon: 'facebook' },
+            { type: 'instagram', url: '', icon: 'instagram' },
+            { type: 'line', url: '', icon: 'line' },
+            { type: 'linkedin', url: '', icon: 'linkedin' },
+        ]);
 
-            if (!linkedMember && isBypassClaimAdminEmail(user.email) && !hasTarget) {
-                navigate('/admin');
-                return;
-            }
+        const resetForm = () => {
+            setMemberId('');
+            setName('');
+            setCompany('');
+            setPosition('');
+            setIndustry('');
+            setSelectedCategories([]);
+            setShortIntro('');
+            setFullIntro('');
+            setReferralTargets(EMPTY_REFERRAL_TARGETS);
+            setServices(['', '', '']);
+            setHashtags(['', '', '']);
+            setLinks(emptyLinks());
+            setPhoto('');
+            setPhotoPosition('center');
+            setPhotoFile(null);
+            setPreviewUrl(null);
+            setPhone('');
+            setEmail('');
+            setIsGoldBadge(false);
+            setTrafficMonth(new Date().toISOString().slice(0, 7));
+            setTrafficScore(0);
+            setHasChanges(false);
+            setMessage(null);
+        };
 
-            let query = insforge.database.from('members').select('*');
+        const fetchMemberData = async () => {
+            if (!isBackendConfigured) return;
+            setLoading(true);
+            resetForm();
+            try {
+                const targetIdx = targetIdxParam;
+                const targetId = targetIdParam;
+                const parsedIdx = targetIdx != null && targetIdx !== '' ? Number(targetIdx) : NaN;
+                const hasValidIdx = Number.isFinite(parsedIdx) && parsedIdx > 0;
+                const hasValidId = !!(targetId && targetId !== 'null' && targetId !== 'undefined');
+                const hasTarget = hasValidIdx || hasValidId;
+                const linkedMember = await getLinkedMemberAccount(user);
+                if (cancelled) return;
+                const adminAccess = hasAdminAccess(user, linkedMember);
+                setIsAdmin(adminAccess);
 
-            if (hasTarget && adminAccess) {
-                // Admin editing another member — prefer idx (real PK), fallback to id
-                if (hasValidIdx) {
-                    query = query.eq('idx', parsedIdx);
-                } else {
-                    query = query.eq('id', Number(targetId));
+                if (!linkedMember && !isBypassClaimAdminEmail(user.email)) {
+                    navigate('/login');
+                    return;
                 }
-            } else if (linkedMember) {
-                // Normal user editing self
-                query = query.eq('user_id', user.id);
-            } else {
-                navigate('/admin');
-                return;
-            }
 
-            const { data, error } = await query.single();
+                if (!linkedMember && isBypassClaimAdminEmail(user.email) && !hasTarget) {
+                    navigate('/admin');
+                    return;
+                }
 
-            if (error) throw error;
-            if (data) {
-                const m = data as Member & { idx?: number };
-                // Use idx (real PK) as memberId for all subsequent updates
+                let query = insforge.database.from('members').select('*');
+
+                if (hasTarget && adminAccess) {
+                    if (hasValidIdx) {
+                        query = query.eq('idx', parsedIdx);
+                    } else {
+                        query = query.eq('id', Number(targetId));
+                    }
+                } else if (linkedMember) {
+                    query = query.eq('user_id', user.id);
+                } else {
+                    navigate('/admin');
+                    return;
+                }
+
+                const { data, error } = await query.single();
+                if (cancelled) return;
+                if (error) throw error;
+                if (!data) return;
+
+                const m = data as Member & { idx?: number; links?: any };
                 setMemberId(String(m.idx ?? m.id));
-                setName(m.name);
+                setName(m.name || '');
                 setCompany(m.company || '');
                 setPosition(m.position || m.title || '');
                 setIndustry(m.industry || '');
@@ -185,17 +213,20 @@ const MemberEdit: React.FC = () => {
                     const { data: scoreData } = await insforge.database
                         .from('member_traffic_scores')
                         .select('*')
-                        .eq('member_id', Number((m as any).idx ?? m.id))
+                        .eq('member_id', Number(m.idx ?? m.id))
                         .order('month', { ascending: false })
                         .limit(1)
                         .maybeSingle();
+                    if (cancelled) return;
                     if (scoreData) {
                         setTrafficMonth(scoreData.month);
                         setTrafficScore(scoreData.score || 0);
+                    } else {
+                        setTrafficMonth(new Date().toISOString().slice(0, 7));
+                        setTrafficScore(0);
                     }
                 }
 
-                // Handle Arrays
                 if (m.category) {
                     const loadedCats = m.category.split(',').map(c => c.trim()).filter(Boolean);
                     const normalizedCats = loadedCats.map(c => {
@@ -205,45 +236,56 @@ const MemberEdit: React.FC = () => {
                         return c;
                     });
                     setSelectedCategories(normalizedCats);
-                }
-                if (m.services && Array.isArray(m.services)) {
-                    setServices([...m.services, '', '', ''].slice(0, 3));
-                }
-                if (m.hashtags && Array.isArray(m.hashtags)) {
-                    setHashtags([...m.hashtags, '', '', ''].slice(0, 3));
+                } else {
+                    setSelectedCategories([]);
                 }
 
-                // Handle Links
-                const newLinks = [...links];
+                setServices(
+                    m.services && Array.isArray(m.services)
+                        ? [...m.services, '', '', ''].slice(0, 3)
+                        : ['', '', '']
+                );
+                setHashtags(
+                    m.hashtags && Array.isArray(m.hashtags)
+                        ? [...m.hashtags, '', '', ''].slice(0, 3)
+                        : ['', '', '']
+                );
+
+                const nextLinks = emptyLinks();
                 if (m.links) {
                     if (Array.isArray(m.links)) {
-                        m.links.forEach(l => {
-                            const idx = newLinks.findIndex(nl => nl.type === l.type);
-                            if (idx !== -1) newLinks[idx].url = l.url;
+                        m.links.forEach((l: MemberLink) => {
+                            const i = nextLinks.findIndex(nl => nl.type === l.type);
+                            if (i !== -1) nextLinks[i].url = l.url || '';
                         });
                     } else if (typeof m.links === 'object') {
                         Object.entries(m.links).forEach(([key, url]) => {
-                            const idx = newLinks.findIndex(nl => nl.type === key);
-                            if (idx !== -1) newLinks[idx].url = url as string;
+                            const i = nextLinks.findIndex(nl => nl.type === key);
+                            if (i !== -1) nextLinks[i].url = String(url || '');
                         });
                     }
                 }
-                setLinks(newLinks);
-
-                // After initial load, we have no changes
+                setLinks(nextLinks);
                 setHasChanges(false);
+            } catch (err: any) {
+                if (cancelled) return;
+                console.error('Error fetching member:', err);
+                if (err.code === 'PGRST116' || err.code === '406' || err.status === 406) {
+                    navigate('/login');
+                    return;
+                }
+                setMessage({ text: '無法載入會員資料', type: 'error' });
+            } finally {
+                if (!cancelled) setLoading(false);
             }
-        } catch (err: any) {
-            console.error('Error fetching member:', err);
-            if (err.code === 'PGRST116' || err.code === '406' || err.status === 406) {
-                navigate('/login');
-                return;
-            }
-            setMessage({ text: '無法載入會員資料', type: 'error' });
-        } finally {
-            setLoading(false);
-        }
-    };
+        };
+
+        void fetchMemberData();
+        return () => {
+            cancelled = true;
+            void requestId;
+        };
+    }, [user, authLoading, navigate, targetIdxParam, targetIdParam]);
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -309,7 +351,8 @@ const MemberEdit: React.FC = () => {
                     .upload(filePath, photoFile);
 
                 if (uploadError) throw uploadError;
-                currentPhotoUrl = uploadData?.url || '';
+                if (!uploadData?.url) throw new Error('照片上傳成功但未取得網址，請重試');
+                currentPhotoUrl = uploadData.url;
             }
 
             const linksObject: { [key: string]: string } = {};

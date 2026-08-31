@@ -116,7 +116,7 @@ const Members: React.FC = () => {
             />
             <PageHero
                 title="台灣商會會員"
-                subtitle={<>BNI 長翔名人堂白金分會 — 五大產業鏈、39 位優質台灣企業家<br />我們為夥伴的生意著想，也為夥伴的生意做引薦</>}
+                subtitle={<>BNI 長翔名人堂白金分會 — 五大產業鏈、{members.length || '多'} 位優質台灣企業家<br />我們為夥伴的生意著想，也為夥伴的生意做引薦</>}
             />
 
             <div className="container mx-auto px-4 py-8 relative z-10 pt-4 md:pt-10">
@@ -166,7 +166,7 @@ const Members: React.FC = () => {
                         {filteredMembers.map(member => (
                             <motion.div
                                 layout
-                                key={member.id || member.name}
+                                key={(member as any).idx ?? member.id ?? member.slug ?? member.name}
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
