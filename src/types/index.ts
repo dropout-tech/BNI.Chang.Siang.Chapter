@@ -113,6 +113,7 @@ export interface EventEntry {
     description: string;
     icon_name?: string;
     cover_image?: string;
+    youtube_url?: string;
     is_published: boolean;
     sort_order: number;
     created_at?: string;

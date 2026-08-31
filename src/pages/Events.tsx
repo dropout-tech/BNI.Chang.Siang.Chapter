@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Zap, Users, GraduationCap, PartyPopper, type LucideIcon } from 'lucide-react';
+import { Calendar, Zap, Users, GraduationCap, PartyPopper, Youtube, type LucideIcon } from 'lucide-react';
 import PageHero from '../components/common/PageHero';
 import SectionWrapper from '../components/common/SectionWrapper';
 import SEO from '../components/common/SEO';
@@ -24,6 +24,33 @@ const STATIC_EVENTS: EventEntry[] = [
     { title: '年度尾牙春酒', category: '尾牙春酒', event_date: '每年舉辦', description: '歲末年初的歡聚時刻。精彩表演、豐富抽獎，還有夥伴們發自內心的感謝與祝福。', icon_name: 'PartyPopper', is_published: true, sort_order: 2 },
     { title: '引薦技巧工作坊', category: '教育訓練', event_date: '不定期', description: '邀請 BNI 資深顧問進行專題訓練，全面提升夥伴的引薦能力與信心。', icon_name: 'GraduationCap', is_published: true, sort_order: 3 },
 ];
+
+function youtubeEmbedUrl(url?: string): string | null {
+    if (!url) return null;
+    try {
+        const u = new URL(url);
+        if (u.hostname.includes('youtu.be')) {
+            const id = u.pathname.replace('/', '');
+            return id ? `https://www.youtube.com/embed/${id}` : null;
+        }
+        if (u.hostname.includes('youtube.com')) {
+            const id = u.searchParams.get('v');
+            if (id) return `https://www.youtube.com/embed/${id}`;
+            const parts = u.pathname.split('/');
+            const embedIdx = parts.indexOf('embed');
+            if (embedIdx >= 0 && parts[embedIdx + 1]) {
+                return `https://www.youtube.com/embed/${parts[embedIdx + 1]}`;
+            }
+            const shortsIdx = parts.indexOf('shorts');
+            if (shortsIdx >= 0 && parts[shortsIdx + 1]) {
+                return `https://www.youtube.com/embed/${parts[shortsIdx + 1]}`;
+            }
+        }
+    } catch {
+        return null;
+    }
+    return null;
+}
 
 const Events: React.FC = () => {
     const [displayEvents, setDisplayEvents] = useState<EventEntry[]>(STATIC_EVENTS);
@@ -55,14 +82,21 @@ const Events: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
                     {displayEvents.map((ev, i) => {
                         const Icon = ICON_MAP[ev.icon_name || 'Calendar'] ?? Calendar;
+                        const embed = youtubeEmbedUrl(ev.youtube_url);
                         return (
                             <motion.div key={ev.id ?? ev.title} {...f} transition={{ ...f.transition, delay: i * 0.1 }}
                                 className="bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-[#CF2030]/20 rounded-2xl overflow-hidden group transition-all duration-300 hover:-translate-y-1">
                                 <div className="h-48 bg-gradient-to-br from-[#102A43] to-[#0A1628] flex items-center justify-center relative overflow-hidden">
-                                    <div className="absolute inset-0 opacity-[0.05]" style={{ background: 'radial-gradient(circle at 30% 50%, #D4AF37, transparent 70%)' }} />
-                                    <Icon size={48} className="text-[#CF2030]/30 group-hover:text-[#CF2030]/50 transition-colors" />
+                                    {ev.cover_image ? (
+                                        <img src={ev.cover_image} alt={ev.title} className="absolute inset-0 w-full h-full object-cover" />
+                                    ) : (
+                                        <>
+                                            <div className="absolute inset-0 opacity-[0.05]" style={{ background: 'radial-gradient(circle at 30% 50%, #D4AF37, transparent 70%)' }} />
+                                            <Icon size={48} className="text-[#CF2030]/30 group-hover:text-[#CF2030]/50 transition-colors" />
+                                        </>
+                                    )}
                                     <div className="absolute top-4 right-4">
-                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#CF2030]/10 text-[#CF2030] border border-[#CF2030]/20">{ev.category}</span>
+                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#CF2030]/10 text-[#CF2030] border border-[#CF2030]/20 backdrop-blur-sm">{ev.category}</span>
                                     </div>
                                 </div>
                                 <div className="p-6">
@@ -71,6 +105,27 @@ const Events: React.FC = () => {
                                     </div>
                                     <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-[#CF2030] transition-colors">{ev.title}</h3>
                                     <p className="text-gray-500 text-sm leading-relaxed">{ev.description}</p>
+                                    {embed && (
+                                        <div className="mt-4 aspect-video rounded-xl overflow-hidden border border-gray-100">
+                                            <iframe
+                                                src={embed}
+                                                title={`${ev.title} YouTube`}
+                                                className="w-full h-full"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    )}
+                                    {!embed && ev.youtube_url && (
+                                        <a
+                                            href={ev.youtube_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#CF2030] hover:underline"
+                                        >
+                                            <Youtube size={16} /> 觀看 YouTube
+                                        </a>
+                                    )}
                                 </div>
                             </motion.div>
                         );

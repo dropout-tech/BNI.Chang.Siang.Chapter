@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Save, AlertCircle, X, Camera, ArrowLeft, LogOut, KeyRound } from 'lucide-react';
 import { insforge, isBackendConfigured } from '../lib/insforge';
@@ -56,6 +56,9 @@ function normalizeReferralTargets(value: unknown, fullIntro: string): ReferralTa
 const MemberEdit: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const targetIdxParam = searchParams.get('idx');
+    const targetIdParam = searchParams.get('id');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
 
@@ -109,17 +112,24 @@ const MemberEdit: React.FC = () => {
         if (user) {
             fetchMemberData();
         }
-    }, [user, authLoading, navigate]);
+        // Re-fetch when admin switches ?idx= / ?id= between members (same route, no remount)
+    }, [user, authLoading, navigate, targetIdxParam, targetIdParam]);
 
     const fetchMemberData = async () => {
         if (!user || !isBackendConfigured) return;
         setLoading(true);
+        setMessage(null);
+        setPhotoFile(null);
+        setPreviewUrl(null);
+        setHasChanges(false);
         try {
-            const searchParams = new URLSearchParams(window.location.search);
             // Prefer ?idx= (real PK) over legacy ?id= param
-            const targetIdx = searchParams.get('idx');
-            const targetId = searchParams.get('id');
-            const hasTarget = !!(targetIdx || targetId);
+            const targetIdx = targetIdxParam;
+            const targetId = targetIdParam;
+            const parsedIdx = targetIdx != null && targetIdx !== '' ? Number(targetIdx) : NaN;
+            const hasValidIdx = Number.isFinite(parsedIdx) && parsedIdx > 0;
+            const hasValidId = !!(targetId && targetId !== 'null' && targetId !== 'undefined');
+            const hasTarget = hasValidIdx || hasValidId;
             const linkedMember = await getLinkedMemberAccount(user);
             const adminAccess = hasAdminAccess(user, linkedMember);
             setIsAdmin(adminAccess);
@@ -138,10 +148,10 @@ const MemberEdit: React.FC = () => {
 
             if (hasTarget && adminAccess) {
                 // Admin editing another member — prefer idx (real PK), fallback to id
-                if (targetIdx) {
-                    query = query.eq('idx', Number(targetIdx));
+                if (hasValidIdx) {
+                    query = query.eq('idx', parsedIdx);
                 } else {
-                    query = query.eq('id', targetId);
+                    query = query.eq('id', Number(targetId));
                 }
             } else if (linkedMember) {
                 // Normal user editing self

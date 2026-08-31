@@ -16,6 +16,17 @@ interface Props {
 
 const ITEMS_PER_PAGE = 10;
 
+/** Stable unique key — always prefer idx (real PK), never rely on nullable business id */
+function memberKey(member: Member): string {
+    const key = member.idx ?? member.id;
+    return key != null && key !== '' ? String(key) : `name-${member.name}`;
+}
+
+function memberIdx(member: Member): number | null {
+    const n = Number(member.idx ?? member.id);
+    return Number.isFinite(n) && n > 0 ? n : null;
+}
+
 const getTrafficLevel = (score: number): 'green' | 'yellow' | 'red' => {
     if (score >= 70) return 'green';
     if (score >= 40) return 'yellow';
@@ -36,109 +47,132 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
     useEffect(() => {
         const nextDrafts: Record<string, number> = {};
         members.forEach((member) => {
-            nextDrafts[member.id] = member.traffic_score ?? 0;
+            nextDrafts[memberKey(member)] = member.traffic_score ?? 0;
         });
         setScoreDrafts(nextDrafts);
+        setPage((p) => {
+            const maxPage = Math.max(1, Math.ceil(members.length / ITEMS_PER_PAGE));
+            return Math.min(p, maxPage);
+        });
     }, [members]);
 
     const totalPages = Math.max(1, Math.ceil(members.length / ITEMS_PER_PAGE));
     const startIdx = (page - 1) * ITEMS_PER_PAGE;
     const displayed = members.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('??????????????????')) return;
+    const openEdit = (member: Member) => {
+        const idx = memberIdx(member);
+        if (idx == null) {
+            alert('此會員缺少有效編號，無法開啟編輯頁');
+            return;
+        }
+        navigate(`/member-edit?idx=${idx}`);
+    };
+
+    const handleDelete = async (member: Member) => {
+        if (!confirm('確定要刪除這位會員？')) return;
         if (!isBackendConfigured) return;
-        const { error } = await insforge.database.from('members').delete().eq('id', id);
+        const idx = memberIdx(member);
+        if (idx == null) {
+            alert('刪除失敗：缺少有效編號');
+            return;
+        }
+        const { error } = await insforge.database.from('members').delete().eq('idx', idx);
         if (error) {
-            alert('????: ' + error.message);
+            alert('刪除失敗: ' + error.message);
         } else {
-            alert('???');
+            alert('已刪除');
             onRefresh();
         }
     };
 
     if (displayed.length === 0) {
-        return <div className="text-center text-gray-500 py-8">????????</div>;
+        return <div className="text-center text-gray-500 py-8">目前沒有會員資料</div>;
     }
 
     return (
         <div>
             {/* Mobile: Card Layout */}
             <div className="md:hidden space-y-3">
-                {displayed.map(member => (
-                    <div key={member.id} className="rounded-xl border border-red-100 bg-white p-4 shadow-sm">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-12 h-12 rounded-full overflow-hidden bg-red-50 shrink-0">
-                                {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                                <div className="font-bold text-gray-950 truncate flex items-center gap-2">
-                                    {member.name}
-                                    {member.frozen_at && (
-                                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-500 shrink-0">
-                                            <Snowflake size={10} /> ??
-                                        </span>
-                                    )}
+                {displayed.map(member => {
+                    const key = memberKey(member);
+                    return (
+                        <div key={key} className="rounded-xl border border-red-100 bg-white p-4 shadow-sm">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-12 h-12 rounded-full overflow-hidden bg-red-50 shrink-0">
+                                    {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
                                 </div>
-                                <div className="text-sm text-[#CF2030] truncate">{member.industry}</div>
-                                <div className="text-xs text-gray-500 truncate">{member.company} {member.position || member.title ? `? ${member.position || member.title}` : ''}</div>
+                                <div className="min-w-0 flex-1">
+                                    <div className="font-bold text-gray-950 truncate flex items-center gap-2">
+                                        {member.name}
+                                        {member.frozen_at && (
+                                            <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-500 shrink-0">
+                                                <Snowflake size={10} /> 冷凍
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="text-sm text-[#CF2030] truncate">{member.industry}</div>
+                                    <div className="text-xs text-gray-500 truncate">
+                                        {member.company}
+                                        {member.position || member.title ? ` · ${member.position || member.title}` : ''}
+                                    </div>
+                                </div>
+                                {member.is_gold_badge && <Crown size={18} className="text-yellow-500" />}
                             </div>
-                            {member.is_gold_badge && <Crown size={18} className="text-yellow-500" />}
-                        </div>
-                        <div className="mb-3 grid grid-cols-2 gap-2 text-xs">
-                            <label className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-gray-600">
-                                <input
-                                    type="checkbox"
-                                    checked={member.is_gold_badge === true}
-                                    onChange={(event) => onToggleGold?.(member, event.target.checked)}
-                                />
-                                <Crown size={12} className="text-yellow-500" /> ????
-                            </label>
-                            <label className={`flex items-center gap-2 rounded-lg px-3 py-2 ${member.is_admin ? 'bg-red-50 text-[#CF2030] font-bold' : 'bg-white text-gray-600'}`}>
-                                <input
-                                    type="checkbox"
-                                    checked={member.is_admin === true}
-                                    onChange={(event) => onToggleAdmin?.(member, event.target.checked)}
-                                />
-                                <Shield size={12} /> ???
-                            </label>
-                            <div className={`rounded-lg border px-3 py-2 text-center font-bold ${levelClassName[member.traffic_level || getTrafficLevel(scoreDrafts[member.id] ?? 0)]}`}>
-                                ??? {scoreDrafts[member.id] ?? 0}
+                            <div className="mb-3 grid grid-cols-2 gap-2 text-xs">
+                                <label className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-gray-600">
+                                    <input
+                                        type="checkbox"
+                                        checked={member.is_gold_badge === true}
+                                        onChange={(event) => onToggleGold?.(member, event.target.checked)}
+                                    />
+                                    <Crown size={12} className="text-yellow-500" /> 金章
+                                </label>
+                                <label className={`flex items-center gap-2 rounded-lg px-3 py-2 ${member.is_admin ? 'bg-red-50 text-[#CF2030] font-bold' : 'bg-white text-gray-600'}`}>
+                                    <input
+                                        type="checkbox"
+                                        checked={member.is_admin === true}
+                                        onChange={(event) => onToggleAdmin?.(member, event.target.checked)}
+                                    />
+                                    <Shield size={12} /> 管理員
+                                </label>
+                                <div className={`rounded-lg border px-3 py-2 text-center font-bold ${levelClassName[member.traffic_level || getTrafficLevel(scoreDrafts[key] ?? 0)]}`}>
+                                    紅綠燈 {scoreDrafts[key] ?? 0}
+                                </div>
                             </div>
-                        </div>
-                        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-                            <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
-                                ?? {member.claim_count ?? 0} ?
-                            </span>
-                            {member.claim_last_at && <span className="text-[#A01828]">?????{new Date(member.claim_last_at).toLocaleDateString('zh-TW')}</span>}
-                            {member.claim_last_user_id && (
-                                <span className="font-mono text-[10px] text-[#CF2030]/70" title={member.claim_last_user_id}>
-                                    by {member.claim_last_user_id.slice(0, 8)}?
+                            <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
+                                <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
+                                    認領 {member.claim_count ?? 0} 次
                                 </span>
-                            )}
+                                {member.claim_last_at && (
+                                    <span className="text-[#A01828]">
+                                        上次 {new Date(member.claim_last_at).toLocaleDateString('zh-TW')}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => openEdit(member)}
+                                    className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-50 hover:bg-[#CF2030]/20 text-[#CF2030] rounded-lg transition-colors text-sm font-medium"
+                                >
+                                    <Edit size={14} /> 編輯
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(member)}
+                                    className="flex items-center justify-center gap-1.5 py-2 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors text-sm font-medium"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                                <button
+                                    onClick={() => onToggleFrozen?.(member)}
+                                    className="flex items-center justify-center gap-1.5 py-2 px-4 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-lg transition-colors text-sm font-medium"
+                                >
+                                    {member.frozen_at ? <RotateCcw size={14} /> : <Snowflake size={14} />}
+                                </button>
+                            </div>
                         </div>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => navigate(`/member-edit?idx=${member.idx ?? member.id}`)}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-50 hover:bg-[#CF2030]/20 text-[#CF2030] rounded-lg transition-colors text-sm font-medium"
-                            >
-                                <Edit size={14} /> ??
-                            </button>
-                            <button
-                                onClick={() => handleDelete(member.id)}
-                                className="flex items-center justify-center gap-1.5 py-2 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors text-sm font-medium"
-                            >
-                                <Trash2 size={14} />
-                            </button>
-                            <button
-                                onClick={() => onToggleFrozen?.(member)}
-                                className="flex items-center justify-center gap-1.5 py-2 px-4 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-lg transition-colors text-sm font-medium"
-                            >
-                                {member.frozen_at ? <RotateCcw size={14} /> : <Snowflake size={14} />}
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Desktop: Table Layout */}
@@ -146,151 +180,148 @@ const MemberList: React.FC<Props> = ({ members, onRefresh, onToggleFrozen, onTog
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="text-sm text-gray-500 border-b border-red-100">
-                            <th className="p-4">??</th>
-                            <th className="p-4">?????</th>
-                            <th className="p-4">??</th>
-                            <th className="p-4">??</th>
-                            <th className="p-4">???</th>
-                            <th className="p-4">?????</th>
-                            <th className="p-4">????</th>
-                            <th className="p-4 text-right">??</th>
+                            <th className="p-4">會員</th>
+                            <th className="p-4">產業 / 公司</th>
+                            <th className="p-4">職稱</th>
+                            <th className="p-4">金章</th>
+                            <th className="p-4">管理員</th>
+                            <th className="p-4">紅綠燈</th>
+                            <th className="p-4">認領紀錄</th>
+                            <th className="p-4 text-right">操作</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {displayed.map(member => (
-                            <tr key={member.id} className="border-b border-red-50 hover:bg-red-50/50 transition-colors">
-                                <td className="p-4 flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-red-50 shrink-0">
-                                        {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
-                                    </div>
-                                    <div>
-                                        <span className="font-medium text-gray-950">{member.name}</span>
-                                        {member.frozen_at && (
-                                            <div className="inline-flex items-center gap-1 ml-2 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-500">
-                                                <Snowflake size={10} /> ??
+                        {displayed.map(member => {
+                            const key = memberKey(member);
+                            return (
+                                <tr key={key} className="border-b border-red-50 hover:bg-red-50/50 transition-colors">
+                                    <td className="p-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full overflow-hidden bg-red-50 shrink-0">
+                                                {member.photo && <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />}
                                             </div>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="p-4 text-gray-600">
-                                    <div className="text-gray-950 text-sm">{member.industry}</div>
-                                    <div className="text-xs opacity-70">{member.company}</div>
-                                </td>
-                                <td className="p-4 text-gray-600 text-sm">
-                                    {member.position || member.title}
-                                </td>
-                                <td className="p-4">
-                                    <label className="inline-flex items-center gap-2 text-sm text-gray-600">
-                                        <input
-                                            type="checkbox"
-                                            checked={member.is_gold_badge === true}
-                                            onChange={(event) => onToggleGold?.(member, event.target.checked)}
-                                            className="h-4 w-4 accent-[#CF2030]"
-                                        />
-                                        {member.is_gold_badge && <Crown size={16} className="text-yellow-500" />}
-                                    </label>
-                                </td>
-                                <td className="p-4">
-                                    <label className={`inline-flex items-center gap-2 text-sm rounded-full px-2 py-1 ${member.is_admin ? 'bg-red-50 text-[#CF2030] font-bold' : 'text-gray-500'}`}>
-                                        <input
-                                            type="checkbox"
-                                            checked={member.is_admin === true}
-                                            onChange={(event) => onToggleAdmin?.(member, event.target.checked)}
-                                            className="h-4 w-4 accent-[#CF2030]"
-                                        />
-                                        <Shield size={14} />
-                                    </label>
-                                </td>
-                                <td className="p-4">
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="number"
-                                            min={0}
-                                            value={scoreDrafts[member.id] ?? 0}
-                                            onChange={(event) => setScoreDrafts(prev => ({ ...prev, [member.id]: Number(event.target.value) }))}
-                                            className="w-20 rounded-lg border border-gray-200 bg-white px-2 py-1 text-sm text-gray-800"
-                                        />
-                                        <span className={`rounded-full border px-2 py-1 text-xs font-bold ${levelClassName[member.traffic_level || getTrafficLevel(scoreDrafts[member.id] ?? 0)]}`}>
-                                            {member.traffic_level || getTrafficLevel(scoreDrafts[member.id] ?? 0)}
-                                        </span>
-                                        <button
-                                            onClick={() => onSaveTrafficScore?.(member, scoreDrafts[member.id] ?? 0)}
-                                            className="rounded-full bg-[#CF2030] p-1.5 text-white"
-                                            title="???????"
-                                        >
-                                            <Save size={14} />
-                                        </button>
-                                    </div>
-                                    {member.latest_traffic_month && (
-                                        <div className="mt-1 text-xs text-gray-500">{member.latest_traffic_month}</div>
-                                    )}
-                                </td>
-                                <td className="p-4">
-                                    <div className="flex flex-col gap-2">
-                                        <span className="inline-flex w-fit rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-                                            ?? {member.claim_count ?? 0} ?
-                                        </span>
-                                        {member.claim_last_at && (
-                                            <span className="text-xs text-[#A01828]">
-                                                ???{new Date(member.claim_last_at).toLocaleDateString('zh-TW')}
+                                            <div>
+                                                <span className="font-medium text-gray-950">{member.name}</span>
+                                                {member.frozen_at && (
+                                                    <div className="inline-flex items-center gap-1 ml-2 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-500">
+                                                        <Snowflake size={10} /> 冷凍
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="p-4 text-gray-600">
+                                        <div className="text-gray-950 text-sm">{member.industry}</div>
+                                        <div className="text-xs opacity-70">{member.company}</div>
+                                    </td>
+                                    <td className="p-4 text-gray-600 text-sm">
+                                        {member.position || member.title}
+                                    </td>
+                                    <td className="p-4">
+                                        <label className="inline-flex items-center gap-2 text-sm text-gray-600">
+                                            <input
+                                                type="checkbox"
+                                                checked={member.is_gold_badge === true}
+                                                onChange={(event) => onToggleGold?.(member, event.target.checked)}
+                                                className="h-4 w-4 accent-[#CF2030]"
+                                            />
+                                            {member.is_gold_badge && <Crown size={16} className="text-yellow-500" />}
+                                        </label>
+                                    </td>
+                                    <td className="p-4">
+                                        <label className={`inline-flex items-center gap-2 text-sm rounded-full px-2 py-1 ${member.is_admin ? 'bg-red-50 text-[#CF2030] font-bold' : 'text-gray-500'}`}>
+                                            <input
+                                                type="checkbox"
+                                                checked={member.is_admin === true}
+                                                onChange={(event) => onToggleAdmin?.(member, event.target.checked)}
+                                                className="h-4 w-4 accent-[#CF2030]"
+                                            />
+                                            <Shield size={14} />
+                                        </label>
+                                    </td>
+                                    <td className="p-4">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="number"
+                                                min={0}
+                                                value={scoreDrafts[key] ?? 0}
+                                                onChange={(event) => setScoreDrafts(prev => ({ ...prev, [key]: Number(event.target.value) }))}
+                                                className="w-20 rounded-lg border border-gray-200 bg-white px-2 py-1 text-sm text-gray-800"
+                                            />
+                                            <span className={`rounded-full border px-2 py-1 text-xs font-bold ${levelClassName[member.traffic_level || getTrafficLevel(scoreDrafts[key] ?? 0)]}`}>
+                                                {member.traffic_level || getTrafficLevel(scoreDrafts[key] ?? 0)}
                                             </span>
-                                        )}
-                                        {member.claim_last_user_id && (
-                                            <span
-                                                className="font-mono text-[10px] text-[#CF2030]/70"
-                                                title={member.claim_last_user_id}
+                                            <button
+                                                onClick={() => onSaveTrafficScore?.(member, scoreDrafts[key] ?? 0)}
+                                                className="rounded-full bg-[#CF2030] p-1.5 text-white"
+                                                title="儲存紅綠燈分數"
                                             >
-                                                by {member.claim_last_user_id.slice(0, 8)}?
-                                            </span>
+                                                <Save size={14} />
+                                            </button>
+                                        </div>
+                                        {member.latest_traffic_month && (
+                                            <div className="mt-1 text-xs text-gray-500">{member.latest_traffic_month}</div>
                                         )}
-                                    </div>
-                                </td>
-                                <td className="p-4 text-right">
-                                    <div className="flex gap-2 justify-end">
-                                        <button
-                                            onClick={() => navigate(`/member-edit?idx=${member.idx ?? member.id}`)}
-                                            className="px-3 py-1 bg-red-50 hover:bg-[#CF2030]/20 text-[#CF2030] rounded-full transition-colors text-sm flex items-center gap-1"
-                                        >
-                                            <Edit size={14} /> ??
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(member.id)}
-                                            className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-full transition-colors text-sm flex items-center gap-1"
-                                        >
-                                            <Trash2 size={14} /> ??
-                                        </button>
-                                        <button
-                                            onClick={() => onToggleFrozen?.(member)}
-                                            className="px-3 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-full transition-colors text-sm flex items-center gap-1"
-                                        >
-                                            {member.frozen_at ? <RotateCcw size={14} /> : <Snowflake size={14} />}
-                                            {member.frozen_at ? '??' : '????'}
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                                    </td>
+                                    <td className="p-4">
+                                        <div className="flex flex-col gap-2">
+                                            <span className="inline-flex w-fit rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                                                認領 {member.claim_count ?? 0} 次
+                                            </span>
+                                            {member.claim_last_at && (
+                                                <span className="text-xs text-[#A01828]">
+                                                    上次 {new Date(member.claim_last_at).toLocaleDateString('zh-TW')}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="p-4 text-right">
+                                        <div className="flex gap-2 justify-end">
+                                            <button
+                                                onClick={() => openEdit(member)}
+                                                className="px-3 py-1 bg-red-50 hover:bg-[#CF2030]/20 text-[#CF2030] rounded-full transition-colors text-sm flex items-center gap-1"
+                                            >
+                                                <Edit size={14} /> 編輯
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(member)}
+                                                className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-full transition-colors text-sm flex items-center gap-1"
+                                            >
+                                                <Trash2 size={14} /> 刪除
+                                            </button>
+                                            <button
+                                                onClick={() => onToggleFrozen?.(member)}
+                                                className="px-3 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-full transition-colors text-sm flex items-center gap-1"
+                                            >
+                                                {member.frozen_at ? <RotateCcw size={14} /> : <Snowflake size={14} />}
+                                                {member.frozen_at ? '解凍' : '冷凍'}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
 
             {/* Pagination */}
             <div className="flex justify-between items-center mt-4 pt-4 border-t border-red-100 text-sm text-gray-500">
-                <span>? {page} / {totalPages} ??? {members.length} ?</span>
+                <span>第 {page} / {totalPages} 頁，共 {members.length} 位</span>
                 <div className="flex gap-2">
                     <button
                         onClick={() => setPage(p => Math.max(p - 1, 1))}
                         disabled={page === 1}
                         className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-gray-700 border border-gray-200 disabled:opacity-30 hover:bg-red-50 transition-colors"
                     >
-                        <ChevronLeft size={14} /> ???
+                        <ChevronLeft size={14} /> 上一頁
                     </button>
                     <button
                         onClick={() => setPage(p => Math.min(p + 1, totalPages))}
                         disabled={page === totalPages}
                         className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-gray-700 border border-gray-200 disabled:opacity-30 hover:bg-red-50 transition-colors"
                     >
-                        ??? <ChevronRight size={14} />
+                        下一頁 <ChevronRight size={14} />
                     </button>
                 </div>
             </div>

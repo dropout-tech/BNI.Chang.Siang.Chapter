@@ -12,7 +12,7 @@ import StatsCard from '../components/common/StatsCard';
 import MemberList from '../components/admin/MemberList';
 import SEO from '../components/common/SEO';
 import { siteConfig } from '../config/site.config';
-import { sanitizeText } from '../lib/sanitize';
+import { sanitizeText, sanitizeUrl } from '../lib/sanitize';
 import { DEFAULT_FAQS } from '../hooks/useFaqs';
 import { getAdminAccessSource, getLinkedMemberAccount, hasAdminAccess } from '../lib/memberAccount';
 import { SYSTEM_SUPPORT_TEAM } from '../lib/adminAccess';
@@ -107,9 +107,13 @@ const Admin: React.FC = () => {
         event_date: '不定期',
         description: '',
         icon_name: 'Calendar',
+        cover_image: '',
+        youtube_url: '',
         is_published: true,
         sort_order: 0,
     });
+    const [eventCoverFile, setEventCoverFile] = useState<File | null>(null);
+    const [eventCoverPreview, setEventCoverPreview] = useState<string | null>(null);
     const [eventSaving, setEventSaving] = useState(false);
 
     useEffect(() => {
@@ -418,10 +422,15 @@ const Admin: React.FC = () => {
 
         setAddMemberLoading(true);
         try {
-            const payload: Record<string, string> = {
+            const maxId = members.reduce((max, m) => {
+                const n = Number(m.id);
+                return Number.isFinite(n) ? Math.max(max, n) : max;
+            }, 0);
+            const payload: Record<string, string | number> = {
                 name,
                 industry,
                 status: 'active',
+                id: maxId + 1,
             };
             if (newMemberForm.category) payload.category = sanitizeText(newMemberForm.category, 30);
             if (newMemberForm.company) payload.company = sanitizeText(newMemberForm.company, 100);
@@ -635,29 +644,62 @@ const Admin: React.FC = () => {
     // ── Events CRUD ──────────────────────────────────────────────
     const emptyEventForm = (): EventEntry => ({
         title: '', category: '活動', event_date: '不定期',
-        description: '', icon_name: 'Calendar', is_published: true, sort_order: events.length,
+        description: '', icon_name: 'Calendar', cover_image: '', youtube_url: '',
+        is_published: true, sort_order: events.length,
     });
 
     const startEditEvent = (ev: EventEntry) => {
         setEditingEvent(ev);
-        setEventForm({ ...ev });
+        setEventForm({ ...ev, cover_image: ev.cover_image || '', youtube_url: ev.youtube_url || '' });
+        setEventCoverFile(null);
+        setEventCoverPreview(ev.cover_image || null);
     };
 
     const cancelEditEvent = () => {
         setEditingEvent(null);
         setEventForm(emptyEventForm());
+        setEventCoverFile(null);
+        setEventCoverPreview(null);
+    };
+
+    const handleEventCoverChange = (file: File | null) => {
+        setEventCoverFile(file);
+        if (file) {
+            setEventCoverPreview(URL.createObjectURL(file));
+        } else {
+            setEventCoverPreview(eventForm.cover_image || null);
+        }
     };
 
     const handleSaveEvent = async () => {
         if (!eventForm.title.trim()) { alert('請填寫活動名稱'); return; }
         setEventSaving(true);
         try {
+            let coverImage = (eventForm.cover_image || '').trim();
+            if (eventCoverFile) {
+                const ext = eventCoverFile.name.split('.').pop() || 'jpg';
+                const fileName = `event-${Date.now()}.${ext}`;
+                const { data: uploadData, error: uploadError } = await insforge.storage
+                    .from('event-covers')
+                    .upload(fileName, eventCoverFile);
+                if (uploadError) throw uploadError;
+                coverImage = uploadData?.url || coverImage;
+            }
+
+            const youtubeUrl = sanitizeUrl(eventForm.youtube_url || '');
+            if ((eventForm.youtube_url || '').trim() && !youtubeUrl) {
+                alert('YouTube 連結格式不正確，請使用 https:// 開頭的完整網址');
+                return;
+            }
+
             const payload = {
                 title: sanitizeText(eventForm.title, 200),
                 category: sanitizeText(eventForm.category, 100),
                 event_date: sanitizeText(eventForm.event_date, 100),
                 description: sanitizeText(eventForm.description, 2000),
                 icon_name: eventForm.icon_name || 'Calendar',
+                cover_image: coverImage || null,
+                youtube_url: youtubeUrl || null,
                 is_published: eventForm.is_published,
                 sort_order: Number(eventForm.sort_order) || 0,
                 updated_at: new Date().toISOString(),
@@ -1273,6 +1315,49 @@ const Admin: React.FC = () => {
                                         onChange={e => setEventForm(prev => ({ ...prev, description: e.target.value }))}
                                     />
                                 </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">活動照片</label>
+                                    <div className="flex flex-col sm:flex-row gap-4 items-start">
+                                        <div className="w-full sm:w-48 h-28 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center shrink-0">
+                                            {eventCoverPreview ? (
+                                                <img src={eventCoverPreview} alt="活動封面預覽" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="text-xs text-gray-400">尚未上傳</span>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 space-y-2">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-red-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-[#CF2030] hover:file:bg-red-100"
+                                                onChange={(e) => handleEventCoverChange(e.target.files?.[0] || null)}
+                                            />
+                                            <p className="text-xs text-gray-500">建議橫向照片，儲存時會一併上傳。</p>
+                                            {(eventCoverPreview || eventForm.cover_image) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setEventCoverFile(null);
+                                                        setEventCoverPreview(null);
+                                                        setEventForm(prev => ({ ...prev, cover_image: '' }));
+                                                    }}
+                                                    className="text-xs font-semibold text-red-500 hover:underline"
+                                                >
+                                                    移除照片
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">YouTube 連結（選填）</label>
+                                    <input
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#CF2030]/30"
+                                        placeholder="https://www.youtube.com/watch?v=... 或 https://youtu.be/..."
+                                        value={eventForm.youtube_url || ''}
+                                        onChange={e => setEventForm(prev => ({ ...prev, youtube_url: e.target.value }))}
+                                    />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-1">圖示名稱（Lucide icon）</label>
                                     <input
@@ -1343,6 +1428,21 @@ const Admin: React.FC = () => {
                                                 {ev.description && (
                                                     <p className="mt-1 text-sm text-gray-500 line-clamp-2">{ev.description}</p>
                                                 )}
+                                                <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                                                    {ev.cover_image && (
+                                                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">有照片</span>
+                                                    )}
+                                                    {ev.youtube_url && (
+                                                        <a
+                                                            href={ev.youtube_url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="rounded-full bg-red-50 px-2 py-0.5 font-semibold text-[#CF2030] hover:underline"
+                                                        >
+                                                            YouTube 連結
+                                                        </a>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="flex gap-2 shrink-0">
                                                 <button
