@@ -64,6 +64,8 @@ npm run dev
 7. `www` 轉址請用 Zeabur 的「Redirect to another domain」或 Cloudflare Redirect Rule，並確認目標網域拼字正確
 8. InsForge 後台將 `https://changsiang.tw/login`、`https://changsiang.tw/member-edit?reset=true` 加入回跳允許清單
 
+> `dist/` 不納入 git，一律由 Zeabur 依 `Dockerfile` 從原始碼建置（`npm ci` 鎖定 `package-lock.json` 版本）。新增或升級套件後務必一併提交 `package-lock.json`。
+>
 > 舊的會員照片網址 `https://changsiang.tw/BNI.Chang.Siang.Chapter/...` 仍由 `server.js` 的 `LEGACY_BASE_PATH` 自動轉回根路徑，請勿移除該設定。
 
 ### 方案 B：Vercel
@@ -94,8 +96,8 @@ npm run dev
 # 使用內建 Dockerfile
 docker build -t bni-changsiang .
 docker run -p 8080:8080 \
-  -e VITE_SUPABASE_URL=your_url \
-  -e VITE_SUPABASE_ANON_KEY=your_key \
+  -e INSFORGE_URL=https://your-app.insforge.app \
+  -e INSFORGE_ANON_KEY=your_anon_key \
   bni-changsiang
 ```
 
