@@ -47,13 +47,24 @@ npm run dev
 
 ## 部署選項
 
-### 方案 A：Zeabur（推薦）
+### 方案 A：Zeabur + Cloudflare DNS（正式站 `changsiang.tw` 使用中）
 
-1. [Zeabur](https://zeabur.com) 連接 GitHub repo
-2. 設定環境變數（見下方「環境變數」章節）
-3. Build Command：`npm run build`
-4. Start Command：`npm start`
-5. 自動部署
+正式站由 Zeabur 提供服務，Cloudflare 只負責 DNS（可選 CDN）。本專案**不再使用 GitHub Pages**。
+
+1. [Zeabur](https://zeabur.com) 連接 GitHub repo（會使用根目錄的 `Dockerfile` 建置，push 到 `main` 即自動部署）
+2. Variables 設定 `INSFORGE_URL`、`INSFORGE_ANON_KEY`（或使用 Zeabur 的 InsForge 原生綁定自動注入）。`server.js` 會在 runtime 注入瀏覽器，不需在 build 階段提供
+3. 先用 Zeabur 產生的 `*.zeabur.app` 網址確認網站可正常開啟
+4. 服務的 Domains → Custom Domain 新增 `changsiang.tw` 與 `www.changsiang.tw`，記下 Zeabur 提供的 CNAME 目標（例如 `tpe1.clusters.zeabur.com`）
+5. Cloudflare → DNS → Records：
+   - 刪除 `changsiang.tw` 舊的 A / CNAME 記錄（例如指向 GitHub Pages `185.199.x.x` 的記錄）
+   - `CNAME  @    → <Zeabur CNAME 目標>`（根網域可直接用 CNAME，Cloudflare 會自動 CNAME Flattening）
+   - `CNAME  www  → <Zeabur CNAME 目標>`
+   - 首次設定建議先用灰雲（DNS only），待 Zeabur 顯示網域生效後再視需要開橘雲
+6. 若開啟橘雲（Cloudflare Proxy）：SSL/TLS 模式請選 **Full**，**不可選 Full (Strict)**，否則會因 Zeabur 自簽憑證導致連線失敗（Cloudflare 回 5xx）
+7. `www` 轉址請用 Zeabur 的「Redirect to another domain」或 Cloudflare Redirect Rule，並確認目標網域拼字正確
+8. InsForge 後台將 `https://changsiang.tw/login`、`https://changsiang.tw/member-edit?reset=true` 加入回跳允許清單
+
+> 舊的會員照片網址 `https://changsiang.tw/BNI.Chang.Siang.Chapter/...` 仍由 `server.js` 的 `LEGACY_BASE_PATH` 自動轉回根路徑，請勿移除該設定。
 
 ### 方案 B：Vercel
 
