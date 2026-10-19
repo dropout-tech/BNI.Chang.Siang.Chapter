@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import seoRoutes from './seo-routes.js';
+import { injectSeoMeta, injectNoindex, isNoindexRoute } from './seo-render.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,74 +61,6 @@ function injectRuntimeConfig(html) {
         : html.replace('</head>', `  ${script}\n</head>`);
 }
 
-function injectSeoMeta(html, routePath) {
-    const seo = seoRoutes[routePath];
-    if (!seo) return injectRuntimeConfig(html);
-
-    let result = html;
-
-    result = result.replace(
-        /<title>[^<]*<\/title>/,
-        `<title>${seo.title}</title>`
-    );
-
-    result = result.replace(
-        /<meta name="description" content="[^"]*"/,
-        `<meta name="description" content="${seo.description}"`
-    );
-
-    result = result.replace(
-        /<meta name="keywords" content="[^"]*"/,
-        `<meta name="keywords" content="${seo.keywords}"`
-    );
-
-    result = result.replace(
-        /<link rel="canonical" href="[^"]*"/,
-        `<link rel="canonical" href="${seo.canonical}"`
-    );
-
-    result = result.replace(
-        /<meta property="og:url" content="[^"]*"/,
-        `<meta property="og:url" content="${seo.canonical}"`
-    );
-
-    result = result.replace(
-        /<meta property="og:title" content="[^"]*"/,
-        `<meta property="og:title" content="${seo.title}"`
-    );
-
-    result = result.replace(
-        /<meta property="og:description" content="[^"]*"/,
-        `<meta property="og:description" content="${seo.description}"`
-    );
-
-    result = result.replace(
-        /<meta name="twitter:url" content="[^"]*"/,
-        `<meta name="twitter:url" content="${seo.canonical}"`
-    );
-
-    result = result.replace(
-        /<meta name="twitter:title" content="[^"]*"/,
-        `<meta name="twitter:title" content="${seo.title}"`
-    );
-
-    result = result.replace(
-        /<meta name="twitter:description" content="[^"]*"/,
-        `<meta name="twitter:description" content="${seo.description}"`
-    );
-
-    return injectRuntimeConfig(result);
-}
-
-const NOINDEX_ROUTES = ['/login', '/admin', '/member-edit'];
-
-function injectNoindex(html) {
-    return injectRuntimeConfig(html).replace(
-        '</head>',
-        '  <meta name="robots" content="noindex, nofollow" />\n</head>'
-    );
-}
-
 function sendText(res, statusCode, message) {
     res.writeHead(statusCode, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end(message);
@@ -171,10 +104,11 @@ function cacheControlFor(requestPath, extname) {
     return 'no-cache';
 }
 
+// Runtime config is injected before noindex to keep the original tag order in <head>.
 function renderSpaHtml(routePath) {
-    return NOINDEX_ROUTES.some(r => routePath.startsWith(r))
-        ? injectNoindex(indexHtmlCache)
-        : injectSeoMeta(indexHtmlCache, routePath);
+    return isNoindexRoute(routePath)
+        ? injectNoindex(injectRuntimeConfig(indexHtmlCache))
+        : injectRuntimeConfig(injectSeoMeta(indexHtmlCache, routePath));
 }
 
 function serveStaticFile(res, filePath, requestPath) {
@@ -221,7 +155,7 @@ function handleRequest(req, res) {
 
     const requestPath = stripLegacyBasePath(decodedPath);
     if (requestPath === '/' || requestPath === '/index.html') {
-        sendHtml(res, injectSeoMeta(indexHtmlCache, '/'));
+        sendHtml(res, injectRuntimeConfig(injectSeoMeta(indexHtmlCache, '/')));
         return;
     }
     if (!path.extname(requestPath)) {

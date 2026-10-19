@@ -68,6 +68,35 @@ npm run dev
 >
 > 舊的會員照片網址 `https://changsiang.tw/BNI.Chang.Siang.Chapter/...` 仍由 `server.js` 的 `LEGACY_BASE_PATH` 自動轉回根路徑，請勿移除該設定。
 
+### 方案 A2：Cloudflare Pages（靜態託管，準備取代 Zeabur）
+
+不需 Node server：`npm run build` 會在 `vite build` 後執行 `scripts/prerender-routes.mjs`，把 `server.js` 原本在 request 時做的 SEO meta 注入，預先寫成靜態檔。
+
+1. Cloudflare → Workers & Pages → Create → Pages → 連接 GitHub repo
+2. Build 設定：
+   - Framework preset：**None**
+   - Build command：`npm run build`
+   - Build output directory：`dist`
+3. Environment variables（Production 與 Preview 都要設）：
+   - `NODE_VERSION` = `22`
+   - `VITE_INSFORGE_URL`、`VITE_INSFORGE_ANON_KEY` — **build-time** 變數，由 Vite 編進前端 bundle（Pages 沒有 `server.js`，不會在 runtime 注入 `window.__APP_CONFIG__`；未設定時才會退回 `index.html` 內寫死的 `window.__APP_CONFIG__`）。修改後須重新部署才會生效
+4. 先用 `*.pages.dev` 網址確認網站可正常開啟，再到 Custom domains 綁定 `changsiang.tw` 與 `www.changsiang.tw`
+5. InsForge 後台將 `https://changsiang.tw/login`、`https://changsiang.tw/member-edit?reset=true` 加入回跳允許清單（測試 `*.pages.dev` 時也要加入該網域）
+
+靜態檔如何對應 `server.js` 的行為：
+
+| `server.js`（Zeabur） | Cloudflare Pages |
+|---|---|
+| 依路由注入 title / description / canonical / OG | `dist/index.html`（`/`）與 `dist/<route>.html`（`seo-routes.js` 每個路由，例如 `dist/bni.html`） |
+| `/login`、`/admin`、`/member-edit` 加 noindex | `dist/login.html` 等加 `<meta name="robots">`；`public/_headers` 另加 `X-Robots-Tag` |
+| 其他路徑（`/members/:id` 等）回 `index.html` | 不產生 `404.html`，Pages 自動 SPA fallback 到 `dist/index.html`（HTTP 200） |
+| `LEGACY_BASE_PATH` 去除 `/BNI.Chang.Siang.Chapter` | `public/_redirects` 301 轉回根路徑 |
+| Cache-Control（assets 1 年、images 7 天） | `public/_headers` |
+
+> 共用的 meta 注入函式在 `seo-render.js`，`server.js` 與 prerender 腳本都引用它；修改 SEO 請改 `seo-routes.js`。
+>
+> **注意：** `npm run build` 會改寫 `dist/index.html`（套上 `/` 的 meta）。要用 `server.js`（Zeabur / Docker / `npm start`）時請改用 `npx vite build`（`Dockerfile` 已如此），否則 noindex 頁與未知路由會帶 `/` 的 title / description。
+
 ### 方案 B：Vercel
 
 1. Import GitHub repo
@@ -176,7 +205,7 @@ cp .env.example .env
 
 | 機制 | 說明 |
 |------|------|
-| Server-side Meta Injection | `server.js` 根據路由動態替換 `<title>`、`<meta description>`、OG tags |
+| Server-side Meta Injection | `server.js` 根據路由動態替換 `<title>`、`<meta description>`、OG tags（Cloudflare Pages 則由 `scripts/prerender-routes.mjs` 預先產生） |
 | JSON-LD 結構化資料 | Organization + WebSite + ProfessionalService + FAQPage + Event |
 | `<noscript>` 全文內容 | 不支援 JS 的爬蟲也能讀取完整內容 |
 | `sitemap.xml` | 列出所有路由 |
@@ -218,6 +247,8 @@ cp .env.example .env
 ├── index.html                   ← 入口 HTML（含 SEO）
 ├── server.js                    ← Production server
 ├── seo-routes.js                ← SEO 路由配置
+├── seo-render.js                ← SEO meta 注入函式（server.js 與 prerender 共用）
+├── scripts/prerender-routes.mjs ← build 後產生各路由靜態 HTML（Cloudflare Pages）
 ├── CLONE_GUIDE.md               ← 完整 Clone 部署指南
 └── DEPLOY_GUIDE.md              ← 本文件
 ```
